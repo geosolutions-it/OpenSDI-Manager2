@@ -51,7 +51,17 @@
             <!-- MODULES  -->
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
-                <artifactId>opensdi-web</artifactId>
+                <artifactId>opensdi2-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-filemanager</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-web</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
@@ -262,6 +272,8 @@
         </dependencies>
      </dependencyManagement>
     <modules>
+        <module>core</module>
+        <module>modules</module>
         <module>web</module>
     </modules>
   <build>
