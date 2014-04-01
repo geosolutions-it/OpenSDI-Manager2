@@ -25,6 +25,7 @@ import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
 import it.geosolutions.opensdi2.model.FileUpload;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
+import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -55,8 +56,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,62 +93,62 @@ public class FileManager extends AbstractFileController {
 	/**
 	 * Known operation: Extjs integration folder list
 	 */
-	private static final String EXTJS_FOLDER_LIST = "get_folderlist";
+	public static final String EXTJS_FOLDER_LIST = "get_folderlist";
 
 	/**
 	 * Known operation: Extjs integration file list
 	 */
-	private static final String EXTJS_FILE_LIST = "get_filelist";
+	public static final String EXTJS_FILE_LIST = "get_filelist";
 
 	/**
 	 * Known operation: Extjs integration folder new
 	 */
-	private static final String EXTJS_FOLDER_NEW = "folder_new";
+	public static final String EXTJS_FOLDER_NEW = "folder_new";
 
 	/**
 	 * Known operation: Extjs integration folder rename
 	 */
-	private static final String EXTJS_FOLDER_RENAME = "folder_rename";
+	public static final String EXTJS_FOLDER_RENAME = "folder_rename";
 
 	/**
 	 * Known operation: Extjs integration folder delete
 	 */
-	private static final String EXTJS_FOLDER_DEL = "folder_delete";
+	public static final String EXTJS_FOLDER_DEL = "folder_delete";
 
 	/**
 	 * Known operation: Extjs integration file rename
 	 */
-	private static final String EXTJS_FILE_RENAME = "file_rename";
+	public static final String EXTJS_FILE_RENAME = "file_rename";
 
 	/**
 	 * Known operation: Extjs integration file delete
 	 */
-	private static final String EXTJS_FILE_DELETE = "file_delete";
+	public static final String EXTJS_FILE_DELETE = "file_delete";
 
 	/**
 	 * Known operation: Extjs integration file download
 	 */
-	private static final String EXTJS_FILE_DOWNLOAD = "file_download";
+	public static final String EXTJS_FILE_DOWNLOAD = "file_download";
 
 	/**
 	 * Known operation: Extjs integration file upload
 	 */
-	private static final String EXTJS_FILE_UPLOAD = "file_upload";
+	public static final String EXTJS_FILE_UPLOAD = "file_upload";
 
 	/**
 	 * Known operation: Extjs integration file properties
 	 */
-	private static final String EXTJS_FILE_PROPERTIES = "file_properties";
+	public static final String EXTJS_FILE_PROPERTIES = "file_properties";
 
 	/**
 	 * Known operation: Extjs integration file thumb
 	 */
-	private static final String EXTJS_FILE_THUMB = "get_thumb";
+	public static final String EXTJS_FILE_THUMB = "get_thumb";
 
 	/**
 	 * Known operation: Extjs integration serve image
 	 */
-	private static final String EXTJS_IMAGE = "get_image";
+	public static final String EXTJS_IMAGE = "get_image";
 
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
@@ -248,13 +247,11 @@ public class FileManager extends AbstractFileController {
 	 */
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	public void upload(
-			@RequestHeader HttpHeaders gotHeaders,
 			@RequestParam MultipartFile file,
 			@RequestParam(required = false, defaultValue = "uploadedFile") String filename,
 			@RequestParam(required = false, defaultValue = "-1") int chunks,
 			@RequestParam(required = false, defaultValue = "-1") int chunk,
-			HttpServletRequest request, HttpServletResponse servletResponse,
-			ModelMap model) {
+			HttpServletRequest request, HttpServletResponse servletResponse) {
 
 		FileUpload uploadedFiles = new FileUpload();
 		List<MultipartFile> files = new LinkedList<MultipartFile>();
@@ -463,8 +460,8 @@ public class FileManager extends AbstractFileController {
 				data.add(objectData);
 			}
 		}
-		result.put("data", data);
-		result.put("count", index);
+		result.put(ResponseConstants.DATA, data);
+		result.put(ResponseConstants.COUNT, index);
 
 		return result;
 	}

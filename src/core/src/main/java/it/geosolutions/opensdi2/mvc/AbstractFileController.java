@@ -74,4 +74,18 @@ public abstract class AbstractFileController {
 		return filePath;
 	}
 
+	/**
+	 * @return the config
+	 */
+	public OpenSDIManagerConfig getConfig() {
+		return config;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(OpenSDIManagerConfig config) {
+		this.config = config;
+	}
+
 }
