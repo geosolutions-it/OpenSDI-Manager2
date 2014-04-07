@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       
+    <!-- GeoStore wrapper -->
+    <bean name="geostoreFacade" class="it.geosolutions.opensdi2.service.impl.URLFacadeImpl">
+    	<property name="urlWrapped" value="http://localhost:8082/geostore" />
+    	<property name="proxy"><ref bean="geostoreProxyService"/></property>
+    </bean>
+    
+    <bean id="geostoreProxyService" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
+    	<property name="proxyConfig" ref="proxyConfig"></property>
+    	<property name="proxyHelper" ref="proxyHelper"></property>
+    	<property name="callbacks">
+            <list> 
+                <!-- TODO: Configure geostore callbacks 
+                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+            </list>
+    	</property>
+    </bean>
+    
+</beans>
