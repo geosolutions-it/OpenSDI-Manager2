@@ -17,7 +17,18 @@
 
 	<servlet-mapping>
 		<servlet-name>mvc-dispatcher</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>/mvc/</url-pattern>
+	</servlet-mapping>
+
+	<!-- REST Facade -->
+	<servlet>
+		<servlet-name>rest-facade</servlet-name>
+		<servlet-class>it.geosolutions.opensdi2.servlet.RestFacade</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>rest-facade</servlet-name>
+		<url-pattern>/facade/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- pick up all spring application contexts -->

@@ -18,6 +18,6 @@
         <module>filemanager</module>
         <module>http-proxy-core</module>
         <module>http-proxy-mvc</module>
-        <module>geostore-wrapper</module>
+        <module>rest-facade</module>
     </modules>
 </project>

@@ -71,7 +71,7 @@
             </dependency>
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
-                <artifactId>opensdi2-geostore-wrapper</artifactId>
+                <artifactId>opensdi2-rest-facade</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

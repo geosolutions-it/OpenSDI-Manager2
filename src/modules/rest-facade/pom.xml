@@ -9,10 +9,10 @@
     </parent>
   
     <groupId>it.geosolutions.opensdi2</groupId>
-    <artifactId>opensdi2-geostore-wrapper</artifactId>
+    <artifactId>opensdi2-rest-facade</artifactId>
     <packaging>jar</packaging>
 
-    <name>OpenSDI Manager 2 - Modules - Geostore Wrapper component</name>
+    <name>OpenSDI Manager 2 - Modules - Rest facade</name>
 
 	<dependencies>
         <dependency>

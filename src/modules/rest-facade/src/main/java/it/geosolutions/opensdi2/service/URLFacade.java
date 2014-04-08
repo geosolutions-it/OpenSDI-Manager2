@@ -44,17 +44,15 @@ public interface URLFacade {
 	 * @throws IOException
 	 */
 	void handleRequest(HttpServletRequest request,
-			HttpServletResponse response, String... path) throws IOException;
-
+			HttpServletResponse response, String urlWrapped, String... path) throws IOException;
+	
 	/**
-	 * @return the urlWrapped
+	 * Check if an URL is a wrapped one
+	 * 
+	 * @param url relative URL to check
+	 * 
+	 * @return true if is a wrapped one or false otherwise
 	 */
-	String getUrlWrapped();
-
-	/**
-	 * @param urlWrapped
-	 *            the urlWrapped to set
-	 */
-	void setUrlWrapped(String urlWrapped);
+	boolean isWrappedURL(String url);
 
 }
