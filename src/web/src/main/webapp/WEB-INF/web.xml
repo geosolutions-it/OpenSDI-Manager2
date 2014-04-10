@@ -17,7 +17,7 @@
 
 	<servlet-mapping>
 		<servlet-name>mvc-dispatcher</servlet-name>
-		<url-pattern>/mvc/</url-pattern>
+		<url-pattern>/mvc/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- REST Facade -->
