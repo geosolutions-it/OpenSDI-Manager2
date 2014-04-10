@@ -19,7 +19,7 @@
                 <value>classpath*:opensdi-config-ovr.properties</value>
                 <!-- used for externalized override -->
                 <value>${opensdi-ovr:dummy}</value>
-                <value>file:///${OPENSDI_CONFIG_FILE}</value>    
+                <value>file:///${OPENSDI_CONFIG_FILE:dummy}</value>    
             </list>
         </property>
     </bean>

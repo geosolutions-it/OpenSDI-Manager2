@@ -20,6 +20,8 @@
  */
 package it.geosolutions.opensdi2.config;
 
+import it.geosolutions.opensdi2.utils.ControllerUtils;
+
 import java.io.Serializable;
 
 /**
@@ -29,7 +31,8 @@ import java.io.Serializable;
  * @author adiaz
  * 
  */
-public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerConfig {
+public class OpenSDIManagerConfigImpl implements Serializable,
+		OpenSDIManagerConfig {
 
 	/**
 	 * 
@@ -53,6 +56,11 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
 	 */
 	public void setBaseFolder(String baseFolder) {
 		this.baseFolder = baseFolder;
+		if (this.baseFolder != null
+				&& this.baseFolder.lastIndexOf(ControllerUtils.SEPARATOR) != this.baseFolder
+						.length() - 1) {
+			this.baseFolder += ControllerUtils.SEPARATOR;
+		}
 	}
 
 }

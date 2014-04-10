@@ -22,6 +22,10 @@
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-filemanager</artifactId>
         </dependency>
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-rest-facade</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>

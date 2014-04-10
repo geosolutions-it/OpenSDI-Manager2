@@ -61,6 +61,21 @@
             </dependency>
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-http_proxy-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-http_proxy-mvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-rest-facade</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-web</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
@@ -88,6 +103,11 @@
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>1.9</version>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -163,6 +183,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-remoting</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
             </dependency>
  
