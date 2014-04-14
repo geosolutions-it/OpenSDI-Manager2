@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +55,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,17 +77,12 @@ public class FileManager extends AbstractFileController {
 	private final static Logger LOGGER = Logger.getLogger(FileManager.class);
 
 	/**
-	 * Map to handle file uploading chunked
-	 */
-	private Map<String, List<byte[]>> uploadedChunks = new ConcurrentHashMap<String, List<byte[]>>();
-	
-	/**
-	 * Default width for thumb 
+	 * Default width for thumb
 	 */
 	private static final int THUMB_W = 100;
-	
+
 	/**
-	 * Default height for thumb 
+	 * Default height for thumb
 	 */
 	private static final int THUMB_H = 100;
 
@@ -183,7 +179,7 @@ public class FileManager extends AbstractFileController {
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
-		// TODO: Known operations for ExtJS file browser. 
+		// TODO: Known operations for ExtJS file browser.
 		if (EXTJS_FILE_DELETE.equals(action)) {
 			result.put(SUCCESS, deleteFile(file, folder));
 		} else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
@@ -244,34 +240,40 @@ public class FileManager extends AbstractFileController {
 	 * @param request
 	 * @param model
 	 * @return
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	public void upload(
 			@RequestParam MultipartFile file,
-			@RequestParam(required = false, defaultValue = "uploadedFile") String filename,
+			@RequestParam(required = false, defaultValue = "uploadedFile") String name,
 			@RequestParam(required = false, defaultValue = "-1") int chunks,
 			@RequestParam(required = false, defaultValue = "-1") int chunk,
-			HttpServletRequest request, HttpServletResponse servletResponse) {
+			HttpServletRequest request, HttpServletResponse servletResponse)
+			throws IOException {
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("upload (name, chunks, chunk) --> " + name + ","
+					+ chunks + "," + chunk);
+			LOGGER.info("Uploading " + ControllerUtils.CONCURRENT_UPLOAD.size()
+					+ " files");
+		}
 
 		FileUpload uploadedFiles = new FileUpload();
 		List<MultipartFile> files = new LinkedList<MultipartFile>();
 		if (chunks > 0) {
-			List<byte[]> uploadedChunks = this.uploadedChunks.get(filename);
-			if (uploadedChunks == null) {
-				// init bytes for the chunk upload
-				uploadedChunks = new LinkedList<byte[]>();
+			// init bytes for the chunk upload
+			Entry<String, List<byte[]>> entry = ControllerUtils.CONCURRENT_UPLOAD
+					.addChunk(name, chunks, chunk, file);
+			if (entry == null) {
+				String msg = "Expired file upload dor file " + name;
+				LOGGER.error(msg);
+				throw new IOException(msg);
 			}
-			try {
-				// add chunk on its position
-				uploadedChunks.add(chunk, file.getBytes());
-				this.uploadedChunks.put(filename, uploadedChunks);
-			} catch (IOException e) {
-				LOGGER.error("Error on file upload", e);
-			}
+			List<byte[]> uploadedChunks = entry.getValue();
 			if (chunk == chunks - 1) {
 				// Create the upload file to be handled
 				MultipartFile composedUpload = new CommonsMultipartFile(
-						getFileItem(file, uploadedChunks, filename));
+						getFileItem(file, uploadedChunks, name, entry));
 				files.add(composedUpload);
 				uploadedFiles.setFiles(files);
 				doUpload(uploadedFiles);
@@ -285,11 +287,23 @@ public class FileManager extends AbstractFileController {
 	}
 
 	/**
+	 * Scheduled each 5 minutes. If an user stop an upload along 5 minutes, it
+	 * will be removed from memory
+	 */
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public void cleanupUploadedFiles() {
+		ControllerUtils.CONCURRENT_UPLOAD.cleanup();
+	}
+
+	/**
 	 * Download a file
 	 * 
-	 * @param folder folder for the file
-	 * @param file to be downloaded
-	 * @param resp servlet response
+	 * @param folder
+	 *            folder for the file
+	 * @param file
+	 *            to be downloaded
+	 * @param resp
+	 *            servlet response
 	 */
 	@RequestMapping(value = "download", method = { RequestMethod.POST,
 			RequestMethod.GET })
@@ -311,12 +325,13 @@ public class FileManager extends AbstractFileController {
 	 * @param file
 	 * @param chunkedBytes
 	 * @param name
+	 * @param entry
 	 * @return
 	 */
 	private FileItem getFileItem(MultipartFile file, List<byte[]> chunkedBytes,
-			String name) {
+			String name, Entry<String, List<byte[]>> entry) {
 		// Temporal file to write chunked bytes
-		File outFile = FileUtils.getFile(FileUtils.getTempDirectory(), name);
+		File outFile = new File(System.getProperty("java.io.tmpdir"), name);
 
 		// total file size
 		int sizeThreshold = 0;
@@ -344,7 +359,7 @@ public class FileManager extends AbstractFileController {
 			LOGGER.error("Error writing final file", e);
 		} finally {
 			// Remove bytes from memory
-			uploadedChunks.remove(file.getName());
+			ControllerUtils.CONCURRENT_UPLOAD.remove(entry.getKey());
 		}
 
 		return fileItem;
