@@ -65,7 +65,7 @@ public abstract class AbstractFileController {
 	 * @return
 	 */
 	public String getFilePath(String fileName, String subFolder) {
-		String filePath = config.getBaseFolder();
+		String filePath = getRunTimeDir();
 		if (subFolder != null) {
 			filePath += subFolder + ControllerUtils.SEPARATOR;
 		}

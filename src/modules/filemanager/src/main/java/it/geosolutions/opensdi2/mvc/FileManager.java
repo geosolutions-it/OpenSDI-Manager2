@@ -145,6 +145,11 @@ public class FileManager extends AbstractFileController {
 	 * Known operation: Extjs integration serve image
 	 */
 	public static final String EXTJS_IMAGE = "get_image";
+	
+	/**
+	 * Name for new folders
+	 */
+	private String newFolderName = "New Folder";
 
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
@@ -170,34 +175,37 @@ public class FileManager extends AbstractFileController {
 	Object extJSbrowser(
 			@RequestParam(value = "action", required = false) String action,
 			@RequestParam(value = "folder", required = false) String folder,
+			@RequestParam(value = "name", required = false) String name,
+			@RequestParam(value = "oldName", required = false) String oldName,
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Performing " + action + " in extJSFileBrowser");
 		}
+		
+		String finalFolder = folder != null && !folder.equals("root") ? folder
+				: null;
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		// TODO: Known operations for ExtJS file browser.
 		if (EXTJS_FILE_DELETE.equals(action)) {
-			result.put(SUCCESS, deleteFile(file, folder));
+			result.put(SUCCESS, deleteFile(file, finalFolder));
 		} else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
-			download(response, file, getFilePath(file, folder));
+			download(response, file, getFilePath(file, finalFolder));
 			return null;
 		} else if (EXTJS_FILE_LIST.equals(action)) {
 			return getFileList(folder);
 		} else if (EXTJS_FILE_PROPERTIES.equals(action)) {
 			LOGGER.error("TODO operation: " + EXTJS_FILE_PROPERTIES);
 		} else if (EXTJS_FILE_RENAME.equals(action)) {
-			LOGGER.error("TODO operation: " + EXTJS_FILE_RENAME);
+			result.put(SUCCESS, renameFolder(finalFolder, name, oldName));
 		} else if (EXTJS_FILE_THUMB.equals(action)) {
 			serveImageThumb(
 					response,
 					file,
-					getFilePath(file,
-							folder != null && !folder.equals("root") ? folder
-									: null));
+					getFilePath(file, finalFolder));
 			return null;
 		} else if (EXTJS_IMAGE.equals(action)) {
 			download(
@@ -205,20 +213,18 @@ public class FileManager extends AbstractFileController {
 					null,
 					response,
 					file,
-					getFilePath(file,
-							folder != null && !folder.equals("root") ? folder
-									: null));
+					getFilePath(file, finalFolder));
 			return null;
 		} else if (EXTJS_FILE_UPLOAD.equals(action)) {
 			LOGGER.error("TODO operation: " + EXTJS_FILE_UPLOAD);
 		} else if (EXTJS_FOLDER_DEL.equals(action)) {
-			result.put(SUCCESS, deleteFolder(folder, null));
+			result.put(SUCCESS, deleteFolder(finalFolder, null));
 		} else if (EXTJS_FOLDER_LIST.equals(action)) {
 			return getFolderList(folder);
 		} else if (EXTJS_FOLDER_NEW.equals(action)) {
-			LOGGER.error("TODO operation: " + EXTJS_FOLDER_NEW);
+			result.put(SUCCESS, newFolder(finalFolder));
 		} else if (EXTJS_FOLDER_RENAME.equals(action)) {
-			LOGGER.error("TODO operation: " + EXTJS_FOLDER_RENAME);
+			result.put(SUCCESS, renameFolder(file, name, oldName));
 		} else {
 			LOGGER.error("Unknown operation " + action);
 			result.put(SUCCESS, false);
@@ -248,6 +254,7 @@ public class FileManager extends AbstractFileController {
 			@RequestParam(required = false, defaultValue = "uploadedFile") String name,
 			@RequestParam(required = false, defaultValue = "-1") int chunks,
 			@RequestParam(required = false, defaultValue = "-1") int chunk,
+			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
 
@@ -276,13 +283,13 @@ public class FileManager extends AbstractFileController {
 						getFileItem(file, uploadedChunks, name, entry));
 				files.add(composedUpload);
 				uploadedFiles.setFiles(files);
-				doUpload(uploadedFiles);
+				doUpload(uploadedFiles, folder);
 			}
 		} else {
 			// Create the upload file to be handled
 			files.add(file);
 			uploadedFiles.setFiles(files);
-			doUpload(uploadedFiles);
+			doUpload(uploadedFiles, folder);
 		}
 	}
 
@@ -370,7 +377,7 @@ public class FileManager extends AbstractFileController {
 	 * 
 	 * @param uploadedFiles
 	 */
-	private void doUpload(FileUpload uploadedFiles) {
+	private void doUpload(FileUpload uploadedFiles, String folder) {
 		List<MultipartFile> files = uploadedFiles.getFiles();
 
 		if (null != files && files.size() > 0) {
@@ -380,8 +387,7 @@ public class FileManager extends AbstractFileController {
 				if (!"".equalsIgnoreCase(fileName)) {
 					// Handle file content - multipartFile.getInputStream()
 					try {
-						multipartFile.transferTo(new File(getRunTimeDir()
-								+ fileName));
+						multipartFile.transferTo(new File(getFilePath(fileName, folder)));
 					} catch (IllegalStateException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -406,7 +412,11 @@ public class FileManager extends AbstractFileController {
 		if (file.exists()) {
 			if (file.canWrite()) {
 				try {
-					FileUtils.deleteQuietly(file);
+					if(file.isDirectory()){
+						FileUtils.deleteQuietly(file);
+					}else{
+						file.delete();
+					}
 					return true;
 				} catch (Exception e) {
 					LOGGER.error("Error deleting '" + filePath + "' file");
@@ -419,6 +429,98 @@ public class FileManager extends AbstractFileController {
 			}
 		} else {
 			LOGGER.error("File '" + filePath + "' not exists");
+			return false;
+		}
+	}
+
+	/**
+	 * Create a new folder in a subFolder
+	 * 
+	 * @param folder
+	 * 
+	 * @return true if the new folder is successfully created and false otherwise
+	 */
+	private boolean newFolder(String absolutePath) {
+
+		// get the new folder path
+		String newFolderPath = absolutePath;
+		// absolute path could contain target new path or only the parent folder
+		if (newFolderPath != null
+				&& newFolderPath.contains(ControllerUtils.SEPARATOR)) {
+			File targetFile = new File(getFilePath(newFolderPath, null));
+			if (targetFile.exists()) {
+				// absolute path is parent folder
+				newFolderPath = generateNewFolderName(newFolderPath);
+			} else {
+				// absolute path is target new folder. We're going to check the
+				// parent folder
+				String parentFolder = newFolderPath.substring(0,
+						newFolderPath.lastIndexOf(ControllerUtils.SEPARATOR));
+				File parent = new File(getFilePath(parentFolder, null));
+				if (!parent.exists()) {
+					LOGGER.error("Can't create folder '" + absolutePath
+							+ "'. Parent folder don't exists");
+					return false;
+				}
+			}
+
+		}
+		// now, we create the folder
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Creating new folder in " + newFolderPath);
+		}
+		try {
+			new File(getFilePath(newFolderPath, null)).mkdir();
+			return true;
+		} catch (Exception e) {
+			LOGGER.error("Error creating '" + newFolderPath + "' folder");
+			return false;
+		}
+	}
+	
+	/**
+	 * Generate a new folder name
+	 * @param parent
+	 * @return new name for the folder
+	 */
+	private String generateNewFolderName(String parent){
+		String filePath = getFilePath(newFolderName, parent);
+		File file = new File(filePath);
+		// generate new folder name
+		if(file.exists()){
+			int i = 1;
+			while (file.exists()){
+				filePath = getFilePath(newFolderName + " (" + (i++) + ")", parent);
+				file = new File(filePath);
+			}
+		}
+		return filePath;
+	}
+
+	private Object renameFolder(String folder, String newName, String oldName) {
+		String filePath = getFilePath(oldName, folder);
+		String newPath = getFilePath(newName, folder);
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.debug("Renaming folder " + folder + " to " + newName);
+		}
+		File file = new File(filePath);
+		File targetFile = new File(newPath);
+		if (file.exists()) {
+			if(!targetFile.exists()){
+				try {
+					file.renameTo(targetFile);
+					return true;
+				} catch (Exception e) {
+					LOGGER.error("Error renaming '" + filePath + "' file");
+					return false;
+				}
+			}else{
+				LOGGER.error("Target folder '" + newPath
+						+ "' already exists");
+				return false;
+			}
+		} else {
+			LOGGER.error("File '" + filePath + "' don't exists exists");
 			return false;
 		}
 	}
@@ -438,9 +540,18 @@ public class FileManager extends AbstractFileController {
 			for (String sub : folderToList.list()) {
 				File file = new File(getFilePath(sub, subFolder));
 				Map<String, Object> objectData = new HashMap<String, Object>();
-				objectData.put("id", ControllerUtils.SEPARATOR + sub);
+				String id = ControllerUtils.SEPARATOR + sub;
+				if(folder != null){
+					id = folder + id;
+				}
+				objectData.put("id", id);
+//				objectData.put("id", ControllerUtils.SEPARATOR + sub);
 				objectData.put("text", sub);
+				objectData.put("size", file.length());
+				objectData.put("mtime", file.lastModified());
 				objectData.put("loaded", !file.isDirectory());
+				objectData.put("iconCls", file.isDirectory() ? "folder" : "file");
+				objectData.put("leaf", file.isDirectory() ? false: true);
 				objectData.put("expanded", false);
 				data.add(objectData);
 			}
@@ -469,6 +580,8 @@ public class FileManager extends AbstractFileController {
 				objectData.put("name", sub);
 				objectData.put("size", file.length());
 				objectData.put("mtime", file.lastModified());
+				objectData.put("iconCls", file.isDirectory() ? "folder" : "file");
+				objectData.put("leaf", file.isDirectory() ? false: true);
 				objectData.put("web_path", subFolder
 						+ ControllerUtils.SEPARATOR + sub);
 				result.put(index++ + "", objectData);
@@ -723,6 +836,20 @@ public class FileManager extends AbstractFileController {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return the newFolderName
+	 */
+	public String getNewFolderName() {
+		return newFolderName;
+	}
+
+	/**
+	 * @param newFolderName the newFolderName to set
+	 */
+	public void setNewFolderName(String newFolderName) {
+		this.newFolderName = newFolderName;
 	}
 
 }
