@@ -110,7 +110,7 @@ public class FileManagerTest {
 			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt(); 
 			OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
 			config.setBaseFolder(basePath + ControllerUtils.SEPARATOR);
-			fileManager.setConfig(config);
+			fileManager.setRuntimeDir(config.getBaseFolder());
 			// create test folder
 			File file = new File(basePath);
 			file.mkdir();
@@ -137,7 +137,7 @@ public class FileManagerTest {
 	@Test
 	public void testFileList(){
 		HttpServletResponse response = new MockHttpServletResponse();
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -156,9 +156,9 @@ public class FileManagerTest {
 	public void testFileDeleteFiles(){
 		HttpServletResponse response = new MockHttpServletResponse();
 		for(File file: currentFiles){
-			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, file.getName(), new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, file.getName(), null, null, new MockHttpServletRequest(), response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -177,9 +177,9 @@ public class FileManagerTest {
 	public void testFileDeleteFolder(){
 		HttpServletResponse response = new MockHttpServletResponse();
 		for(File file: currentFolders){
-			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null, new MockHttpServletRequest(), response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;

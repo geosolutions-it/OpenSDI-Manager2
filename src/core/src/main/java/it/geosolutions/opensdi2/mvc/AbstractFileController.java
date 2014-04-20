@@ -33,30 +33,9 @@ import javax.annotation.Resource;
  */
 public abstract class AbstractFileController {
 	
-	@Resource(name="baseConfig")
-	private OpenSDIManagerConfig config;
+	private String runtimeDir;
 
-	/**
-	 * Obtain run time directory
-	 * 
-	 * @return default directory if differentDirectoryByUser it's disabled or
-	 *         user directory otherwise
-	 */
-	public String getRunTimeDir() {
-		return config.getBaseFolder();
-		// TODO: Use user logged
-		// String dir = null;
-		// if (Boolean.TRUE.equals(differentDirectoryByUser)) {
-		//
-		// String username = SecurityContextHolder.getContext()
-		// .getAuthentication().getName();
-		// dir = GeoBatchRunInfoUtils.getRunDir(getDefaultBaseDir(), username);
-		// } else {
-		// dir = getDefaultBaseDir();
-		// }
-		// return dir;
-	}
-
+	
 	/**
 	 * Obtain file path for a file in a folder inside defaultFolderDir
 	 * 
@@ -65,7 +44,7 @@ public abstract class AbstractFileController {
 	 * @return
 	 */
 	public String getFilePath(String fileName, String subFolder) {
-		String filePath = getRunTimeDir();
+		String filePath = getRuntimeDir();
 		if (subFolder != null) {
 			filePath += subFolder + ControllerUtils.SEPARATOR;
 		}
@@ -77,15 +56,16 @@ public abstract class AbstractFileController {
 	/**
 	 * @return the config
 	 */
-	public OpenSDIManagerConfig getConfig() {
-		return config;
+	public String getRuntimeDir() {
+		return this.runtimeDir;
 	}
 
 	/**
 	 * @param config the config to set
 	 */
-	public void setConfig(OpenSDIManagerConfig config) {
-		this.config = config;
+	public void setRuntimeDir(String runtimeDir){
+		this.runtimeDir = runtimeDir;
 	}
+	
 
 }
