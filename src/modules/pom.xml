@@ -19,5 +19,6 @@
         <module>http-proxy-core</module>
         <module>http-proxy-mvc</module>
         <module>rest-facade</module>
+        <module>web-security</module>
     </modules>
 </project>
