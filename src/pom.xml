@@ -25,6 +25,7 @@
         <project.build.target>1.6</project.build.target>
         <junit.version>4.8.1</junit.version>
         <jetty.version>6.1.14</jetty.version>
+        <geostore.version>1.2-SNAPSHOT</geostore.version>
         <spring.version>3.2.4.RELEASE</spring.version>
         <spring.security.version>3.1.4.RELEASE</spring.security.version>
         <jackson.version>1.9.10</jackson.version>
@@ -72,6 +73,11 @@
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-rest-facade</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>web-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -190,14 +196,38 @@
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
             </dependency>
- 
+            <!-- =========================================================== -->
+            <!--     SPRING SECURITY                                         -->
+            <!-- =========================================================== -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
             <!-- Jackson JSON Mapper -->
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
+            <!-- =========================================================== -->
+            <!--     GEOSTORE                                                -->
+            <!-- =========================================================== -->
+            <dependency>
+                <groupId>it.geosolutions.geostore</groupId>
+                 <artifactId>geostore-rest-client</artifactId>
+                 <version>${geostore.version}</version>
+             </dependency>
             <!-- =========================================================== -->
             <!--     TEST                                                    -->
             <!-- =========================================================== -->
