@@ -20,10 +20,7 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
-
-import javax.annotation.Resource;
 
 /**
  * Base controller based on files to be extended

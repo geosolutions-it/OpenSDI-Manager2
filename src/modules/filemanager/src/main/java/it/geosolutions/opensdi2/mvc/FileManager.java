@@ -29,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,17 +50,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-	
-	@Resource(name="baseConfig")
-	private OpenSDIManagerConfig config;
-	
 	/**
-	 * Set the conficuration to set up the base directory
+	 * Set the configuration to set up the base directory
 	 * @param config
 	 */
-	public void setConfig(OpenSDIManagerConfig config){
-		this.config = config;
-		this.setRuntimeDir(config.getBaseFolder());
+	@Autowired
+	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
+		this.setRuntimeDir(baseConfig.getBaseFolder());
 	}
 	/**
 	 * Browser handler server side for ExtJS filebrowser.

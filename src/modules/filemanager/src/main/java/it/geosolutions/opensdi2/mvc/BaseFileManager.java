@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -287,6 +288,7 @@ public class BaseFileManager extends AbstractFileController {
 			// Create the upload file to be handled
 			files.add(file);
 			uploadedFiles.setFiles(files);
+			//TODO check if upload file don't exist return error
 			doUpload(uploadedFiles, folder);
 		}
 	}
@@ -390,7 +392,7 @@ public class BaseFileManager extends AbstractFileController {
 						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					} 
 				}
 			}
 		}
@@ -551,10 +553,21 @@ public class BaseFileManager extends AbstractFileController {
 				objectData.put("iconCls", file.isDirectory() ? "folder" : "file");
 				objectData.put("leaf", file.isDirectory() ? false: true);
 				objectData.put("expanded", false);
+				objectData.put("actions", getActions(file));
 				data.add(objectData);
 			}
 		}
 		return data;
+	}
+
+	/**
+	 * This provides actions associated to the file
+	 * @param file
+	 * @return
+	 */
+	protected List<Object> getActions(File file) {
+		
+		return new ArrayList<Object>();
 	}
 
 	/**
