@@ -20,9 +20,8 @@
  */
 package it.geosolutions.opensdi2.model;
 
+import java.io.File;
 import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Model to hold uploaded files
@@ -33,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUpload {
 
 
-	private List<MultipartFile> files;
+	private List<File> files;
 
 	
 	public FileUpload() {
@@ -42,14 +41,14 @@ public class FileUpload {
 	/**
 	 * @return the files
 	 */
-	public List<MultipartFile> getFiles() {
+	public List<File> getFiles() {
 		return files;
 	}
 
 	/**
 	 * @param files the files to set
 	 */
-	public void setFiles(List<MultipartFile> files) {
+	public void setFiles(List<File> files) {
 		this.files = files;
 	}
 

@@ -21,16 +21,13 @@
 package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -114,15 +111,6 @@ public class FileManager extends BaseFileManager {
 			throws IOException {
 
 		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
-	}
-
-	/**
-	 * Scheduled each 5 minutes. If an user stop an upload along 5 minutes, it
-	 * will be removed from memory
-	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
-	public void cleanupUploadedFiles() {
-		ControllerUtils.CONCURRENT_UPLOAD.cleanup();
 	}
 
 	/**

@@ -23,7 +23,7 @@ package it.geosolutions.opensdi2.mvc;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.RESULTS;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
-import it.geosolutions.opensdi2.model.FileUpload;
+import it.geosolutions.opensdi2.service.FileUploadService;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
@@ -48,22 +48,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
  * File Manager controller base for ExtJS
@@ -75,6 +68,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 public class BaseFileManager extends AbstractFileController {
 
 	protected final static Logger LOGGER = Logger.getLogger(BaseFileManager.class);
+	
+	private FileUploadService fileUploadService;
 
 	/**
 	 * Default width for thumb
@@ -256,51 +251,38 @@ public class BaseFileManager extends AbstractFileController {
 			HttpServletResponse servletResponse)
 			throws IOException {
 
-		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("upload (name, chunks, chunk) --> " + name + ","
-					+ chunks + "," + chunk);
-			LOGGER.info("Uploading " + ControllerUtils.CONCURRENT_UPLOAD.size()
-					+ " files");
-		}
+	    if (LOGGER.isDebugEnabled()) {
+	        LOGGER.debug("upload (name, chunks, chunk) --> " + name + "," + chunks
+	                + "," + chunk);
+	        LOGGER.debug("Uploading " + fileUploadService.size() + " files");
+	    }
 
-		FileUpload uploadedFiles = new FileUpload();
-		List<MultipartFile> files = new LinkedList<MultipartFile>();
-		if (chunks > 0) {
-			// init bytes for the chunk upload
-			//TODO check this for concurrent instances
-			Entry<String, List<byte[]>> entry = ControllerUtils.CONCURRENT_UPLOAD
-					.addChunk(name, chunks, chunk, file);
-			if (entry == null) {
-				String msg = "Expired file upload dor file " + name;
-				LOGGER.error(msg);
-				throw new IOException(msg);
-			}
-			List<byte[]> uploadedChunks = entry.getValue();
-			if (chunk == chunks - 1) {
-				// Create the upload file to be handled
-				MultipartFile composedUpload = new CommonsMultipartFile(
-						getFileItem(file, uploadedChunks, name, entry));
-				files.add(composedUpload);
-				uploadedFiles.setFiles(files);
-				doUpload(uploadedFiles, folder);
-			}
-		} else {
-			// Create the upload file to be handled
-			files.add(file);
-			uploadedFiles.setFiles(files);
-			//TODO check if upload file don't exist return error
-			doUpload(uploadedFiles, folder);
-		}
+	    if (chunks > 0) {
+	        // init bytes for the chunk upload
+	        Entry<String, ?> entry = fileUploadService.addChunk(name, chunks,
+	                chunk, file);
+	        if (entry == null) {
+	            String msg = "Expired file upload dor file " + name;
+	            LOGGER.error(msg);
+	            throw new IOException(msg);
+	        }
+	        if (chunk == chunks - 1) {
+	            // get the final file
+	        	fileUploadService.getCompletedFile(name, getFilePath(name, folder), entry);
+	        }
+	    } else {
+	        // get the final file
+        	fileUploadService.getCompletedFile(file, getFilePath(name, folder));
+	    }
 	}
 
 	/**
-	 * Scheduled each 5 minutes. If an user stop an upload along 5 minutes, it
+	 * Scheduled every day at 4:00. If an user stop an upload, it
 	 * will be removed from memory
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0 4 * * ?")
 	public void cleanupUploadedFiles() {
-		//TODO check this for concurrent instances
-		ControllerUtils.CONCURRENT_UPLOAD.cleanup();
+		fileUploadService.cleanup();
 	}
 
 	/**
@@ -323,79 +305,6 @@ public class BaseFileManager extends AbstractFileController {
 				getFilePath(file,
 						folder != null && !folder.equals("root") ? folder
 								: null));
-	}
-
-	/**
-	 * Obtain a temporal file item with chunked bytes
-	 * 
-	 * @param file
-	 * @param chunkedBytes
-	 * @param name
-	 * @param entry
-	 * @return
-	 */
-	protected FileItem getFileItem(MultipartFile file, List<byte[]> chunkedBytes,
-			String name, Entry<String, List<byte[]>> entry) {
-		// Temporal file to write chunked bytes
-		File outFile = new File(System.getProperty("java.io.tmpdir"), name);
-
-		// total file size
-		int sizeThreshold = 0;
-		for (byte[] bytes : chunkedBytes) {
-			sizeThreshold += bytes.length;
-		}
-
-		// Get file item
-		FileItem fileItem = new DiskFileItem("tmpFile", file.getContentType(),
-				false, name, sizeThreshold, outFile);
-		try {
-
-			OutputStream outputStream;
-			outputStream = fileItem.getOutputStream();
-
-			// write bytes
-			for (byte[] readedBytes : chunkedBytes) {
-				outputStream.write(readedBytes, 0, readedBytes.length);
-			}
-
-			// close the file
-			outputStream.flush();
-			outputStream.close();
-		} catch (IOException e) {
-			LOGGER.error("Error writing final file", e);
-		} finally {
-			// Remove bytes from memory
-			//TODO check this for concurrent instances 
-			ControllerUtils.CONCURRENT_UPLOAD.remove(entry.getKey());
-		}
-
-		return fileItem;
-	}
-
-	/**
-	 * Do upload for uploaded files
-	 * 
-	 * @param uploadedFiles
-	 */
-	protected void doUpload(FileUpload uploadedFiles, String folder) {
-		List<MultipartFile> files = uploadedFiles.getFiles();
-
-		if (null != files && files.size() > 0) {
-			for (MultipartFile multipartFile : files) {
-
-				String fileName = multipartFile.getOriginalFilename();
-				if (!"".equalsIgnoreCase(fileName)) {
-					// Handle file content - multipartFile.getInputStream()
-					try {
-						multipartFile.transferTo(new File(getFilePath(fileName, folder)));
-					} catch (IllegalStateException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} 
-				}
-			}
-		}
 	}
 
 	/**
@@ -861,6 +770,21 @@ public class BaseFileManager extends AbstractFileController {
 	 */
 	public void setNewFolderName(String newFolderName) {
 		this.newFolderName = newFolderName;
+	}
+
+	/**
+	 * @return the fileUploadService
+	 */
+	public FileUploadService getFileUploadService() {
+		return fileUploadService;
+	}
+
+	/**
+	 * @param fileUploadService the fileUploadService to set
+	 */
+	@Autowired
+	public void setFileUploadService(FileUploadService fileUploadService) {
+		this.fileUploadService = fileUploadService;
 	}
 
 }
