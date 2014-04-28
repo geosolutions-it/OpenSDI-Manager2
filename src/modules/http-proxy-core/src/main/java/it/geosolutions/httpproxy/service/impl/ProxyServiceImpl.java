@@ -28,6 +28,7 @@ import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
 import it.geosolutions.httpproxy.utils.Utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
@@ -248,8 +251,12 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
      */
     public void doMethod(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
+    	
+    	// Create a request wrapper to allow multiple reads of input stream
+    	BufferedRequestWrapper requestWrapper = new BufferedRequestWrapper(httpServletRequest);
+    	
 		ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(
-				httpServletRequest, httpServletResponse, this);
+				requestWrapper, httpServletResponse, this);
 
         if (methodConfig != null) {
 
@@ -263,7 +270,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             // Forward the request headers
             // //////////////////////////////
 
-            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(), httpServletRequest,
+            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(), requestWrapper,
             		methodProxyRequest);
 
             // //////////////////////////////////////////////////
@@ -272,9 +279,9 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 
             if(methodProxyRequest instanceof EntityEnclosingMethod){
 	            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-	                this.handleMultipart((EntityEnclosingMethod)methodProxyRequest, httpServletRequest);
+	                this.handleMultipart((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
 	            } else {
-	                this.handleStandard((EntityEnclosingMethod)methodProxyRequest, httpServletRequest);
+	                this.handleStandard((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
 	            }
             }
 
@@ -282,7 +289,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             // Execute the proxy request
             // //////////////////////////////
 
-            this.executeProxyRequest(methodProxyRequest, httpServletRequest,
+            this.executeProxyRequest(methodProxyRequest, requestWrapper,
                     httpServletResponse, methodConfig.getUser(), methodConfig.getPassword(), proxyInfo);
 
         }
@@ -716,6 +723,86 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 	 */
 	public void setProxyHelper(ProxyHelper proxyHelper) {
 		this.proxyHelper = proxyHelper;
+	}
+	
+
+	/**
+	 * Request wrapper to allow input stream reads on callbacks
+	 * 
+	 * @author adiaz
+	 *
+	 */
+	private class BufferedRequestWrapper extends HttpServletRequestWrapper {
+
+		ByteArrayInputStream bais;
+		ByteArrayOutputStream baos;
+		BufferedServletInputStream bsis;
+		byte[] buffer;
+		
+		/**
+		 * Constructor
+		 * @param req
+		 * @throws IOException
+		 */
+		public BufferedRequestWrapper(HttpServletRequest req)
+				throws IOException {
+			super(req);
+			// Read InputStream and store its content in a buffer.
+			InputStream is = req.getInputStream();
+			baos = new ByteArrayOutputStream();
+			byte buf[] = new byte[1024];
+			int letti;
+			while ((letti = is.read(buf)) > 0)
+				baos.write(buf, 0, letti);
+			buffer = baos.toByteArray();
+		}
+
+		/**
+		 * Get input stream wrapped
+		 */
+		public ServletInputStream getInputStream() {
+			try {
+				// Generate a new InputStream by stored buffer
+				bais = new ByteArrayInputStream(buffer);
+				// Istantiate a subclass of ServletInputStream
+				// (Only ServletInputStream or subclasses of it are accepted by
+				// the servlet engine!)
+				bsis = new BufferedServletInputStream(bais);
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE,
+						"Error on input stream copy", e);
+			}
+			
+			return bsis;
+		}
+
+	}
+
+	/*
+	 * Subclass of ServletInputStream needed by the servlet engine. All
+	 * inputStream methods are wrapped and are delegated to the
+	 * ByteArrayInputStream (obtained as constructor parameter)!
+	 */
+	private class BufferedServletInputStream extends ServletInputStream {
+
+		ByteArrayInputStream bais;
+
+		public BufferedServletInputStream(ByteArrayInputStream bais) {
+			this.bais = bais;
+		}
+
+		public int available() {
+			return bais.available();
+		}
+
+		public int read() {
+			return bais.read();
+		}
+
+		public int read(byte[] buf, int off, int len) {
+			return bais.read(buf, off, len);
+		}
+
 	}
 
 }
