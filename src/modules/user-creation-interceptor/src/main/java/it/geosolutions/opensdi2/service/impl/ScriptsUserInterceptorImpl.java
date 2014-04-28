@@ -146,7 +146,7 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * it.geosolutions.opensdi2.service.UserIterceptorService#onUserCreation
+	 * it.geosolutions.opensdi2.service.UserInterceptorService#onUserCreation
 	 * (it.geosolutions.geostore.core.model.User)
 	 */
 	@Override

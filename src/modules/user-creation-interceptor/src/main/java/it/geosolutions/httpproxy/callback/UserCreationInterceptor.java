@@ -40,11 +40,11 @@ import org.apache.log4j.Logger;
  * 
  * @author adiaz
  */
-public class UserCreationIterceptor extends AbstractProxyCallback implements
+public class UserCreationInterceptor extends AbstractProxyCallback implements
 		ProxyCallback {
 
 	private final static Logger LOGGER = Logger
-			.getLogger(UserCreationIterceptor.class);
+			.getLogger(UserCreationInterceptor.class);
 
 	/**
 	 * User interceptors configured for this callback
@@ -64,14 +64,14 @@ public class UserCreationIterceptor extends AbstractProxyCallback implements
 	/**
 	 * Default constructor
 	 */
-	public UserCreationIterceptor() {
+	public UserCreationInterceptor() {
 		super();
 	}
 
 	/**
 	 * @param config
 	 */
-	public UserCreationIterceptor(ProxyConfig config) {
+	public UserCreationInterceptor(ProxyConfig config) {
 		super(config);
 	}
 
