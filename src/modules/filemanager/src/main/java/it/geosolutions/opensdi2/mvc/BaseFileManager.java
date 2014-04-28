@@ -271,8 +271,11 @@ public class BaseFileManager extends AbstractFileController {
 	        	fileUploadService.getCompletedFile(name, getFilePath(name, folder), entry);
 	        }
 	    } else {
+	        // init bytes for the chunk upload
+	        Entry<String, ?> entry = fileUploadService.addChunk(name, 1,
+	                0, file);
 	        // get the final file
-        	fileUploadService.getCompletedFile(file, getFilePath(name, folder));
+        	fileUploadService.getCompletedFile(name, getFilePath(name, folder), entry);
 	    }
 	}
 
