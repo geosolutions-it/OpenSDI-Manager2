@@ -28,13 +28,15 @@
     	<property name="proxyHelper" ref="proxyHelper"></property>
     	<property name="callbacks">
             <list>
-            	<!-- Uncomment it if you want to activate a user interceptor
+            	<!-- Uncomment it if you want to activate a user interceptor 
+            	and you need to enable the -PuserInterception maven profile
             	<ref bean="userCreationInterceptor" />  -->
             </list>
     	</property>
     </bean>
     
-    <!-- User creation interceptor for GeoStore -->
+    <!-- User creation interceptor for GeoStore 
+    you need to enable the -PuserInterception maven profile
     <bean name="userCreationInterceptor" class="it.geosolutions.httpproxy.callback.UserCreationIterceptor">
     	<property name="interceptedURL" value="http://localhost/geostore/rest/users/"/>
     	<property name="userInterceptors">
@@ -54,6 +56,6 @@
                 </bean>
             </list>
     	</property>
-    </bean>
+    </bean>-->
     
 </beans>

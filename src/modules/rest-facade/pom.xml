@@ -19,10 +19,22 @@
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-http_proxy-core</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-user-creation-interceptor</artifactId>
-        </dependency>
+        </dependency-->
 	</dependencies>
+
+    <profiles>
+        <profile>
+            <id>userInterception</id>
+            <dependencies>
+                <dependency>
+                    <groupId>it.geosolutions.opensdi2</groupId>
+                    <artifactId>opensdi2-user-creation-interceptor</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>
