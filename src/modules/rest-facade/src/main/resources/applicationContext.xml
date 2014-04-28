@@ -27,13 +27,31 @@
     	<property name="proxyConfig" ref="proxyConfig"></property>
     	<property name="proxyHelper" ref="proxyHelper"></property>
     	<property name="callbacks">
+            <list>
+            	<!-- Uncomment it if you want to activate a user interceptor
+            	<ref bean="userCreationInterceptor" />  -->
+            </list>
+    	</property>
+    </bean>
+    
+    <!-- User creation interceptor for GeoStore -->
+    <bean name="userCreationInterceptor" class="it.geosolutions.httpproxy.callback.UserCreationIterceptor">
+    	<property name="interceptedURL" value="http://localhost/geostore/rest/users/"/>
+    	<property name="userInterceptors">
             <list> 
-                <!-- TODO: Configure geostore callbacks 
-                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
-                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
-                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
-                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
-                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+                <bean class="it.geosolutions.opensdi2.service.impl.ScriptsUserInterceptorImpl">
+                	<property name="createUserScript" value="create_user"/>
+                	<property name="updateUserScript" value="modify_user"/>
+                	<property name="deleteUserScript" value="remove_user"/>
+                	<property name="passwordEncoding" value="{SSHA}"/>
+                	<property name="geoStoreClient">
+                		<bean class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
+					      <property name="geostoreRestUrl" value="http://localhost/geostore"></property>
+					      <property name="username" value="admin"></property>
+					      <property name="password" value="admin"></property>
+					    </bean>
+    				</property>
+                </bean>
             </list>
     	</property>
     </bean>

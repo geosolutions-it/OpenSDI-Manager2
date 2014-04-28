@@ -9,19 +9,31 @@
     </parent>
   
     <groupId>it.geosolutions.opensdi2</groupId>
-    <artifactId>opensdi2-rest-facade</artifactId>
+    <artifactId>opensdi2-user-creation-interceptor</artifactId>
     <packaging>jar</packaging>
 
-    <name>OpenSDI Manager 2 - Modules - Rest facade</name>
+    <name>OpenSDI Manager 2 - Modules - Rest facade - User creation interceptor</name>
 
 	<dependencies>
+        <!-- Internal -->
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-http_proxy-core</artifactId>
         </dependency>
+        <!-- GeoStore Model -->
         <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>opensdi2-user-creation-interceptor</artifactId>
+            <groupId>it.geosolutions.geostore</groupId>
+            <artifactId>geostore-rest-client</artifactId>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
 	</dependencies>
 
