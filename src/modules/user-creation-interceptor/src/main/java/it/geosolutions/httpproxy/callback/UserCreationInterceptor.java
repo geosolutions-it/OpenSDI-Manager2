@@ -133,6 +133,16 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 	 * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
 	 */
 	public void onFinish() throws IOException {
+		// call on finish
+		try {
+			if (userInterceptors != null) {
+				for (UserInterceptorService interceptor : userInterceptors) {
+					interceptor.onFinish();
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error on user interception", e);
+		}
 	}
 
 	/**
