@@ -62,7 +62,8 @@ public class UserGroupsInterceptorImpl implements UserInterceptorService {
 	 * Synchronize user groups when the request is finished (after other actions) 
 	 */
 	public void onFinish() {
-		synchronizeUserGroups(usersToSave.pop());
+		if(!usersToSave.isEmpty())
+			synchronizeUserGroups(usersToSave.pop());
 	}
 	
 	/**
