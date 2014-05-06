@@ -28,6 +28,7 @@ import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
 import it.geosolutions.httpproxy.utils.Utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,12 +36,15 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
@@ -239,6 +243,35 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             callback.onFinish();
         }
     }
+    
+    /**
+     * Callback method beforeExecuteProxyRequest executed before execute the proxy request
+     * @param httpMethodProxyRequest
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param user
+     * @param password
+     * @param proxyInfo
+     * @throws IOException
+     */
+    public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            String user, String password, ProxyInfo proxyInfo) throws IOException {
+    	boolean continueWithRequest = true;
+    	// by default we use the old implementation
+    	if (user != null && password != null) {
+			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(user, password);
+			httpClient.getState().setCredentials(AuthScope.ANY, upc);
+    	}
+    	// call on beforeExecuteProxyRequest calbacks. It could stop the request, change some headers...
+        for (ProxyCallback callback : callbacks) {
+            continueWithRequest = callback.beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest, httpServletResponse, user, password, proxyInfo);
+            if(!continueWithRequest){
+            	break;
+            }
+        }
+        return continueWithRequest;
+    }
 
     /**
      * Performs an HTTP request
@@ -248,8 +281,12 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
      */
     public void doMethod(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
+    	
+    	// Create a request wrapper to allow multiple reads of input stream
+    	BufferedRequestWrapper requestWrapper = new BufferedRequestWrapper(httpServletRequest);
+    	
 		ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(
-				httpServletRequest, httpServletResponse, this);
+				requestWrapper, httpServletResponse, this);
 
         if (methodConfig != null) {
 
@@ -263,7 +300,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             // Forward the request headers
             // //////////////////////////////
 
-            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(), httpServletRequest,
+            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(), requestWrapper,
             		methodProxyRequest);
 
             // //////////////////////////////////////////////////
@@ -272,17 +309,16 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 
             if(methodProxyRequest instanceof EntityEnclosingMethod){
 	            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-	                this.handleMultipart((EntityEnclosingMethod)methodProxyRequest, httpServletRequest);
+	                this.handleMultipart((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
 	            } else {
-	                this.handleStandard((EntityEnclosingMethod)methodProxyRequest, httpServletRequest);
+	                this.handleStandard((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
 	            }
             }
 
             // //////////////////////////////
             // Execute the proxy request
             // //////////////////////////////
-
-            this.executeProxyRequest(methodProxyRequest, httpServletRequest,
+            this.executeProxyRequest(methodProxyRequest, requestWrapper,
                     httpServletResponse, methodConfig.getUser(), methodConfig.getPassword(), proxyInfo);
 
         }
@@ -425,8 +461,6 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 		      methodProxyRequest.setRequestEntity(new InputStreamRequestEntity(httpServletRequest.getInputStream()));
 		      //LOGGER.info("original request content length:" + httpServletRequest.getContentLength());
 		      //LOGGER.info("proxied request content length:" +methodProxyRequest.getRequestEntity().getContentLength()+"");
-		      
-		      
 		       
 		  } catch (IOException e) {
 		      throw new IOException(e);
@@ -446,162 +480,162 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             String user, String password, ProxyInfo proxyInfo) throws IOException, ServletException {
 
-        if (user != null && password != null) {
-            UsernamePasswordCredentials upc = new UsernamePasswordCredentials(user, password);
-            httpClient.getState().setCredentials(AuthScope.ANY, upc);
-        }
+    	// pre execute proxy request callback
+    	if(beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest, httpServletResponse, user, password, proxyInfo)){
+    		httpMethodProxyRequest.setFollowRedirects(false);
 
-        httpMethodProxyRequest.setFollowRedirects(false);
+            InputStream inputStreamServerResponse = null;
+            ByteArrayOutputStream baos = null;
+            
+            try {
 
-        InputStream inputStreamServerResponse = null;
-        ByteArrayOutputStream baos = null;
-        
-        try {
+                // //////////////////////////
+                // Execute the request
+                // //////////////////////////
 
-            // //////////////////////////
-            // Execute the request
-            // //////////////////////////
+                int intProxyResponseCode = httpClient.executeMethod(httpMethodProxyRequest);
 
-            int intProxyResponseCode = httpClient.executeMethod(httpMethodProxyRequest);
+                onRemoteResponse(httpMethodProxyRequest);
 
-            onRemoteResponse(httpMethodProxyRequest);
+                // ////////////////////////////////////////////////////////////////////////////////
+                // Check if the proxy response is a redirect
+                // The following code is adapted from
+                // org.tigris.noodle.filters.CheckForRedirect
+                // Hooray for open source software
+                // ////////////////////////////////////////////////////////////////////////////////
 
-            // ////////////////////////////////////////////////////////////////////////////////
-            // Check if the proxy response is a redirect
-            // The following code is adapted from
-            // org.tigris.noodle.filters.CheckForRedirect
-            // Hooray for open source software
-            // ////////////////////////////////////////////////////////////////////////////////
+                if (intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
+                        && intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
 
-            if (intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
-                    && intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
+                    String stringStatusCode = Integer.toString(intProxyResponseCode);
+                    String stringLocation = httpMethodProxyRequest.getResponseHeader(
+                            Utils.LOCATION_HEADER).getValue();
 
-                String stringStatusCode = Integer.toString(intProxyResponseCode);
-                String stringLocation = httpMethodProxyRequest.getResponseHeader(
-                        Utils.LOCATION_HEADER).getValue();
+                    if (stringLocation == null) {
+                        throw new ServletException("Recieved status code: " + stringStatusCode
+                                + " but no " + Utils.LOCATION_HEADER
+                                + " header was found in the response");
+                    }
 
-                if (stringLocation == null) {
-                    throw new ServletException("Recieved status code: " + stringStatusCode
-                            + " but no " + Utils.LOCATION_HEADER
-                            + " header was found in the response");
+                    // /////////////////////////////////////////////
+                    // Modify the redirect to go to this proxy
+                    // servlet rather that the proxied host
+                    // /////////////////////////////////////////////
+
+                    String stringMyHostName = httpServletRequest.getServerName();
+
+                    if (httpServletRequest.getServerPort() != 80) {
+                        stringMyHostName += ":" + httpServletRequest.getServerPort();
+                    }
+
+                    stringMyHostName += httpServletRequest.getContextPath();
+                    httpServletResponse.sendRedirect(stringLocation.replace(
+                            Utils.getProxyHostAndPort(proxyInfo) + proxyInfo.getProxyPath(),
+                            stringMyHostName));
+
+                    return;
+
+                } else if (intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
+
+                    // ///////////////////////////////////////////////////////////////
+                    // 304 needs special handling. See:
+                    // http://www.ics.uci.edu/pub/ietf/http/rfc1945.html#Code304
+                    // We get a 304 whenever passed an 'If-Modified-Since'
+                    // header and the data on disk has not changed; server
+                    // responds w/ a 304 saying I'm not going to send the
+                    // body because the file has not changed.
+                    // ///////////////////////////////////////////////////////////////
+
+                    httpServletResponse.setIntHeader(Utils.CONTENT_LENGTH_HEADER_NAME, 0);
+                    httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+
+                    return;
                 }
 
                 // /////////////////////////////////////////////
-                // Modify the redirect to go to this proxy
-                // servlet rather that the proxied host
+                // Pass the response code back to the client
                 // /////////////////////////////////////////////
 
-                String stringMyHostName = httpServletRequest.getServerName();
+                httpServletResponse.setStatus(intProxyResponseCode);
 
-                if (httpServletRequest.getServerPort() != 80) {
-                    stringMyHostName += ":" + httpServletRequest.getServerPort();
+                // /////////////////////////////////////////////
+                // Pass response headers back to the client
+                // /////////////////////////////////////////////
+
+                Header[] headerArrayResponse = httpMethodProxyRequest.getResponseHeaders();
+
+                for (Header header : headerArrayResponse) {
+
+                    // /////////////////////////
+                    // Skip GZIP Responses
+                    // /////////////////////////
+
+                    if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_ACCEPT_ENCODING)
+                            && header.getValue().toLowerCase().contains("gzip"))
+                        continue;
+                    else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_CONTENT_ENCODING)
+                            && header.getValue().toLowerCase().contains("gzip"))
+                        continue;
+                    else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_TRANSFER_ENCODING))
+                        continue;
+//                    else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_WWW_AUTHENTICATE))
+//                        continue;                
+                    else
+                        httpServletResponse.setHeader(header.getName(), header.getValue());
                 }
 
-                stringMyHostName += httpServletRequest.getContextPath();
-                httpServletResponse.sendRedirect(stringLocation.replace(
-                        Utils.getProxyHostAndPort(proxyInfo) + proxyInfo.getProxyPath(),
-                        stringMyHostName));
-
-                return;
-
-            } else if (intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
-
-                // ///////////////////////////////////////////////////////////////
-                // 304 needs special handling. See:
-                // http://www.ics.uci.edu/pub/ietf/http/rfc1945.html#Code304
-                // We get a 304 whenever passed an 'If-Modified-Since'
-                // header and the data on disk has not changed; server
-                // responds w/ a 304 saying I'm not going to send the
-                // body because the file has not changed.
-                // ///////////////////////////////////////////////////////////////
-
-                httpServletResponse.setIntHeader(Utils.CONTENT_LENGTH_HEADER_NAME, 0);
-                httpServletResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-
-                return;
-            }
-
-            // /////////////////////////////////////////////
-            // Pass the response code back to the client
-            // /////////////////////////////////////////////
-
-            httpServletResponse.setStatus(intProxyResponseCode);
-
-            // /////////////////////////////////////////////
-            // Pass response headers back to the client
-            // /////////////////////////////////////////////
-
-            Header[] headerArrayResponse = httpMethodProxyRequest.getResponseHeaders();
-
-            for (Header header : headerArrayResponse) {
-
-                // /////////////////////////
-                // Skip GZIP Responses
-                // /////////////////////////
-
-                if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_ACCEPT_ENCODING)
-                        && header.getValue().toLowerCase().contains("gzip"))
-                    continue;
-                else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_CONTENT_ENCODING)
-                        && header.getValue().toLowerCase().contains("gzip"))
-                    continue;
-                else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_TRANSFER_ENCODING))
-                    continue;
-//                else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_WWW_AUTHENTICATE))
-//                    continue;                
-                else
-                    httpServletResponse.setHeader(header.getName(), header.getValue());
-            }
-
-            // ///////////////////////////////////
-            // Send the content to the client
-            // ///////////////////////////////////
-            
-            inputStreamServerResponse = httpMethodProxyRequest
-            		.getResponseBodyAsStream();
-            
-            if(inputStreamServerResponse != null){
-                byte[] b = new byte[proxyConfig.getDefaultStreamByteSize()];
+                // ///////////////////////////////////
+                // Send the content to the client
+                // ///////////////////////////////////
                 
-                baos = new ByteArrayOutputStream(b.length);
+                inputStreamServerResponse = httpMethodProxyRequest
+                		.getResponseBodyAsStream();
                 
-                int read = 0;
-    		    while((read = inputStreamServerResponse.read(b)) > 0){ 
-    		      	baos.write(b, 0, read);
-    		        baos.flush();
-    		    }
-    	            
-    		    baos.writeTo(httpServletResponse.getOutputStream());
+                if(inputStreamServerResponse != null){
+                    byte[] b = new byte[proxyConfig.getDefaultStreamByteSize()];
+                    
+                    baos = new ByteArrayOutputStream(b.length);
+                    
+                    int read = 0;
+        		    while((read = inputStreamServerResponse.read(b)) > 0){ 
+        		      	baos.write(b, 0, read);
+        		        baos.flush();
+        		    }
+        	            
+        		    baos.writeTo(httpServletResponse.getOutputStream());
+                }
+                
+            } catch (HttpException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error executing HTTP method ", e);
+            } finally {
+    			try {
+    	        	if(inputStreamServerResponse != null)
+    	        		inputStreamServerResponse.close();
+    			} catch (IOException e) {
+    				if (LOGGER.isLoggable(Level.SEVERE))
+    					LOGGER.log(Level.SEVERE,
+    							"Error closing request input stream ", e);
+    				throw new ServletException(e.getMessage());
+    			}
+    			
+    			try {
+    	        	if(baos != null){
+    	        		baos.flush();
+    	        		baos.close();
+    	        	}
+    			} catch (IOException e) {
+    				if (LOGGER.isLoggable(Level.SEVERE))
+    					LOGGER.log(Level.SEVERE,
+    							"Error closing response stream ", e);
+    				throw new ServletException(e.getMessage());
+    			}
+            	
+                httpMethodProxyRequest.releaseConnection();
             }
-            
-        } catch (HttpException e) {
-            if (LOGGER.isLoggable(Level.SEVERE))
-                LOGGER.log(Level.SEVERE, "Error executing HTTP method ", e);
-        } finally {
-			try {
-	        	if(inputStreamServerResponse != null)
-	        		inputStreamServerResponse.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error closing request input stream ", e);
-				throw new ServletException(e.getMessage());
-			}
-			
-			try {
-	        	if(baos != null){
-	        		baos.flush();
-	        		baos.close();
-	        	}
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error closing response stream ", e);
-				throw new ServletException(e.getMessage());
-			}
-        	
-            httpMethodProxyRequest.releaseConnection();
-        }
+    	}else if (LOGGER.isLoggable(Level.FINE)){
+    		LOGGER.log(Level.FINE, "The proxy execution has been handled in a callback");
+    	}
     }
 
     /**
@@ -683,6 +717,18 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
     }
     
     /**
+     * Add a proxy callback
+     * 
+     * @param callback to be added
+     */
+	public void addCallback(ProxyCallback callback) {
+		if(callbacks == null){
+			callbacks = new LinkedList<ProxyCallback>();
+		}
+		callbacks.add(callback);
+	}
+    
+    /**
      * @return int the maximum file upload size.
      */
     public int getMaxFileUploadSize() {
@@ -716,6 +762,86 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 	 */
 	public void setProxyHelper(ProxyHelper proxyHelper) {
 		this.proxyHelper = proxyHelper;
+	}
+	
+
+	/**
+	 * Request wrapper to allow input stream reads on callbacks
+	 * 
+	 * @author adiaz
+	 *
+	 */
+	private class BufferedRequestWrapper extends HttpServletRequestWrapper {
+
+		ByteArrayInputStream bais;
+		ByteArrayOutputStream baos;
+		BufferedServletInputStream bsis;
+		byte[] buffer;
+		
+		/**
+		 * Constructor
+		 * @param req
+		 * @throws IOException
+		 */
+		public BufferedRequestWrapper(HttpServletRequest req)
+				throws IOException {
+			super(req);
+			// Read InputStream and store its content in a buffer.
+			InputStream is = req.getInputStream();
+			baos = new ByteArrayOutputStream();
+			byte buf[] = new byte[1024];
+			int letti;
+			while ((letti = is.read(buf)) > 0)
+				baos.write(buf, 0, letti);
+			buffer = baos.toByteArray();
+		}
+
+		/**
+		 * Get input stream wrapped
+		 */
+		public ServletInputStream getInputStream() {
+			try {
+				// Generate a new InputStream by stored buffer
+				bais = new ByteArrayInputStream(buffer);
+				// Istantiate a subclass of ServletInputStream
+				// (Only ServletInputStream or subclasses of it are accepted by
+				// the servlet engine!)
+				bsis = new BufferedServletInputStream(bais);
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE,
+						"Error on input stream copy", e);
+			}
+			
+			return bsis;
+		}
+
+	}
+
+	/*
+	 * Subclass of ServletInputStream needed by the servlet engine. All
+	 * inputStream methods are wrapped and are delegated to the
+	 * ByteArrayInputStream (obtained as constructor parameter)!
+	 */
+	private class BufferedServletInputStream extends ServletInputStream {
+
+		ByteArrayInputStream bais;
+
+		public BufferedServletInputStream(ByteArrayInputStream bais) {
+			this.bais = bais;
+		}
+
+		public int available() {
+			return bais.available();
+		}
+
+		public int read() {
+			return bais.read();
+		}
+
+		public int read(byte[] buf, int off, int len) {
+			return bais.read(buf, off, len);
+		}
+
 	}
 
 }

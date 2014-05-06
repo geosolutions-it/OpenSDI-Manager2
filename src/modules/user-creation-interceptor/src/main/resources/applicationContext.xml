@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
+	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/task      http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+       default-autowire="byName">
+      
+    <!-- GeoStore REST Client -->
+    <bean id="geoStoreClient" class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
+      <property name="geostoreRestUrl" value="http://localhost/geostore"></property>
+      <property name="username" value="admin"></property>
+      <property name="password" value="admin"></property>
+    </bean>
+    
+    <!-- This bean points at the embedded directory server created by the ldap-server element above  -->
+   <bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
+       <property name="url" value="ldap://localhost:389/dc=mariss,dc=egeos,dc=it"/>
+       <property name="userDn" value="uid=admin,ou=people,dc=mariss,dc=egeos,dc=it"/>
+       <property name="password" value=""/>
+   </bean> 
+   
+   <!-- Propiedades de busqueda en DirectorySearcherImpl -->
+	<bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
+	  <constructor-arg ref="contextSource" />
+	</bean>
+    
+    <!-- User creation interceptor for GeoStore -->
+    <bean name="userGroupService" class="it.geosolutions.opensdi2.service.impl.LDAPUserGroupServiceImpl">
+    	<property name="LDAP_USER_BASE_SEARCH" value=""/>
+    	<property name="LDAP_PROPERTIES_SEARCH" value="cn,uid"/>
+    	<property name="LDAP_CN_PROPERTY" value="cn"/>
+    	<property name="LDAP_UID_PROPERTY" value="uid"/>
+    	<property name="ldapTemplate" ref="ldapTemplate"/>
+    </bean>
+    
+    <bean name="userInterceptor1" class="it.geosolutions.opensdi2.service.impl.ScriptsUserInterceptorImpl">
+		<property name="createUserScript" value="create_user"/>
+		<property name="updateUserScript" value="modify_user"/>
+		<property name="deleteUserScript" value="remove_user"/>
+		<property name="passwordEncoding" value="{SSHA}"/>
+		<property name="geoStoreClient" ref="geoStoreClient"/>
+    </bean>
+    
+    <bean name="userInterceptor2" class="it.geosolutions.opensdi2.service.impl.UserGroupsInterceptorImpl">
+		<property name="userService" ref="userGroupService"/>
+		<property name="geoStoreClient" ref="geoStoreClient"/>
+    	<property name="userAdminGroups">
+            <list> 
+                <!-- Include group DN that should work as ADMIN users.
+                	You can use the property overrider like that:
+                	userInterceptor2.userAdminGroups[0]=cn=manager,ou=groups 
+                 -->
+            </list>
+    	</property>
+    </bean>
+    
+    <!-- User creation interceptor for GeoStore -->
+    <bean name="userCreationInterceptor" class="it.geosolutions.httpproxy.callback.UserCreationInterceptor">
+    	<property name="interceptedURL" value="http://localhost/geostore/rest/users/"/>
+    	<property name="userInterceptors">
+            <list> 
+                <ref bean="userInterceptor1" />
+                <ref bean="userInterceptor2" />
+            </list>
+    	</property>
+    </bean>
+    
+    <!-- Enable the -PuserInterception as maven profile to add the interceptor with this post processor -->
+    <bean class="it.geosolutions.httpproxy.config.ProxyServiceCallbackAppenderPostProcessor">
+    	<!-- The bean name is the proxy implementation to be intercepted -->
+		<property name="beanName" value="geostoreProxyService"/>
+		<!-- The callback to add -->
+    	<property name="callbacksToAdd">
+            <list> 
+            	<ref bean="userCreationInterceptor" />
+            </list>
+    	</property>
+    </bean>
+
+</beans>

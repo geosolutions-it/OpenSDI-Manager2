@@ -99,5 +99,17 @@
 
     </build>
 
+    <profiles>
+        <!-- Profile that adds the user management interceptor (that integrates LDAP/Scripts integration) -->
+        <profile>
+            <id>userInterception</id>
+            <dependencies>
+                <dependency>
+                    <groupId>it.geosolutions.opensdi2</groupId>
+                    <artifactId>opensdi2-user-creation-interceptor</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

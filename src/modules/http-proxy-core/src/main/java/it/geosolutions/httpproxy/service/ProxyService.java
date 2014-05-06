@@ -19,6 +19,8 @@
  */
 package it.geosolutions.httpproxy.service;
 
+import it.geosolutions.httpproxy.callback.ProxyCallback;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -83,5 +85,12 @@ public interface ProxyService {
      * @throws IOException
      */
     public void onFinish() throws IOException;
+    
+    /**
+     * Add a proxy callback
+     * 
+     * @param callback to be added
+     */
+    void addCallback(ProxyCallback callback);
 
 }
