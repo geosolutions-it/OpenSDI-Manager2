@@ -21,7 +21,9 @@ package it.geosolutions.httpproxy.callback;
 
 import it.geosolutions.geostore.core.model.User;
 import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.opensdi2.service.UserInterceptorService;
+import it.geosolutions.opensdi2.service.WrappedCredentials;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,10 +31,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXB;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.log4j.Logger;
+
+import sun.misc.BASE64Encoder;
 
 /**
  * Create a new FTP user and his configuration when a new user is created in the
@@ -125,6 +130,16 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 	 * .httpclient.HttpMethod)
 	 */
 	public void onRemoteResponse(HttpMethod method) throws IOException {
+		// call on remote response
+		try {
+			if (userInterceptors != null) {
+				for (UserInterceptorService interceptor : userInterceptors) {
+					interceptor.onRemoteResponse(method);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error on user interception", e);
+		}
 	}
 
 	/*
@@ -203,6 +218,35 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 	}
 
 	/**
+	 * Execute another operation
+	 * 
+	 * @param operation
+	 * @param response
+	 * @param request
+	 */
+	public boolean onUserOperation(String operation,
+			HttpServletRequest request, HttpServletResponse response) {
+		boolean continueWithRequest = true;
+		if (LOGGER.isInfoEnabled())
+			LOGGER.info("User operation: " + operation);
+		try {
+			if (userInterceptors != null) {
+				for (UserInterceptorService interceptor : userInterceptors) {
+					continueWithRequest = interceptor.onUserOperation(
+							operation, request, response);
+					// one user interceptor has flushed the response
+					if (!continueWithRequest) {
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error on user update interception", e);
+		}
+		return continueWithRequest;
+	}
+
+	/**
 	 * @return the interceptedURL
 	 */
 	public String getInterceptedURL() {
@@ -246,5 +290,66 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	/**
+	 * Callback method preExecuteProxyRequest executed before execute the proxy
+	 * request
+	 * 
+	 * @param httpMethodProxyRequest
+	 * @param httpServletRequest
+	 * @param httpServletResponse
+	 * @param user
+	 * @param password
+	 * @param proxyInfo
+	 * @return true if the proxy must continue and false otherwise
+	 */
+	public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, String user,
+			String password, ProxyInfo proxyInfo) {
+		// continue request or not
+		boolean continueWithRequest = true;
+
+		if (enabled) {
+			// Get credentials from the interceptors
+			WrappedCredentials credentials = null;
+			for (UserInterceptorService interceptor : userInterceptors) {
+				WrappedCredentials interceptorCredentials = interceptor
+						.getCredentials();
+				credentials = interceptorCredentials != null ? interceptorCredentials
+						: credentials;
+			}
+
+			// here we return the user information wrapped
+			if ("GET".equals(httpServletRequest.getMethod())
+					&& ((String) httpServletRequest.getAttribute("url"))
+							.startsWith(interceptedURL)) {
+				// other operation
+				String operation = ((String) httpServletRequest
+						.getAttribute("url")).replace(interceptedURL + "user/",
+						"").replaceAll("/", "");
+				continueWithRequest = onUserOperation(operation,
+						httpServletRequest, httpServletResponse);
+			}
+
+			// use user and password from credentials
+			String userName = credentials != null ? credentials.getUserName()
+					: user;
+			String userPassword = credentials != null ? credentials
+					.getUserPassword() : password;
+
+			if (userName != null && userPassword != null) {
+				// Basic authorization in the header with the new credentials
+				httpMethodProxyRequest
+						.removeRequestHeader(HttpHeaders.AUTHORIZATION);
+				String encoding = new BASE64Encoder()
+						.encode((userName + ":" + userPassword).getBytes());
+				httpMethodProxyRequest.setRequestHeader(
+						HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+			}
+		}
+
+		return continueWithRequest;
 	}
 }

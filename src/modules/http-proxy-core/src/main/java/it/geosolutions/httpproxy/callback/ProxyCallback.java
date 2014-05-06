@@ -21,6 +21,7 @@ package it.geosolutions.httpproxy.callback;
 
 import it.geosolutions.httpproxy.exception.HttpErrorException;
 import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
 
 import java.io.IOException;
 import java.net.URL;
@@ -67,4 +68,21 @@ public interface ProxyCallback {
      * @throws IOException
      */
     void onFinish() throws IOException;
+    
+	/**
+	 * Callback method beforeExecuteProxyRequest executed before execute the
+	 * proxy request
+	 * 
+	 * @param httpMethodProxyRequest
+	 * @param httpServletRequest
+	 * @param httpServletResponse
+	 * @param user
+	 * @param password
+	 * @param proxyInfo
+	 * @return true if the proxy must continue and false otherwise
+	 */
+	boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, String user,
+			String password, ProxyInfo proxyInfo);
 }
