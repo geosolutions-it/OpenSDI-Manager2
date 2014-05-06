@@ -23,6 +23,7 @@ import it.geosolutions.geostore.core.model.User;
 import it.geosolutions.geostore.core.model.UserAttribute;
 import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
 import it.geosolutions.opensdi2.service.UserInterceptorService;
+import it.geosolutions.opensdi2.service.WrappedCredentials;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.log4j.Logger;
 
 /**
@@ -138,7 +143,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	private String libPath = "/opt/ldap_manager/scripts";
 
 	/**
-	 * Libraries path used inside the script. You can use <code>echo $PATH</code> executed in bash
+	 * Libraries path used inside the script. You can use
+	 * <code>echo $PATH</code> executed in bash
 	 */
 	private String systemPath = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin";
 
@@ -241,22 +247,22 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 
 		String[] env = new String[parameters != null ? parameters.size() + 2
 				: 2];
-		
+
 		String envParams = "";
 		int i = 0;
 		env[i++] = LIB_PATH + EQUALS + libPath;
-		envParams += env[i-1] + " ";
+		envParams += env[i - 1] + " ";
 		env[i++] = PATH + EQUALS + systemPath + ":$" + LIB_PATH;
-		envParams += env[i-1]+ " ";
+		envParams += env[i - 1] + " ";
 		for (String key : parameters.keySet()) {
 			env[i++] = key + EQUALS + parameters.get(key);
-			envParams += env[i-1]+ " ";
+			envParams += env[i - 1] + " ";
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Running script: '" + envParams + scriptPath + "'");
 		}
 		Process process = Runtime.getRuntime().exec(scriptPath, env);
-		
+
 		// DEBUG the process execution
 		if (LOGGER.isDebugEnabled()) {
 			InputStream is = process.getInputStream();
@@ -265,10 +271,10 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				LOGGER.debug(line);       
+				LOGGER.debug(line);
 			}
 			LOGGER.debug("Script terminated!");
-			
+
 		}
 
 		return process;
@@ -372,7 +378,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	}
 
 	/**
-	 * @param systemPath the systemPath to set
+	 * @param systemPath
+	 *            the systemPath to set
 	 */
 	public void setSystemPath(String systemPath) {
 		this.systemPath = systemPath;
@@ -381,6 +388,28 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	@Override
 	public void onFinish() {
 		// nothing on complete
+	}
+
+	@Override
+	public void onRemoteResponse(HttpMethod method) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean onUserOperation(String operation,
+			HttpServletRequest request, HttpServletResponse response) {
+		return true;
+	}
+
+	/**
+	 * Get credentials for the remote operation
+	 * 
+	 * @return credentials to perform the operation
+	 */
+	public WrappedCredentials getCredentials() {
+		// Wrapped on user groups interceptor
+		return null;
 	}
 
 }

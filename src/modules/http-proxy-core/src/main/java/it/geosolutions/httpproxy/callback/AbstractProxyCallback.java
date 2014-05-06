@@ -20,6 +20,12 @@
 package it.geosolutions.httpproxy.callback;
 
 import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Abstract proxy callback
@@ -54,5 +60,21 @@ public abstract class AbstractProxyCallback implements ProxyCallback {
 	public void setProxyConfig(ProxyConfig config){
 		this.config = config;
 	}
+    
+    /**
+     * Callback method preExecuteProxyRequest executed before execute the proxy request
+     * @param httpMethodProxyRequest
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param user
+     * @param password
+     * @param proxyInfo
+     * @return true if the proxy must continue and false otherwise
+     */
+    public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            String user, String password, ProxyInfo proxyInfo){
+    	return true;
+    }
 
 }

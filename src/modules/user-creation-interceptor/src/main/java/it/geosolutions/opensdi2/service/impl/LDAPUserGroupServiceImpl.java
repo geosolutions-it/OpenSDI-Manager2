@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AbstractFilter;
 import org.springframework.ldap.filter.AndFilter;
@@ -151,9 +150,7 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 			if (userAttr != null && userAttr.size() == 1) {
 
 				// Get complete user unit and current user groups
-				LDAPUnit userUnit = searchDnInLdap(uid).get(0);
-				List<String> actualGroups = getUserGroups(userUnit);
-				String userDn = userUnit.name.toString();
+				List<String> actualGroups = getUserGroups(uid);
 
 				// change user groups
 				success = true;
@@ -162,7 +159,7 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 					for (String group : actualGroups) {
 						if (!groups.contains(group)) {
 							success = success
-									&& removeUserToGroup(userDn, group);
+									&& removeUserToGroup(uid, group);
 						} else {
 							groups.remove(group);
 						}
@@ -170,13 +167,13 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 					// add new groups
 					for (String group : groups) {
 						success = success
-								&& addUserToGroup(userDn, searchDnInLdap(group)
+								&& addUserToGroup(uid, searchDnInLdap(group)
 										.get(0).name.toString());
 					}
 				} else if (!actualGroups.isEmpty()) {
 					// remove all groups
 					for (String group : actualGroups) {
-						success = success && removeUserToGroup(userDn, group);
+						success = success && removeUserToGroup(uid, group);
 					}
 				}
 
@@ -199,7 +196,23 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 	 * @return groups that the user is member of
 	 */
 	public List<String> getUserGroups(String uid) {
-		return getUserGroups(searchDnInLdap(uid).get(0));
+		List<String> actualGroups = new LinkedList<String>();
+		List<LDAPUnit> ldapGroups = searchInLdap(new EqualsFilter(
+				parameterGroup, parameterGroupValue));
+		for (LDAPUnit ldapGroup : ldapGroups) {
+			if (ldapGroup.members != null) {
+				for (Object user : ldapGroup.members) {
+					String userGroupDn = StringUtils.trimAllWhitespace(user
+							.toString());
+					String userDn = StringUtils.trimAllWhitespace(uid);
+					if (userGroupDn.equals(userDn)) {
+						actualGroups.add(ldapGroup.name.toString());
+						break;
+					}
+				}
+			}
+		}
+		return actualGroups;
 	}
 
 	/**
@@ -330,35 +343,6 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 	}
 
 	/**
-	 * Get groups that contains a user unit. It uses {@link #parameterGroup} ==
-	 * {@link #parameterGroupValue} filter to search the groups and look into
-	 * members to find the user LDAP unit
-	 * 
-	 * @param userUnit
-	 * @return List of names of the groups that contains the user
-	 */
-	protected List<String> getUserGroups(LDAPUnit userUnit) {
-		List<String> actualGroups = new LinkedList<String>();
-		List<LDAPUnit> ldapGroups = searchInLdap(new EqualsFilter(
-				parameterGroup, parameterGroupValue));
-		for (LDAPUnit ldapGroup : ldapGroups) {
-			if (ldapGroup.members != null) {
-				for (Object user : ldapGroup.members) {
-					String userGroupDn = StringUtils.trimAllWhitespace(user
-							.toString());
-					String userDn = StringUtils.trimAllWhitespace(userUnit.name
-							.toString());
-					if (userGroupDn.equals(userDn)) {
-						actualGroups.add(ldapGroup.name.toString());
-						break;
-					}
-				}
-			}
-		}
-		return actualGroups;
-	}
-
-	/**
 	 * Add an user in a group by DN
 	 * 
 	 * @param userDinstinguishedName
@@ -366,30 +350,28 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 	 * 
 	 * @return true if we can change or false otherwise
 	 */
-	private boolean addUserToGroup(String userDinstinguishedName,
+	private boolean addUserToGroup(String uid,
 			String groupDistinguishedName) {
 		try {
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Group name: " + groupDistinguishedName);
 
 			String distinguishedGroupName = groupDistinguishedName;
-			DistinguishedName distinguishedName = new DistinguishedName(
-					userDinstinguishedName);
 
 			ModificationItem[] modItems = new ModificationItem[] { new ModificationItem(
 					DirContext.ADD_ATTRIBUTE, new BasicAttribute(
-							memberAttribute, distinguishedName.encode())) };
+							memberAttribute, uid)) };
 
 			String[] split = distinguishedGroupName.split(",DC");
 			ldapTemplate.modifyAttributes(split[0], modItems);
 
 			if (LOGGER.isDebugEnabled())
-				LOGGER.debug("Added user " + userDinstinguishedName
+				LOGGER.debug("Added user " + uid
 						+ " to group " + split[0]);
 
 			return true;
 		} catch (org.springframework.ldap.NameAlreadyBoundException e) {
-			LOGGER.error("User " + userDinstinguishedName
+			LOGGER.error("User " + uid
 					+ " already member of group " + groupDistinguishedName);
 			return true;
 		} catch (Exception e) {
@@ -406,30 +388,28 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
 	 * 
 	 * @return true if we can change or false otherwise
 	 */
-	private boolean removeUserToGroup(String userDinstinguishedName,
+	private boolean removeUserToGroup(String uid,
 			String groupDistinguishedName) {
 		try {
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Group name: " + groupDistinguishedName);
 
 			String distinguishedGroupName = groupDistinguishedName;
-			DistinguishedName distinguishedName = new DistinguishedName(
-					userDinstinguishedName);
 
 			ModificationItem[] modItems = new ModificationItem[] { new ModificationItem(
 					DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(
-							memberAttribute, distinguishedName.encode())) };
+							memberAttribute, uid)) };
 
 			String[] split = distinguishedGroupName.split(",DC");
 
 			ldapTemplate.modifyAttributes(split[0], modItems);
 			if (LOGGER.isDebugEnabled())
-				LOGGER.debug("Remove user " + userDinstinguishedName
+				LOGGER.debug("Remove user " + uid
 						+ " to group " + split[0]);
 
 			return true;
 		} catch (org.springframework.ldap.NameNotFoundException e) {
-			LOGGER.error("User " + userDinstinguishedName
+			LOGGER.error("User " + uid
 					+ " already not member of group " + groupDistinguishedName);
 			return true;
 		} catch (Exception e) {

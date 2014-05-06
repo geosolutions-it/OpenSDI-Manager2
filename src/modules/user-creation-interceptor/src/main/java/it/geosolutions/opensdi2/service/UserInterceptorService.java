@@ -21,6 +21,13 @@ package it.geosolutions.opensdi2.service;
 
 import it.geosolutions.geostore.core.model.User;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpMethod;
+
 /**
  * User interceptor interface
  * 
@@ -53,7 +60,33 @@ public interface UserInterceptorService {
 	public void onUserDelete(Long userId);
 
 	/**
+	 * Execute an user operation
+	 * 
+	 * @param operation
+	 * @param request
+	 * @param response
+	 * @return true if the request can continue and false otherwise
+	 */
+	public boolean onUserOperation(String operation,
+			HttpServletRequest request, HttpServletResponse response);
+
+	/**
 	 * Method to be called when the callback has been finished
 	 */
 	public void onFinish();
+
+	/**
+	 * Method to be called on remote response
+	 * 
+	 * @param method
+	 * @throws IOException
+	 */
+	public void onRemoteResponse(HttpMethod method) throws IOException;
+
+	/**
+	 * Get credentials for the remote operation
+	 * 
+	 * @return credentials to perform the operation
+	 */
+	WrappedCredentials getCredentials();
 }

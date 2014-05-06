@@ -67,6 +67,7 @@ public class UserGroupServiceTest {
 	
 	@Test
 	public void testAddGroups(){
+		userService.setUserGroups(UID_SEARCH, null);
 		List<String> groups = userService.getUserGroups(UID_SEARCH);
 		assertEquals(groups.size(), 0);
 		groups = new LinkedList<String>();

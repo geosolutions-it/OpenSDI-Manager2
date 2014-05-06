@@ -49,6 +49,14 @@
     <bean name="userInterceptor2" class="it.geosolutions.opensdi2.service.impl.UserGroupsInterceptorImpl">
 		<property name="userService" ref="userGroupService"/>
 		<property name="geoStoreClient" ref="geoStoreClient"/>
+    	<property name="userAdminGroups">
+            <list> 
+                <!-- Include group DN that should work as ADMIN users.
+                	You can use the property overrider like that:
+                	userInterceptor2.userAdminGroups[0]=cn=manager,ou=groups 
+                 -->
+            </list>
+    	</property>
     </bean>
     
     <!-- User creation interceptor for GeoStore -->
