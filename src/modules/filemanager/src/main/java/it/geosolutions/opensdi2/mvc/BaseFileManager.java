@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -673,7 +674,7 @@ public class BaseFileManager extends AbstractFileController {
 			String fileName, String filePath) {
 
 		return download("application/octet-stream", "attachment; filename=\""
-				+ fileName + "\"", resp, fileName, filePath);
+				+ FilenameUtils.getName(fileName) + "\"", resp, fileName, filePath);
 	}
 
 	/**
