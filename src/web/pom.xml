@@ -110,6 +110,16 @@
                 </dependency>
             </dependencies>
         </profile>
+        <!-- Profile that adds the service management -->
+        <profile>
+            <id>serviceManager</id>
+            <dependencies>
+                <dependency>
+                    <groupId>it.geosolutions.opensdi2</groupId>
+                    <artifactId>opensdi2-servicemanager</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
 </project>

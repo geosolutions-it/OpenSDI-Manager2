@@ -21,6 +21,7 @@
 package it.geosolutions.opensdi2.service.impl;
 
 import it.geosolutions.opensdi2.service.FileUploadService;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
@@ -306,17 +308,34 @@ public File getCompletedFile(String name, String targetPath, Entry<String, ?> en
             LOGGER.debug("Getting final file on: '" + targetPath + "'");
         }
         if (null != entry && ((List<String>) entry.getValue()).size() > 0) {
-            String tempFile = ((List<String>) entry.getValue()).get(0);
+            String tempFile = ControllerUtils.preventDirectoryTrasversing(((List<String>) entry.getValue()).get(0));
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.debug("Getting tmp file on: '" + tempFile + "': " + new File(tempFile).exists());
+            }
             // name is not the final one
             if (!"".equalsIgnoreCase(tempFile) && !targetPath.equals(tempFile)) {
-                new File(tempFile).renameTo(new File(targetPath));
+            	 if(LOGGER.isDebugEnabled()){
+                     LOGGER.debug("Renaming '" + tempFile + "' to '" + targetPath + "'");
+                 }
+            	FileUtils.moveFile(new File(tempFile), new File(targetPath));
+            }
+        }else{
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.error("No file found");
             }
         }
     }catch (Exception e){
         LOGGER.error("Error uploading files", e);
     }finally{
     	// remove the key once complete
-    	remove(entry.getKey());
+    	if(new File(targetPath).exists()){
+    		if(LOGGER.isDebugEnabled()){
+    			LOGGER.debug("File : '" + targetPath + "' complete uploaded");
+    		}
+    		remove(entry.getKey());
+    	}else{
+            LOGGER.error("The file : '" + targetPath + "' doesn't exist");
+    	}
     }
 
     return new File(targetPath);

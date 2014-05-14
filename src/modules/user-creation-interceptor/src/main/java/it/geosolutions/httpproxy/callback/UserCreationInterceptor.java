@@ -134,6 +134,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 		try {
 			if (userInterceptors != null) {
 				for (UserInterceptorService interceptor : userInterceptors) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Calling (remoteResponse): "
+								+ interceptor.getClass().getSimpleName()
+								+ " interceptor");
+					}
 					interceptor.onRemoteResponse(method);
 				}
 			}
@@ -152,6 +157,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 		try {
 			if (userInterceptors != null) {
 				for (UserInterceptorService interceptor : userInterceptors) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Calling (finish): "
+								+ interceptor.getClass().getSimpleName()
+								+ " interceptor");
+					}
 					interceptor.onFinish();
 				}
 			}
@@ -171,6 +181,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 		try {
 			if (userInterceptors != null) {
 				for (UserInterceptorService interceptor : userInterceptors) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Calling: "
+								+ interceptor.getClass().getSimpleName()
+								+ " interceptor");
+					}
 					interceptor.onUserCreation(user);
 				}
 			}
@@ -190,6 +205,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 		try {
 			if (userInterceptors != null) {
 				for (UserInterceptorService interceptor : userInterceptors) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Calling: "
+								+ interceptor.getClass().getSimpleName()
+								+ " interceptor");
+					}
 					interceptor.onUserUpdate(user);
 				}
 			}
@@ -347,6 +367,10 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 						.encode((userName + ":" + userPassword).getBytes());
 				httpMethodProxyRequest.setRequestHeader(
 						HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+			}
+
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Continue: " + continueWithRequest);
 			}
 		}
 

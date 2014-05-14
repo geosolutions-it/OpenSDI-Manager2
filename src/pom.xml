@@ -91,6 +91,11 @@
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-servicemanager</artifactId>
+                <version>${project.version}</version>
+            </dependency>
     
             <!-- =========================================================== -->
             <!--     APACHE COMMONS                                          -->

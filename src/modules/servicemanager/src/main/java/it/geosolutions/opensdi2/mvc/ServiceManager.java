@@ -20,9 +20,12 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
+import it.geosolutions.opensdi2.config.FileManagerConfig;
+import it.geosolutions.opensdi2.config.FolderPermission;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,25 +39,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Controller for the base file manager.
- * **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757
- * Once the issue is resolved and Spring Updated, use xml configuration to map base
- * class.
- * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
- *
+ * Controller for the service file manager.
+ * 
+ * @author Alejandro Diaz (alejandro.diaz at geo-solutions.it)
+ * 
  */
 @Controller
-@RequestMapping("/fileManager")
-public class FileManager extends BaseFileManager {
-	
+@RequestMapping("/serviceManager")
+public class ServiceManager extends BaseFileManager {
+
+	/**
+	 * Base configuration for the service manager
+	 */
+	private FileManagerConfig fileManagerConfig;
+
 	/**
 	 * Set the configuration to set up the base directory
+	 * 
 	 * @param config
 	 */
-	@Resource(name="baseConfig")
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
+	@Resource(name = "serviceManagerConfig")
+	public void setBaseConfig(FileManagerConfig baseConfig) {
+		this.fileManagerConfig = baseConfig;
 		this.setRuntimeDir(baseConfig.getBaseFolder());
 	}
+
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
 	 * 
@@ -84,8 +93,28 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
-		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
-
+		if (EXTJS_FILE_DOWNLOAD.equals(action)) {
+			String finalFolder = folder != null && !folder.equals("root") ? folder
+					: null;
+			if (finalFolder != null) {
+				if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+					finalFolder = finalFolder.replace(
+							fileManagerConfig.getRootText(), "");
+				}
+			}
+			String finalFile = file;
+			if (finalFile != null) {
+				if (finalFile.startsWith(fileManagerConfig.getRootText())) {
+					finalFile = finalFile.replace(
+							fileManagerConfig.getRootText(), "");
+				}
+			}
+			download(response, finalFile, getFilePath(finalFile, finalFolder));
+			return null;
+		} else {
+			return super.extJSbrowser(action, folder, name, oldName, file,
+					request, response);
+		}
 	}
 
 	/**
@@ -109,8 +138,15 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
-
-		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
+		String finalFolder = folder;
+		if (finalFolder != null) {
+			if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+				finalFolder = finalFolder.replace(
+						fileManagerConfig.getRootText(), "");
+			}
+		}
+		super.upload(file, name, chunks, chunk, finalFolder, request,
+				servletResponse);
 	}
 
 	/**
@@ -129,6 +165,50 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "folder", required = false) String folder,
 			@RequestParam(value = "file", required = true) String file,
 			HttpServletResponse resp) {
-		super.downloadFile(folder, file, resp);
+		String finalFolder = folder;
+		if (finalFolder != null) {
+			if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+				finalFolder = finalFolder.replace(
+						fileManagerConfig.getRootText(), "");
+			}
+		}
+		String finalFile = file;
+		if (finalFile != null) {
+			if (finalFile.startsWith(fileManagerConfig.getRootText())) {
+				finalFile = finalFile.replace(fileManagerConfig.getRootText(),
+						"");
+			}
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Download file "
+					+ ((finalFolder != null) ? finalFolder + finalFile
+							: finalFile));
+		}
+		super.downloadFile(finalFolder, finalFile, resp);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * it.geosolutions.opensdi2.mvc.BaseFileManager#getFolderList(java.lang.
+	 * String)
+	 */
+	@Override
+	protected List<Map<String, Object>> getFolderList(String folder) {
+		List<Map<String, Object>> currenteFolderList = super
+				.getFolderList(folder);
+
+		FolderPermission permission = fileManagerConfig.getPermission(folder);
+
+		// write operations available
+		for (Map<String, Object> rootElement : currenteFolderList) {
+			rootElement.put("canRename", permission.canRename());
+			rootElement.put("canDelete", permission.canDelete());
+			rootElement.put("canCreateFolder", permission.canCreateFolder());
+			rootElement.put("canUpload", permission.canUpload());
+		}
+
+		return currenteFolderList;
 	}
 }

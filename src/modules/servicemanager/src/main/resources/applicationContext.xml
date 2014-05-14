@@ -1,0 +1,52 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
+            http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="byName">
+    
+    <!-- Specific configuration by level -->
+	<bean id="serviceManagerConfig" class="it.geosolutions.opensdi2.config.FileManagerConfigImpl">
+        <property name="baseFolder" value="/tmp"/>
+        <property name="defaultPermission">
+     		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
+     			<property name="canCreateFolder" value="true" />
+     			<property name="canRename" value="true" />
+     			<property name="canDelete" value="true" />
+     			<property name="canUpload" value="true" />
+     		</bean>
+        </property>
+        <property name="permissionsByLevel">
+        	<map>
+        		<entry key="0">
+		     		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
+		     			<property name="canCreateFolder" value="true" />
+		     			<property name="canRename" value="false" />
+		     			<property name="canDelete" value="false" />
+		     			<property name="canUpload" value="false" />
+		     		</bean>
+        		</entry>
+        		<entry key="1">
+		     		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
+		     			<property name="canCreateFolder" value="true" />
+		     			<property name="canRename" value="false" />
+		     			<property name="canDelete" value="false" />
+		     			<property name="canUpload" value="true" />
+		     		</bean>
+        		</entry>
+        		<entry key="2">
+		     		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
+		     			<property name="canCreateFolder" value="true" />
+		     			<property name="canRename" value="true" />
+		     			<property name="canDelete" value="true" />
+		     			<property name="canUpload" value="true" />
+		     		</bean>
+        		</entry>
+        	</map>
+        </property>
+    </bean>
+    
+</beans>
+

@@ -21,5 +21,6 @@
         <module>rest-facade</module>
         <module>user-creation-interceptor</module>
         <module>web-security</module>
+        <module>servicemanager</module>
     </modules>
 </project>
