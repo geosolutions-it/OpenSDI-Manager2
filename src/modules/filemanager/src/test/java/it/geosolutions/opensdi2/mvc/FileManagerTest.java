@@ -156,7 +156,7 @@ public class FileManagerTest {
 	public void testFileDeleteFiles(){
 		HttpServletResponse response = new MockHttpServletResponse();
 		for(File file: currentFiles){
-			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, file.getName(), null, null, new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, null, null, file.getName(), new MockHttpServletRequest(), response);
 		}
 		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
 		if(jsonResp != null && jsonResp instanceof Map){
