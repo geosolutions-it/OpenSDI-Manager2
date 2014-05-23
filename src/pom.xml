@@ -33,6 +33,36 @@
         <servlet-api.version>2.5</servlet-api.version>
         <jetty.port>9191</jetty.port>
     </properties>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/geosolutions-it/OpenSDI-Manager2/issues</url>
+    </issueManagement>
+
+    <scm>
+        <url>https://github.com/geosolutions-it/OpenSDI-Manager2</url>
+        <connection>scm:git:git://github.com/geosolutions-it/OpenSDI-Manager2.git</connection>
+    </scm>
+
+    <ciManagement>
+        <system>jenkins</system>    
+        <url>http://ci.geo-solutions.it/</url>
+    </ciManagement>
+
+    <distributionManagement>
+      <!-- use the following if you're not using a snapshot version. -->
+      <repository>
+         <uniqueVersion>false</uniqueVersion>
+         <id>geosolutions</id>
+         <url>ftp://maven.geo-solutions.it/</url>
+      </repository>
+      <!-- use the following if you ARE using a snapshot version. -->
+      <snapshotRepository>
+         <uniqueVersion>false</uniqueVersion>
+         <id>geosolutions</id>
+         <url>ftp://maven.geo-solutions.it/</url>
+      </snapshotRepository>
+    </distributionManagement>
     
     <!-- Repositories -->
     <repositories>
@@ -342,5 +372,12 @@
         </configuration>
     </plugin>
    </plugins>
+    <extensions>
+        <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ftp</artifactId>
+            <version>1.0-beta-6</version>
+        </extension>
+    </extensions>
   </build>
 </project>
