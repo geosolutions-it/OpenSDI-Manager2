@@ -15,7 +15,7 @@
         <property name="order" value="0"/>
         <property name="locations">
             <list>
-                <value>classpath:proxy.dummy.properties</value>
+                <value>classpath:opensdiproxy.dummy.properties</value>
             </list>
         </property>
         <property name="ignoreResourceNotFound" value="true"/>
@@ -25,9 +25,9 @@
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath:proxy.properties</value>
-				<value>classpath*:${ovrdir}/proxy-ovr.properties</value>
-                <value>${proxy-ovr}</value>
+                <value>classpath:opensdiproxy.properties</value>
+				<value>classpath*:${opensdiovrdir}/opensdiproxy-ovr.properties</value>
+                <value>${opensdiproxy-ovr}</value>
             </list>
         </property>
     </bean>
@@ -36,9 +36,9 @@
     	<!-- This locations must be the same than 'PropertyOverrideConfigurer' -->
         <property name="locations">
             <list>
-                <value>classpath:proxy.properties</value>
-				<value>classpath*:${ovrdir}/proxy-ovr.properties</value>
-                <value>${proxy-ovr}</value>
+                <value>classpath:opensdiproxy.properties</value>
+				<value>classpath*:${opensdiovrdir}/opensdiproxy-ovr.properties</value>
+                <value>${opensdiproxy-ovr}</value>
             </list>
         </property>    
     </bean>
