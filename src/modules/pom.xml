@@ -5,7 +5,7 @@
     <parent>
         <groupId>it.geosolutions.opensdi2</groupId>
         <artifactId>opensdi-manager2</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
   
     <groupId>it.geosolutions.opensdi2</groupId>

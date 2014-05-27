@@ -5,7 +5,7 @@
     <!-- Main Project -->
     <groupId>it.geosolutions.opensdi2</groupId>
     <artifactId>opensdi-manager2</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>pom</packaging>
     
     <name>OpenSDI-Manager 2 - Parent</name>
