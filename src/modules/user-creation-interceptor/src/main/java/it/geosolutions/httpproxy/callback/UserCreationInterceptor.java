@@ -67,6 +67,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 	private String interceptedURL = "";
 
 	/**
+	 * REST user service URLs to not be wrapped
+	 */
+	private List<String> notWrappedUrls;
+
+	/**
 	 * Default constructor
 	 */
 	public UserCreationInterceptor() {
@@ -359,7 +364,9 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 			String userPassword = credentials != null ? credentials
 					.getUserPassword() : password;
 
-			if (userName != null && userPassword != null) {
+			if (userName != null 
+					&& userPassword != null
+					&& mustUseWrappedCredentials((String) httpServletRequest.getAttribute("url"))) {
 				// Basic authorization in the header with the new credentials
 				httpMethodProxyRequest
 						.removeRequestHeader(HttpHeaders.AUTHORIZATION);
@@ -375,5 +382,40 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements
 		}
 
 		return continueWithRequest;
+	}
+	
+	/**
+	 * Check if the url must be wrapped or not. It allow wrap only some urls with ADMIN credentials
+	 * 
+	 * @param url to be checked
+	 * 
+	 * @return true if we need to use the wrapped credentials or false otherwise
+	 */
+	private boolean mustUseWrappedCredentials(String url){
+		boolean mustUseWrappedCredentials = true;
+		if(notWrappedUrls != null
+				&& url != null){
+			for(String notWrappedUrl: notWrappedUrls){
+				if(url.startsWith(notWrappedUrl)){
+					mustUseWrappedCredentials = false;
+					break;
+				}
+			}
+		}
+		return mustUseWrappedCredentials;
+	}
+
+	/**
+	 * @return the notWrappedUrls
+	 */
+	public List<String> getNotWrappedUrls() {
+		return notWrappedUrls;
+	}
+
+	/**
+	 * @param notWrappedUrls the notWrappedUrls to set
+	 */
+	public void setNotWrappedUrls(List<String> notWrappedUrls) {
+		this.notWrappedUrls = notWrappedUrls;
 	}
 }

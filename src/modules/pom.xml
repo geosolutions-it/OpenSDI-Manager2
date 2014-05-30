@@ -22,5 +22,6 @@
         <module>user-creation-interceptor</module>
         <module>web-security</module>
         <module>servicemanager</module>
+        <module>servicebox</module>
     </modules>
 </project>

@@ -96,6 +96,11 @@
                 <artifactId>opensdi2-servicemanager</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-servicebox</artifactId>
+                <version>${project.version}</version>
+            </dependency>
     
             <!-- =========================================================== -->
             <!--     APACHE COMMONS                                          -->

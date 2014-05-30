@@ -20,10 +20,22 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import it.geosolutions.httpproxy.callback.ProxyCallback;
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.opensdi2.config.FileManagerConfig;
 import it.geosolutions.opensdi2.config.FolderPermission;
+import it.geosolutions.opensdi2.utils.ResponseConstants;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +43,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.io.IOUtils;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,6 +67,10 @@ public class ServiceManager extends BaseFileManager {
 	 * Base configuration for the service manager
 	 */
 	private FileManagerConfig fileManagerConfig;
+	
+	private static String CONFIRMED_AOI_NAME = "AOI.zip";
+	
+	private ProxyService proxyService;
 
 	/**
 	 * Set the configuration to set up the base directory
@@ -62,6 +81,100 @@ public class ServiceManager extends BaseFileManager {
 	public void setBaseConfig(FileManagerConfig baseConfig) {
 		this.fileManagerConfig = baseConfig;
 		this.setRuntimeDir(baseConfig.getBaseFolder());
+	}
+	
+	ProxyCallback callback;
+
+	/**
+	 * @param proxyService the proxyService to set
+	 */
+	@Resource(name = "serviceManagerProxy")
+	public void setProxyService(ProxyService proxyService) {
+		 	callback = new ProxyCallback() {
+			 	String user;
+				String service;
+				
+				@Override
+				public void setProxyConfig(ProxyConfig config) {
+				}
+				
+				@Override
+				public void onRequest(HttpServletRequest request,
+						HttpServletResponse response, URL url) throws IOException {
+					service = request.getParameter("service");
+					user = request.getParameter("user");
+					
+				}
+				
+				@Override
+				public void onRemoteResponse(HttpMethod method) throws IOException {
+					String filePath = fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service + File.separator + CONFIRMED_AOI_NAME;
+					if(LOGGER.isInfoEnabled())
+						LOGGER.info("Download confirmed AOI to "+ filePath);
+					InputStream is = method.getResponseBodyAsStream();
+					byte[] bytes = IOUtils.toByteArray(is);
+					createCommittedFile(filePath, bytes);	
+				}
+	
+				/**
+				 * Create committed file with byte array with a byte array
+				 * 
+				 * @param filePath of the file
+				 * @param bytes to write
+				 * @return absolute path to the file
+				 * @throws IOException
+				 */
+				private String createCommittedFile(String filePath, byte[] bytes)
+				        throws IOException {
+				
+				    try {
+				
+				        // write bytes
+				        File tmpFile = new File(filePath);
+				        
+				        if(LOGGER.isTraceEnabled()){
+				            LOGGER.trace("Appending bytes to " + tmpFile.getAbsolutePath());
+				        }
+				        
+				        // File channel to append bytes
+				        @SuppressWarnings("resource")
+						FileChannel channel = new FileOutputStream(tmpFile, true).getChannel();
+				        ByteBuffer buf = ByteBuffer.allocateDirect((int)bytes.length);
+				        
+				        // put bytes
+				        buf.put(bytes);
+				        
+				        // Flips this buffer.  The limit is set to the current position and then
+				        // the position is set to zero.  If the mark is defined then it is discarded.
+				        buf.flip();
+				        
+				        // Writes a sequence of bytes to this channel from the given buffer.
+				        channel.write(buf);
+				     
+				        // close the channel
+				        channel.close();
+				        
+				    } catch (IOException e) {
+				        LOGGER.error("Error writing file bytes", e);
+				    }
+					
+				    return filePath;
+				}
+				
+				@Override
+				public void onFinish() throws IOException {
+				}
+				
+				@Override
+				public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+						HttpServletRequest httpServletRequest,
+						HttpServletResponse httpServletResponse, String user,
+						String password, ProxyInfo proxyInfo) {
+					return true;
+				}
+		};
+		proxyService.addCallback(callback);
+		this.proxyService = proxyService;
 	}
 
 	/**
@@ -115,6 +228,35 @@ public class ServiceManager extends BaseFileManager {
 			return super.extJSbrowser(action, folder, name, oldName, file,
 					request, response);
 		}
+	}
+
+	/**
+	 * Download a confirmed AOI to target folder
+	 * 
+	 * @param user
+	 * @param service
+	 * @param request
+	 * @param httpServletResponse
+	 * @return
+	 */
+	@RequestMapping(value = "confirmServiceAOI", method = { RequestMethod.GET,
+			RequestMethod.POST })
+	public @ResponseBody
+	Object confirmService(
+			@RequestParam(value = "user", required = true) String user,
+			@RequestParam(value = "service", required = true) String service,
+			HttpServletRequest request, HttpServletResponse httpServletResponse) {
+
+		// TODO: Check user and service
+		Map<String, Object> response = new HashMap<String, Object>();
+		try {
+			proxyService.execute(request, new MockHttpServletResponse());
+			response.put(ResponseConstants.SUCCESS, true);
+		} catch (Exception e) {
+			LOGGER.error("Error downloading finished AOI", e);
+			response.put(ResponseConstants.SUCCESS, false);
+		}
+		return response;
 	}
 
 	/**
@@ -210,5 +352,12 @@ public class ServiceManager extends BaseFileManager {
 		}
 
 		return currenteFolderList;
+	}
+
+	/**
+	 * @return the proxyService
+	 */
+	public ProxyService getProxyService() {
+		return proxyService;
 	}
 }

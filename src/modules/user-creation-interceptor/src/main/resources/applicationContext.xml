@@ -62,6 +62,10 @@
     <!-- User creation interceptor for GeoStore -->
     <bean name="userCreationInterceptor" class="it.geosolutions.httpproxy.callback.UserCreationInterceptor">
     	<property name="interceptedURL" value="http://localhost/geostore/rest/users/"/>
+    	<property name="notWrappedUrls">
+            <list>
+            </list>
+    	</property>
     	<property name="userInterceptors">
             <list> 
                 <ref bean="userInterceptor1" />

@@ -48,5 +48,21 @@
         </property>
     </bean>
     
+    <!-- Service Manager proxy. -->
+    <bean id="serviceManagerProxy" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
+        <property name="proxyConfig" ref="proxyConfig"></property>
+        <property name="proxyHelper" ref="proxyHelper"></property>
+        <property name="callbacks">
+            <list> 
+                <!-- TODO: Configure geostore callbacks 
+                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+            </list>
+        </property>
+    </bean>
+    
 </beans>
 

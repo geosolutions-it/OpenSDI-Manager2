@@ -22,6 +22,12 @@
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-filemanager</artifactId>
         </dependency>
+        <!-- Spring mock -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-mock</artifactId>
+            <version>2.0.8</version>
+        </dependency> 
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

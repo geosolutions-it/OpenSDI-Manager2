@@ -9,6 +9,13 @@
         <param-name>webAppRootKey</param-name>
         <param-value>opensdi2.root</param-value>
     </context-param>
+
+	<!-- Service box properties -->
+	<context-param>
+		<description>location for the property file used in this application</description>
+		<param-name>app.properties</param-name>
+		<param-value>/servicebox.properties</param-value>
+	</context-param>
 	
     <!--  spring context loader -->
     <listener>
@@ -52,5 +59,86 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
+	<!--======================-->
+	<!-- Service box servlets -->
+	<!--======================-->
+
+	<!-- Save Servlet -->
+	<servlet>
+		<servlet-name>HTTPWebGISSave</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.HTTPWebGISSave</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>HTTPWebGISSave</servlet-name>
+		<url-pattern>/HTTPWebGISSave/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- File Upload Servlet -->
+	<servlet>
+		<servlet-name>HTTPWebGISFileUpload</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.HTTPWebGISFileUpload</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>HTTPWebGISFileUpload</servlet-name>
+		<url-pattern>/HTTPWebGISFileUpload/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- File Download Servlet -->
+	<servlet>
+		<servlet-name>HTTPWebGISFileDownload</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.HTTPWebGISFileDownload</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>HTTPWebGISFileDownload</servlet-name>
+		<url-pattern>/HTTPWebGISFileDownload/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- FileDownloader Servlet -->
+	<servlet>
+		<servlet-name>FileDownloader</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.FileDownloader</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>FileDownloader</servlet-name>
+		<url-pattern>/FileDownloader/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- FileUploader Servlet -->
+	<servlet>
+		<servlet-name>FileUploader</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.FileUploader</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>FileUploader</servlet-name>
+		<url-pattern>/FileUploader/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- FileUploader Servlet -->
+	<servlet>
+		<servlet-name>KMZUploader</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.geoservices.KMZUploader</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>KMZUploader</servlet-name>
+		<url-pattern>/KMZUploader/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- Upload Canvas Servlet -->
+	<servlet>
+		<servlet-name>UploadCanvas</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.UploadCanvas</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>UploadCanvas</servlet-name>
+		<url-pattern>/UploadCanvas</url-pattern>
+	</servlet-mapping>
 
 </web-app>

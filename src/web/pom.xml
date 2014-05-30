@@ -20,6 +20,10 @@
         <!-- Internal  -->
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-servicebox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-filemanager</artifactId>
         </dependency>
         <dependency>

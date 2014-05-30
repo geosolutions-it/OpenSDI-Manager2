@@ -17,10 +17,14 @@
     </properties>
 
     <dependencies>
-        <!-- Internal  -->
+        <!-- Internal -->
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-http_proxy-core</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>
