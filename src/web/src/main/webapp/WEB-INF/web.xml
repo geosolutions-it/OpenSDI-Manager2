@@ -141,4 +141,15 @@
 		<url-pattern>/UploadCanvas</url-pattern>
 	</servlet-mapping>
 
+	<!-- Upload Canvas Servlet -->
+	<servlet>
+		<servlet-name>SHP2GeoJSON</servlet-name>
+		<servlet-class>it.geosolutions.servicebox.SHP2GeoJSON</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SHP2GeoJSON</servlet-name>
+		<url-pattern>/SHP2GeoJSON</url-pattern>
+	</servlet-mapping>
+
 </web-app>
