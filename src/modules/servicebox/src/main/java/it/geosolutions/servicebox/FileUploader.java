@@ -37,16 +37,16 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class FileUploader extends ServiceBoxActionServlet {
 	private static final long serialVersionUID = 1L;
 
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	private final static Logger LOGGER = Logger.getLogger(FileUploader.class
+	protected final static String PROPERTY_FILE_PARAM = "app.properties";
+	protected final static Logger LOGGER = Logger.getLogger(FileUploader.class
 			.getSimpleName());
-	private Properties properties = new Properties();
-	private String tempDirectory;
+	protected Properties properties = new Properties();
+	protected String tempDirectory;
 
-	private String moveDirectory;
+	protected String moveDirectory;
 
-	private String writeRights;
-	private String executeRights;
+	protected String writeRights;
+	protected String executeRights;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -348,7 +348,7 @@ public class FileUploader extends ServiceBoxActionServlet {
 	 * @param text
 	 * @throws IOException
 	 */
-	private void writeResponse(HttpServletResponse response, String text)
+	protected void writeResponse(HttpServletResponse response, String text)
 			throws IOException {
 		Utilities.writeResponse(response, text, LOGGER);
 	}
