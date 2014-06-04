@@ -38,6 +38,8 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.io.IOUtils;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,8 +71,24 @@ public class ServiceManager extends BaseFileManager {
 	 * Base configuration for the service manager
 	 */
 	private FileManagerConfig fileManagerConfig;
+
 	
+	/**
+	 * Confirmed AOI names
+	 */
 	private static String CONFIRMED_AOI_NAME = "AOI.zip";
+	
+	/**
+	 * Confirmed ACQ_PLAN names
+	 */
+	private static String CONFIRMED_ACQ_PLAN = "ACQ_PLAN.zip";
+	private static String CONFIRMED_ACQ_PLAN_NAME = "ACQ_PLAN.xml";
+	
+	/**
+	 * METHODS to change service status
+	 */
+	private static String METHOD_CONFIRMED_ACQ_PLAN = "ACQ_PLAN";
+	private static String METHOD_CONFIRMED_AOI = "METHOD_CONFIRMED_AOI";
 	
 	private ProxyService proxyService;
 
@@ -84,6 +104,7 @@ public class ServiceManager extends BaseFileManager {
 	}
 	
 	ProxyCallback callback;
+	String downloadMethod;
 
 	/**
 	 * @param proxyService the proxyService to set
@@ -98,22 +119,71 @@ public class ServiceManager extends BaseFileManager {
 				public void setProxyConfig(ProxyConfig config) {
 				}
 				
-				@Override
+				/**
+				 * On request we save current call
+				 */
 				public void onRequest(HttpServletRequest request,
 						HttpServletResponse response, URL url) throws IOException {
 					service = request.getParameter("service");
 					user = request.getParameter("user");
-					
 				}
 				
-				@Override
+				/**
+				 * On remote response we download the files and manipulate it
+				 */
 				public void onRemoteResponse(HttpMethod method) throws IOException {
+					if(METHOD_CONFIRMED_ACQ_PLAN.endsWith(downloadMethod)){
+						downloadConfirmedAcqPLan(method);
+					}else{
+						downloadConfirmedAOI(method);
+					}	
+				}
+				
+				/**
+				 * Download the shape-zip for the AOI of the plan
+				 * @param method
+				 * @throws IOException
+				 */
+				private void downloadConfirmedAOI(HttpMethod method) throws IOException{
 					String filePath = fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service + File.separator + CONFIRMED_AOI_NAME;
 					if(LOGGER.isInfoEnabled())
 						LOGGER.info("Download confirmed AOI to "+ filePath);
 					InputStream is = method.getResponseBodyAsStream();
 					byte[] bytes = IOUtils.toByteArray(is);
 					createCommittedFile(filePath, bytes);	
+				}
+				
+				/**
+				 * Download the acquisition list for the plan
+				 * @param method
+				 * @throws IOException
+				 */
+				private void downloadConfirmedAcqPLan(HttpMethod method) throws IOException{
+					String filePath = fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service + File.separator + CONFIRMED_ACQ_PLAN;
+					if(LOGGER.isInfoEnabled())
+						LOGGER.info("Generating acquisition list to "+ filePath);
+					byte[] buffer = new byte[1024];
+					InputStream is = method.getResponseBodyAsStream();
+					
+					// Generate the zip
+					FileOutputStream fos = new FileOutputStream(filePath);
+					ZipOutputStream zos = new ZipOutputStream(fos);
+		    		ZipEntry ze= new ZipEntry(CONFIRMED_ACQ_PLAN_NAME);
+		    		zos.putNextEntry(ze);
+		 
+		    		int len;
+		    		while ((len = is.read(buffer)) > 0) {
+		    			zos.write(buffer, 0, len);
+		    		}
+		 
+		    		is.close();
+		    		zos.closeEntry();
+		 
+		    		//remember close it
+		    		zos.close();
+		    		
+					if(LOGGER.isInfoEnabled())
+						LOGGER.info("Acquisition list available in "+ filePath);
 				}
 	
 				/**
@@ -247,16 +317,79 @@ public class ServiceManager extends BaseFileManager {
 			@RequestParam(value = "service", required = true) String service,
 			HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
-		// TODO: Check user and service
 		Map<String, Object> response = new HashMap<String, Object>();
 		try {
-			proxyService.execute(request, new MockHttpServletResponse());
-			response.put(ResponseConstants.SUCCESS, true);
+			if(checkUserAndService(user, service)){
+				downloadMethod = METHOD_CONFIRMED_AOI;
+				proxyService.execute(request, new MockHttpServletResponse());
+				response.put(ResponseConstants.SUCCESS, true);
+			}else{
+				response.put(ResponseConstants.SUCCESS, false);
+				response.put(ResponseConstants.ROOT, "Wrong user or service");
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error downloading finished AOI", e);
 			response.put(ResponseConstants.SUCCESS, false);
 		}
 		return response;
+	}
+
+	/**
+	 * Download a confirmed AOI to target folder
+	 * 
+	 * @param user
+	 * @param service
+	 * @param request
+	 * @param httpServletResponse
+	 * @return
+	 */
+	@RequestMapping(value = "confirmServiceAcqPlan", method = { RequestMethod.GET,
+			RequestMethod.POST })
+	public @ResponseBody
+	Object confirmServiceAcqPlan(
+			@RequestParam(value = "user", required = true) String user,
+			@RequestParam(value = "service", required = true) String service,
+			HttpServletRequest request, HttpServletResponse httpServletResponse) {
+
+		Map<String, Object> response = new HashMap<String, Object>();
+		try {
+			if(checkUserAndService(user, service)){
+				downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
+				proxyService.execute(request, new MockHttpServletResponse());
+				response.put(ResponseConstants.SUCCESS, true);
+			}else{
+				response.put(ResponseConstants.SUCCESS, false);
+				response.put(ResponseConstants.ROOT, "Wrong user or service");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error on acquisition list generation", e);
+			response.put(ResponseConstants.SUCCESS, false);
+		}
+		return response;
+	}
+	
+	/**
+	 * Check if the user is the logged one and exists the service
+	 * @param user
+	 * @param service
+	 * 
+	 * @return true if the logged user is the user and exists the service for the user
+	 */
+	private boolean checkUserAndService(String user, String service){
+		boolean checked = false;
+		try{
+			SecurityContext sc = SecurityContextHolder.getContext();
+			String username = (String) sc.getAuthentication().getPrincipal();
+			if(user != null 
+					&& username != null 
+					&& user.equals(username)
+					&& service != null){
+				checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service)).exists();
+			}
+		}catch (Exception e){
+			LOGGER.error("Ungranted access", e);
+		}
+		return checked;
 	}
 
 	/**
