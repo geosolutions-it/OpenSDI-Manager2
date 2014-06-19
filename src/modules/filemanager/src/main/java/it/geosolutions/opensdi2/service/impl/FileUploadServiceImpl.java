@@ -24,6 +24,7 @@ import it.geosolutions.opensdi2.service.FileUploadService;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
@@ -309,7 +311,22 @@ public File getCompletedFile(String name, String targetPath, Entry<String, ?> en
             String tempFile = ((List<String>) entry.getValue()).get(0);
             // name is not the final one
             if (!"".equalsIgnoreCase(tempFile) && !targetPath.equals(tempFile)) {
-                new File(tempFile).renameTo(new File(targetPath));
+//                new File(tempFile).renameTo(new File(targetPath));
+            	File tmp = new File(tempFile);
+            	FileInputStream in = new FileInputStream(tmp);
+            	
+            	File target = new File(targetPath);
+            	OutputStream out = new FileOutputStream(target);
+            	
+        	    try{
+        	    	IOUtils.copy(in, out);
+    		    }catch(IOException exc){
+    		    	LOGGER.error("Error copying the temp file", exc);
+    		    	throw exc;
+    		    }finally {
+    		        IOUtils.closeQuietly(in);
+    		        IOUtils.closeQuietly(out);
+    		    }
             }
         }
     }catch (Exception e){
