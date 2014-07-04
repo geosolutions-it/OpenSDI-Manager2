@@ -28,6 +28,11 @@
         </dependency>
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-user-management</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>web-security</artifactId>
         </dependency>
         <!-- Test -->
