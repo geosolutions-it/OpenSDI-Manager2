@@ -1,0 +1,48 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<!-- GeoStore REST Client -->
+	<bean id="administratorGeoStoreClient"
+		class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
+		<property name="geostoreRestUrl" value="http://localhost:8080/geostore/rest/"></property>
+		<property name="username" value="admin"></property>
+		<property name="password" value="admin"></property>
+	</bean>
+	<!-- Scheduled Tasks configuration -->
+	
+	<util:properties id="tasksProps" location="classpath:tasks.properties" />
+	<context:property-placeholder
+		properties-ref="tasksProps" />
+	<!-- Scheduled task bean -->
+	<bean id="userExpiringTask" class="it.geosolutions.opensdi2.userexpiring.ExpiringTask">
+		<property name="notificationService" ref="notificationService"></property>
+		<property name="autoExpireUsers" value="false"></property>
+		<property name="administratorGeoStoreClient" ref="administratorGeoStoreClient"></property>
+		<property name="userExpiringTaskStatus" ref="userExpiringTaskStatus"></property>
+		<property name="dateFormat" value="#{tasksProps['userexpire.dateformat']}"></property>
+		<property name="expiringDateAttribute" value="#{tasksProps['userexpire.dateattribute']}"></property>
+		<property name="notifyTo" value="#{tasksProps['userexpire.notifyTo']}"></property>
+		<property name="notifyUsers" value="#{tasksProps['userexpire.notifyUsers']}"></property>
+		<property name="mailFrom" value="#{tasksProps['userexpire.mailFrom']}"></property>
+		<property name="userSubject" value="#{tasksProps['userexpire.usersubject']}"></property> 
+		<property name="checksumSubject" value="#{tasksProps['userexpire.checksumsubject']}"></property> 
+		<property name="emailAttribute" value="#{tasksProps['userexpire.emailattribute']}"></property>
+	</bean>
+	
+	<!-- Task status -->
+	<bean id="userExpiringTaskStatus"
+		class="it.geosolutions.opensdi2.userexpiring.model.UserExpiringStatus"></bean>
+	<!-- ** task scheduling ** NOTE: the cron attribute will be overridden using 
+		cron.expression -->
+	<task:scheduled-tasks>
+		<task:scheduled ref="userExpiringTask" method="execute"
+			cron="#{tasksProps['userexpire.cron']}"></task:scheduled>
+	</task:scheduled-tasks>
+	
+	<import resource="classpath*:/mailConfigurationContext.xml" />
+</beans>
