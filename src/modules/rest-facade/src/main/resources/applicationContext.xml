@@ -18,12 +18,43 @@
     	<property name="customizedProxies">
 	    	<map>
 		        <entry key="geostore" value-ref="geostoreProxyService" />
+		        <entry key="geoserver" value-ref="geoserverProxyService" />
+		         <entry key="geobatch" value-ref="geobatchProxyService" />
 		    </map>
     	</property>
     </bean>
-    
+     <!-- GeoServer proxy config. No callbacks configured.  -->
+    <bean id="geoserverProxyService" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
+    	<property name="proxyConfig" ref="proxyConfig"></property>
+    	<property name="proxyHelper" ref="proxyHelper"></property>
+    	<property name="callbacks">
+            <list> 
+                <!-- TODO: Configure geostore callbacks 
+                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+            </list>
+    	</property>
+    </bean>
     <!-- Geostore proxy config. No callbacks configured.  -->
     <bean id="geostoreProxyService" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
+    	<property name="proxyConfig" ref="proxyConfig"></property>
+    	<property name="proxyHelper" ref="proxyHelper"></property>
+    	<property name="callbacks">
+            <list> 
+                <!-- TODO: Configure geostore callbacks 
+                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+            </list>
+    	</property>
+    </bean>
+    <!-- GeoBatch proxy config. No callbacks configured.  -->
+    <bean id="geobatchProxyService" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
     	<property name="proxyConfig" ref="proxyConfig"></property>
     	<property name="proxyHelper" ref="proxyHelper"></property>
     	<property name="callbacks">
