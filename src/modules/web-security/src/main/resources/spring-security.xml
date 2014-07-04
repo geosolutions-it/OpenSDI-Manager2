@@ -6,10 +6,11 @@
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-	<http auto-config="true" create-session="never">
+	<http auto-config="true">
 		<http-basic />
 		<anonymous />
 		<intercept-url pattern="/mvc/admin/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/geobatch/**" access="ROLE_ADMIN" />
 	</http>
 	
 	
