@@ -31,10 +31,10 @@
 		<url-pattern>/facade/*</url-pattern>
 	</servlet-mapping>
 
-	<!-- pick up all spring application contexts -->
+	<!-- pick up all spring application contexts   -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/mvc-dispatcher-servlet.xml</param-value>
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
     </context-param>
     <!-- Spring Security -->
 	<filter>
