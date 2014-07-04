@@ -25,7 +25,7 @@
         <project.build.target>1.6</project.build.target>
         <junit.version>4.8.1</junit.version>
         <jetty.version>6.1.14</jetty.version>
-        <geostore.version>1.2-SNAPSHOT</geostore.version>
+        <geostore.version>1.3-SNAPSHOT</geostore.version>
         <spring.version>3.2.4.RELEASE</spring.version>
         <spring.security.version>3.1.4.RELEASE</spring.security.version>
         <jackson.version>1.9.10</jackson.version>
@@ -123,6 +123,11 @@
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-rest-facade</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-user-management</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
