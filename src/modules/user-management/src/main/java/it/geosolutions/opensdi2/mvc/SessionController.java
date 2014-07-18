@@ -34,6 +34,7 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,6 +52,8 @@ public class SessionController {
     @Autowired
     @Resource(name="userSessionService")
     UserSessionService userSessionService;
+    
+    private SecurityContext securityContext;
     
     private static SimpleDateFormat expireParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     
@@ -97,14 +100,14 @@ public class SessionController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @PreAuthorize("!hasRole('ROLE_ANONYMOUS')")
     public @ResponseBody String createSession(@RequestParam(defaultValue="",required=false) String expires) throws ParseException {
-        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object user = getSecurityContext().getAuthentication().getPrincipal();
         if(user != null) {
             Calendar expiration = getExpiration(expires);
             UserSession session = null;
             if(user instanceof UserDetails) {
                  session = new UserSessionImpl(null,(UserDetails) user, expiration);
             } else {
-                User userData = new User(user.toString(), "", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+                User userData = new User(user.toString(), "", getSecurityContext().getAuthentication().getAuthorities());
                 session = new UserSessionImpl(null, userData, expiration);
             }
             return userSessionService.registerNewSession(session);
@@ -113,6 +116,19 @@ public class SessionController {
         return null;
     }
     
+    
+    
+    public void setSecurityContext(SecurityContext securityContext) {
+        this.securityContext = securityContext;
+    }
+
+    private SecurityContext getSecurityContext() {
+        if(securityContext != null) {
+            return securityContext;
+        }
+        return SecurityContextHolder.getContext();
+    }
+
     /**
      * Removes the given session.
      * 
@@ -129,7 +145,7 @@ public class SessionController {
      * 
      * @return
      */
-    @RequestMapping(value = "/{sessionId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void clear() {
        userSessionService.removeAllSessions();
