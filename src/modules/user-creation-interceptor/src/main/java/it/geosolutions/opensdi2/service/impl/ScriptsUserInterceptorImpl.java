@@ -214,7 +214,6 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 			boolean copyPassword, boolean copyKnownAttributes) {
 		Map<String, String> userInformation = new HashMap<String, String>();
 		userInformation.put(USERNAME, user.getName());
-		LOGGER.debug(" >>>>>>>>>>>>>>>>>>> AAAAAAAAAAAAAAA >>>>>>>>>>> UIDNUMBER = " + String.valueOf(System.nanoTime()));
 		userInformation.put(UIDNUMBER, String.valueOf(System.nanoTime()));
 
 		// default information
