@@ -44,5 +44,9 @@
 			cron="#{tasksProps['userexpire.cron']}"></task:scheduled>
 	</task:scheduled-tasks>
 	
+	<!-- default UserSessionService implementation -->
+	<bean id="userSessionService" class="it.geosolutions.opensdi2.session.impl.InMemoryUserSessionService"/>
+	 
+	
 	<import resource="classpath*:/mailConfigurationContext.xml" />
 </beans>
