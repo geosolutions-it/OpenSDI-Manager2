@@ -64,6 +64,11 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	 */
 	private static final String USERNAME = "USERNAME";
 
+        /**
+         * User identifier parameter for the scripts
+         */
+        private static final String UIDNUMBER = "UIDNUMBER";
+	
 	/**
 	 * User name parameter for the scripts
 	 */
@@ -114,8 +119,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 			.getLogger(ScriptsUserInterceptorImpl.class);
 	/**
 	 * # Creating a new user - the script will create also the FTP folder and
-	 * will restart the ProFTP Service USERNAME=THEUSERNAME NAME=THENAME
-	 * SURNAME=THESURNAME EMAIL=THEMAIL
+	 * will restart the ProFTP Service UIDNUMBER=UIDNUMBER USERNAME=THEUSERNAME 
+	 * NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL
 	 * PASS={SSHA}P7BcwmTJLUJQzXAjVJ4N3nTnY68CkY0m ./create_user.sh
 	 */
 	private String createUserScript = "sh create_user.sh";
@@ -124,8 +129,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 	 * # The function updates the user entries. The USERNAME must exist on LDAP,
 	 * the other properties can be customized but all specified # - the
 	 * following examples updates the User password - WARNING: this function
-	 * does not affect the LDAP groups at all USERNAME=THEUSERNAME NAME=THENAME
-	 * SURNAME=THESURNAME EMAIL=THEMAIL
+	 * does not affect the LDAP groups at all UIDNUMBER=UIDNUMBER USERNAME=THEUSERNAME 
+	 * NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL
 	 * PASS={SSHA}L6lReG1EUTC0g8Ps9HgJGDc4bMttlA/9 modify_user.sh
 	 */
 	private String updateUserScript = "sh modify_user.sh";
@@ -209,6 +214,7 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 			boolean copyPassword, boolean copyKnownAttributes) {
 		Map<String, String> userInformation = new HashMap<String, String>();
 		userInformation.put(USERNAME, user.getName());
+		userInformation.put(UIDNUMBER, String.valueOf(System.nanoTime()));
 
 		// default information
 		userInformation.put("NAME", user.getName());
