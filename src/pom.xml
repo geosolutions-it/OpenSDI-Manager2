@@ -135,12 +135,18 @@
                 <artifactId>web-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
+			<dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-workflow</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-web</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
+          
     
             <!-- =========================================================== -->
             <!--     APACHE COMMONS                                          -->
@@ -381,6 +387,24 @@
             </dependency>
         </dependencies>
      </dependencyManagement>
+	 <!-- Profiled dependencies --> 
+	   <!-- =========================================================== -->
+		<!-- ================ Profiled modules ========================= -->
+		<!-- =========================================================== -->
+		<profiles>
+			<profile>
+			<id>geocollect</id>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>it.geosolutions.opensdi2</groupId>
+						<artifactId>opensdi2-geocollect</artifactId>
+						<version>${project.version}</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+			</profile>
+		</profiles>
     <modules>
         <module>core</module>
         <module>modules</module>
