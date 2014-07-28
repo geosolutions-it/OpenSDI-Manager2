@@ -21,5 +21,16 @@
         <module>rest-facade</module>
         <module>user-management</module>
         <module>web-security</module>
+		<module>workflow</module>
     </modules>
+    <!-- profile geocollect -->
+    <profiles>
+		<profile>
+             <id>geocollect</id>
+            <modules>
+                <module>geocollect</module>
+            </modules>
+        </profile>
+  </profiles>
+    
 </project>

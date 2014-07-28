@@ -1,0 +1,75 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    ">
+	<import resource="common-test.xml"/>
+	<!-- Configuration of a sample map trandformer -->
+	<bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+		<property name="inputObjectId" value="map"></property>
+		<property name="outputObjectId" value="out1"></property>
+		<property name="inputPropertyAccessor" ref="mapPropertyAccessor" />
+		<property name="outputPropertyAccessor" ref="mapPropertyAccessor" />
+		<property name="rules" ref="rules1"></property>
+		<property name="preBuilder" ref="mapPreBuilder"></property>
+	<!-- Map Transformation concatenated with action1Config -->
+	</bean>
+		<bean id="action2Config" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+		<property name="inputObjectId" value="out1"></property>
+		<property name="outputObjectId" value="out2"></property>
+		<property name="inputPropertyAccessor" ref="mapPropertyAccessor" />
+		<property name="outputPropertyAccessor" ref="mapPropertyAccessor" />
+		<property name="rules" ref="rules2"></property>
+		<property name="preBuilder" ref="mapPreBuilder"></property>
+	</bean>
+	<!-- Use the context -->
+	<bean id="action3Config" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+		
+		<property name="outputObjectId" value="out2"></property>
+		<property name="inputPropertyAccessor" >
+			<util:list>
+				<ref bean="mapPropertyAccessor"></ref>
+				<ref bean="reflectionPropertyAccessor"></ref>
+			</util:list>
+		</property>
+		<property name="outputPropertyAccessor" ref="mapPropertyAccessor" />
+		<property name="rules" ref="rules3"></property>
+		<property name="preBuilder" ref="mapPreBuilder"></property>
+	</bean>
+	<!-- transform action -->
+	<bean id="action1" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
+		<property name="configuration" ref="action1Config">
+			
+		</property>
+	</bean>
+	<bean id="action2" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
+		<property name="configuration" ref="action2Config">
+			
+		</property>
+	</bean>
+	<bean id="action3" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
+		<property name="configuration" ref="action3Config">
+			
+		</property>
+	</bean>
+	<!-- list of actions for the action sequence -->
+	<util:list id="actions1">
+			<ref bean="action1"></ref>
+			<ref bean="action2"></ref>
+	</util:list>
+	<!-- list of actions for the action sequence -->
+	<util:list id="actions2">
+			<ref bean="action1"></ref>
+			<ref bean="action2"></ref>
+			<ref bean="action3"></ref>
+	</util:list>
+	<bean id="sequence1" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+		<property name="actions" ref="actions1" />
+	</bean>
+	<bean id="sequence2" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+		<property name="actions" ref="actions2" />
+	</bean>
+	
+	
+</beans>

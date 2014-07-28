@@ -1,0 +1,48 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    ">
+	<import resource="common-test.xml"></import>
+	<bean id="testMaps" class="it.geosolutions.opensdi2.worflow.transform.TestMapList">
+
+		<!-- java.util.List -->
+		<property name="tests">
+			<list>
+				<ref bean="test1" />
+			</list>
+		</property>
+		
+	</bean>
+	<bean id="test1"
+		class="it.geosolutions.opensdi2.worflow.transform.MapperTestContainer">
+		<property name="source" ref="map1">
+			
+		</property>
+		<property name="rules" ref="rules1">
+		</property>
+		<property name="expected">
+
+		<util:map>
+			<entry key="attribute1" value="replace1" />
+			<entry key="attribute2" value="replace2" />
+			<entry key="attribute3" value="replace3" />
+			<entry key="attribute4">
+						<value type="int">4</value>
+			</entry>
+			<entry key="attribute5">
+						<value type="int">5</value>
+			</entry>
+			<entry key="attribute6" value="mockMap1.test1 nested1" />
+			<entry key="nested.attribute1" value="mockMap1.test1" />
+			<entry key="nested.attribute2" value="nested2" />
+			<entry key="!nested.attribute4" value="4" />
+		</util:map>
+		
+		</property>
+
+	</bean>	
+
+
+</beans>
