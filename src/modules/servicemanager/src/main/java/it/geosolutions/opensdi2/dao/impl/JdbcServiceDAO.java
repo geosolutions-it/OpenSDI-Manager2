@@ -80,7 +80,7 @@ public class JdbcServiceDAO implements ServiceDAO {
     @Override
     public Service findByServiceId(String serviceId) {
 
-        String sql = "SELECT * FROM SERVICE WHERE SERVICE_ID = ?";
+        String sql = "SELECT * FROM SERVICE WHERE \"SERVICE_ID\" = ?";
 
         Connection conn = null;
 
