@@ -30,6 +30,10 @@
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-user-management</artifactId>
         </dependency>
+        <dependency>
+           <groupId>it.geosolutions.opensdi2</groupId>
+           <artifactId>opensdi2-workflow</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
@@ -58,6 +62,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+    <profile>
+    	<id>geocollect</id>
+    	<dependencies>
+    		<dependency>
+    			<groupId>it.geosolutions.opensdi2</groupId>
+   				 <artifactId>opensdi2-geocollect</artifactId>
+			</dependency>
+    	</dependencies>
+    	
+    </profile>
+    
+	</profiles>
 
     <build>
         <finalName>opensdi2-manager</finalName>
