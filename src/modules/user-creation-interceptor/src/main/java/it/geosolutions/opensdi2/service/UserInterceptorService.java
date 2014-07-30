@@ -35,58 +35,55 @@ import org.apache.commons.httpclient.HttpMethod;
  */
 public interface UserInterceptorService {
 
-	/**
-	 * Method to be called on user creation interception
-	 * 
-	 * @param user
-	 *            created
-	 */
-	public void onUserCreation(User user);
+    /**
+     * Method to be called on user creation interception
+     * 
+     * @param user created
+     */
+    public void onUserCreation(User user);
 
-	/**
-	 * Method to be called on user update
-	 * 
-	 * @param user
-	 *            updated
-	 */
-	public void onUserUpdate(User user);
+    /**
+     * Method to be called on user update
+     * 
+     * @param user updated
+     */
+    public void onUserUpdate(User user);
 
-	/**
-	 * Method to be called on user delete
-	 * 
-	 * @param userId
-	 *            identifier of the user to be deleted
-	 */
-	public void onUserDelete(Long userId);
+    /**
+     * Method to be called on user delete
+     * 
+     * @param userId identifier of the user to be deleted
+     */
+    public void onUserDelete(Long userId);
 
-	/**
-	 * Execute an user operation
-	 * 
-	 * @param operation
-	 * @param request
-	 * @param response
-	 * @return true if the request can continue and false otherwise
-	 */
-	public boolean onUserOperation(String operation,
-			HttpServletRequest request, HttpServletResponse response);
+    /**
+     * Execute an user operation
+     * 
+     * @param operation
+     * @param request
+     * @param response
+     * @return true if the request can continue and false otherwise
+     */
+    public boolean onUserOperation(String operation, HttpServletRequest request,
+            HttpServletResponse response);
 
-	/**
-	 * Method to be called when the callback has been finished
-	 */
-	public void onFinish();
+    /**
+     * Method to be called when the callback has been finished
+     */
+    public void onFinish();
 
-	/**
-	 * Method to be called on remote response
-	 * 
-	 * @param method
-	 * @throws IOException
-	 */
-	public void onRemoteResponse(HttpMethod method) throws IOException;
+    /**
+     * Method to be called on remote response
+     * 
+     * @param method
+     * @throws IOException
+     */
+    public void onRemoteResponse(HttpMethod method) throws IOException;
 
-	/**
-	 * Get credentials for the remote operation
-	 * 
-	 * @return credentials to perform the operation
-	 */
-	WrappedCredentials getCredentials();
+    /**
+     * Get credentials for the remote operation
+     * 
+     * @return credentials to perform the operation
+     */
+    WrappedCredentials getCredentials();
 }

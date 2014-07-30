@@ -35,321 +35,328 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  * Servlet implementation class FileUploader
  */
 public class FileUploader extends ServiceBoxActionServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected final static String PROPERTY_FILE_PARAM = "app.properties";
-	protected final static Logger LOGGER = Logger.getLogger(FileUploader.class
-			.getSimpleName());
-	protected Properties properties = new Properties();
-	protected String tempDirectory;
+    protected final static String PROPERTY_FILE_PARAM = "app.properties";
 
-	protected String moveDirectory;
+    protected final static Logger LOGGER = Logger.getLogger(FileUploader.class.getSimpleName());
 
-	protected String writeRights;
-	protected String executeRights;
+    protected Properties properties = new Properties();
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public FileUploader() {
-		super();
-	}
+    protected String tempDirectory;
 
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
-		String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
-		InputStream inputStream = FileUploader.class.getResourceAsStream(appPropertyFile);
-		try {
-			properties.load(inputStream);
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE,"Error encountered while processing properties file", e);
-			}
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,"Error building the proxy configuration ", e);
-				throw new ServletException(e.getMessage());
-			}
-		}
-		// get the file name for the temporary directory
-		String temp = properties.getProperty("temp");
-		String moveDir = properties.getProperty("moveDir");
-		String writePermissions = properties.getProperty("setWritePermissions");
-		String executePermissions = properties.getProperty("setExecutePermissions");
+    protected String moveDirectory;
 
-		// The move directory must exists !!!
-		moveDirectory = moveDir;
+    protected String writeRights;
 
-		writeRights = writePermissions;
-		executeRights = executePermissions;
+    protected String executeRights;
 
-		// if it does not exists create the file
-		tempDirectory = temp;
-		File tempDir = new File(temp);
-		if (!tempDir.exists()) {
-			if (!tempDir.mkdir()) {
-				LOGGER.log(Level.SEVERE,"Unable to create temporary directory " + tempDir);
-				throw new ServletException("Unable to create temporary directory " + tempDir);
-			}
-		}
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public FileUploader() {
+        super();
+    }
 
-	/**
-	 * read the content of a file and delete it
-	 * 
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGetAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+        String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
+        InputStream inputStream = FileUploader.class.getResourceAsStream(appPropertyFile);
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "Error encountered while processing properties file", e);
+            }
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
+                throw new ServletException(e.getMessage());
+            }
+        }
+        // get the file name for the temporary directory
+        String temp = properties.getProperty("temp");
+        String moveDir = properties.getProperty("moveDir");
+        String writePermissions = properties.getProperty("setWritePermissions");
+        String executePermissions = properties.getProperty("setExecutePermissions");
 
-		// get parameter name
-		String code = request.getParameter("code");
+        // The move directory must exists !!!
+        moveDirectory = moveDir;
 
-		if (code != null) {
+        writeRights = writePermissions;
+        executeRights = executePermissions;
 
-			readFileContents(response, code);
+        // if it does not exists create the file
+        tempDirectory = temp;
+        File tempDir = new File(temp);
+        if (!tempDir.exists()) {
+            if (!tempDir.mkdir()) {
+                LOGGER.log(Level.SEVERE, "Unable to create temporary directory " + tempDir);
+                throw new ServletException("Unable to create temporary directory " + tempDir);
+            }
+        }
+    }
 
-		} else {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE,
-						"malformed request: code param is required");
-			}
-			response.setContentType("text/html");
-			writeResponse(
-					response,
-					"{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
-		}
-	}
+    /**
+     * read the content of a file and delete it
+     * 
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
-	/**
-	 * @param response
-	 * @param uuid
-	 * @throws IOException
-	 * @throws ServletException
-	 */
-	protected String readFileContents(HttpServletResponse response, String uuid)
-			throws IOException, ServletException {
-		StringBuilder content = new StringBuilder();
-		File file = null;
-		BufferedReader br = null;
-		PrintWriter writer = null;
-		try {
-			// get file
-			file = new File(tempDirectory + File.separatorChar + uuid);
-			br = new BufferedReader(new FileReader(file));
-			if (response != null)
-				writer = response.getWriter();
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				if (writer != null)
-					writer.println(line);
+        // get parameter name
+        String code = request.getParameter("code");
 
-				content.append(line.trim().replaceAll("\"", "'"));
-			}
-			// delete file
-			file.delete();
+        if (code != null) {
 
-			return content.toString();
-		} catch (IOException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE,"Error encountered while downloading file");
-			}
+            readFileContents(response, code);
 
-			if (response != null) {
-				response.setContentType("text/html");
-				writeResponse(
-						response,
-						"{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
-			}
+        } else {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "malformed request: code param is required");
+            }
+            response.setContentType("text/html");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
+        }
+    }
 
-			return null;
-		} finally {
-			try {
-				if (br != null) {
-					br.close();
-				}
+    /**
+     * @param response
+     * @param uuid
+     * @throws IOException
+     * @throws ServletException
+     */
+    protected String readFileContents(HttpServletResponse response, String uuid)
+            throws IOException, ServletException {
+        StringBuilder content = new StringBuilder();
+        File file = null;
+        BufferedReader br = null;
+        PrintWriter writer = null;
+        try {
+            // get file
+            file = new File(tempDirectory + File.separatorChar + uuid);
+            br = new BufferedReader(new FileReader(file));
+            if (response != null)
+                writer = response.getWriter();
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                if (writer != null)
+                    writer.println(line);
 
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE)) {
-					LOGGER.log(Level.SEVERE, "Error closing streams ", e);
-				}
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
+                content.append(line.trim().replaceAll("\"", "'"));
+            }
+            // delete file
+            file.delete();
 
-	/**
-	 * read and save on file the content of post request return a json where the
-	 * name of the file is returned
-	 * 
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	@SuppressWarnings("unchecked")
-	protected void doPostAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+            return content.toString();
+        } catch (IOException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
+            }
 
-		// get parameter name
-		String moveFile = request.getParameter("moveFile");
-		String type = request.getParameter("type");
-		String fileToMoveName = request.getParameter("zipName");
-		List<FileItem> items = null;
+            if (response != null) {
+                response.setContentType("text/html");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
+                                + "\"}");
+            }
 
-		File fileToMove = null;
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
 
-		try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.log(Level.SEVERE, "Error closing streams ", e);
+                }
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 
-			// create a file with a random name
-			String uuid = UUID.randomUUID().toString();
-			
-			// File items are read only one time. Check if already exists on the actionParameters 
-			if(actionParameters != null 
-					&& actionParameters.isSuccess()
-					&& actionParameters.getItems() != null){
-				items = actionParameters.getItems();
-				
-			// see http://commons.apache.org/fileupload/using.html
-			}else if (ServletFileUpload.isMultipartContent(request)) {
-				// Create a factory for disk-based file items
-				FileItemFactory factory = new DiskFileItemFactory();
-				// Create a new file upload handler
-				ServletFileUpload upload = new ServletFileUpload(factory);
-				// Parse the request
-				items = upload.parseRequest(request);
-			}
+    /**
+     * read and save on file the content of post request return a json where the name of the file is returned
+     * 
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    @SuppressWarnings("unchecked")
+    protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
-			// Process the uploaded items
-			if (items != null) {
-				@SuppressWarnings("rawtypes")
-				Iterator iter = items.iterator();
-				while (iter.hasNext()) {
-					FileItem item = (FileItem) iter.next();
+        // get parameter name
+        String moveFile = request.getParameter("moveFile");
+        String type = request.getParameter("type");
+        String fileToMoveName = request.getParameter("zipName");
+        List<FileItem> items = null;
 
-					if (!item.isFormField()) { // Process a file upload
-						// TODO build file in a proper way!
+        File fileToMove = null;
 
-						File uploadedFile = null;
+        try {
 
-						//
-						// Manage the move action for the uploaded file
-						//
-						if (moveFile != null && fileToMoveName != null && moveFile.equals("true")) {
-							String fileExtension = item.getName().toLowerCase().split("\\.")[1];
-							uploadedFile = new File(tempDirectory + File.separatorChar + fileToMoveName + "." + fileExtension);
-							item.write(uploadedFile);
+            // create a file with a random name
+            String uuid = UUID.randomUUID().toString();
 
-							//
-							// Move the uploaded file
-							//
+            // File items are read only one time. Check if already exists on the actionParameters
+            if (actionParameters != null && actionParameters.isSuccess()
+                    && actionParameters.getItems() != null) {
+                items = actionParameters.getItems();
 
-							fileToMove = new File(moveDirectory + File.separatorChar + fileToMoveName + "." + fileExtension);
+                // see http://commons.apache.org/fileupload/using.html
+            } else if (ServletFileUpload.isMultipartContent(request)) {
+                // Create a factory for disk-based file items
+                FileItemFactory factory = new DiskFileItemFactory();
+                // Create a new file upload handler
+                ServletFileUpload upload = new ServletFileUpload(factory);
+                // Parse the request
+                items = upload.parseRequest(request);
+            }
 
-							FileInputStream in = null;
-							FileOutputStream out = null;
-							try {
-								in = new FileInputStream(uploadedFile);
-								out = new FileOutputStream(fileToMove);
-								IOUtil.copy(in, out);
-							} catch (IOException exc) {
-								System.out.println(exc.getLocalizedMessage());
-								if (LOGGER.isLoggable(Level.SEVERE))
-									LOGGER.log(Level.SEVERE, "Error encountered while moving the file");
-								throw new ServletException("Error encountered while moving the file", exc);
-							} finally {
-								try {
-									if (in != null) {
-										in.close();
-									}
+            // Process the uploaded items
+            if (items != null) {
+                @SuppressWarnings("rawtypes")
+                Iterator iter = items.iterator();
+                while (iter.hasNext()) {
+                    FileItem item = (FileItem) iter.next();
 
-									if (out != null) {
-										out.close();
-									}
+                    if (!item.isFormField()) { // Process a file upload
+                        // TODO build file in a proper way!
 
-									if (this.writeRights.equals("true")) {
-										fileToMove.setWritable(true, false);
-									}
+                        File uploadedFile = null;
 
-									if (this.executeRights.equals("true")) {
-										fileToMove.setExecutable(true, false);
-									}
+                        //
+                        // Manage the move action for the uploaded file
+                        //
+                        if (moveFile != null && fileToMoveName != null && moveFile.equals("true")) {
+                            String fileExtension = item.getName().toLowerCase().split("\\.")[1];
+                            uploadedFile = new File(tempDirectory + File.separatorChar
+                                    + fileToMoveName + "." + fileExtension);
+                            item.write(uploadedFile);
 
-								} catch (IOException exc) {
-									if (LOGGER.isLoggable(Level.SEVERE))
-										LOGGER.log(Level.SEVERE, "Error encountered while closing the file streams");
-									throw new ServletException("Error encountered while closing the file streams", exc);
-								}
-							}
-						}
+                            //
+                            // Move the uploaded file
+                            //
 
-						//
-						// Basic behavior
-						//
-						else {
-							uploadedFile = new File(tempDirectory + File.separatorChar + uuid);
-							item.write(uploadedFile);
-						}
-					} else if (item.getName() != null) {
-						response.setContentType("text/html");
-						writeResponse(response, "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
-					}
-				}
-			}
+                            fileToMove = new File(moveDirectory + File.separatorChar
+                                    + fileToMoveName + "." + fileExtension);
 
-			response.setContentType("text/html");
-			//response.setContentType("application/json");
-			if (type == null || !type.equalsIgnoreCase("inline")) {
-				writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid + "\"}}");
-			} else {
-				String content = readFileContents(null, uuid);
-				if (content != null && content.length() > 0) 
-					writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + URLEncoder.encode(content, "UTF-8") + "\"}}");
-					//writeResponse(response, URLEncoder.encode(content, "UTF-8"));
-				else
-					writeResponse(response, "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
-			}
-		} catch (FileUploadException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,"Error encountered while uploading file");
+                            FileInputStream in = null;
+                            FileOutputStream out = null;
+                            try {
+                                in = new FileInputStream(uploadedFile);
+                                out = new FileOutputStream(fileToMove);
+                                IOUtil.copy(in, out);
+                            } catch (IOException exc) {
+                                System.out.println(exc.getLocalizedMessage());
+                                if (LOGGER.isLoggable(Level.SEVERE))
+                                    LOGGER.log(Level.SEVERE,
+                                            "Error encountered while moving the file");
+                                throw new ServletException(
+                                        "Error encountered while moving the file", exc);
+                            } finally {
+                                try {
+                                    if (in != null) {
+                                        in.close();
+                                    }
 
-			response.setContentType("text/html");
-			writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
-		} catch (IOException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE, "Error encountered while uploading file");
+                                    if (out != null) {
+                                        out.close();
+                                    }
 
-			response.setContentType("text/html");
-			writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
-		} catch (Exception ex) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,"Error encountered while uploading file");
+                                    if (this.writeRights.equals("true")) {
+                                        fileToMove.setWritable(true, false);
+                                    }
 
-			response.setContentType("text/html");
-			writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
-		} finally {
-			/*
-			 * try { // do nothing } catch (IOException e) { if
-			 * (LOGGER.isLoggable(Level.SEVERE)) LOGGER.log(Level.SEVERE,
-			 * "Error closing streams ", e); throw new
-			 * ServletException(e.getMessage()); }
-			 */
-		}
-	}
+                                    if (this.executeRights.equals("true")) {
+                                        fileToMove.setExecutable(true, false);
+                                    }
 
-	/**
-	 * @param response
-	 * @param text
-	 * @throws IOException
-	 */
-	protected void writeResponse(HttpServletResponse response, String text)
-			throws IOException {
-		Utilities.writeResponse(response, text, LOGGER);
-	}
+                                } catch (IOException exc) {
+                                    if (LOGGER.isLoggable(Level.SEVERE))
+                                        LOGGER.log(Level.SEVERE,
+                                                "Error encountered while closing the file streams");
+                                    throw new ServletException(
+                                            "Error encountered while closing the file streams", exc);
+                                }
+                            }
+                        }
+
+                        //
+                        // Basic behavior
+                        //
+                        else {
+                            uploadedFile = new File(tempDirectory + File.separatorChar + uuid);
+                            item.write(uploadedFile);
+                        }
+                    } else if (item.getName() != null) {
+                        response.setContentType("text/html");
+                        writeResponse(response,
+                                "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
+                    }
+                }
+            }
+
+            response.setContentType("text/html");
+            // response.setContentType("application/json");
+            if (type == null || !type.equalsIgnoreCase("inline")) {
+                writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid
+                        + "\"}}");
+            } else {
+                String content = readFileContents(null, uuid);
+                if (content != null && content.length() > 0)
+                    writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\""
+                            + URLEncoder.encode(content, "UTF-8") + "\"}}");
+                // writeResponse(response, URLEncoder.encode(content, "UTF-8"));
+                else
+                    writeResponse(response,
+                            "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
+            }
+        } catch (FileUploadException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file");
+
+            response.setContentType("text/html");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+        } catch (IOException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file");
+
+            response.setContentType("text/html");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+        } catch (Exception ex) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file");
+
+            response.setContentType("text/html");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+        } finally {
+            /*
+             * try { // do nothing } catch (IOException e) { if (LOGGER.isLoggable(Level.SEVERE)) LOGGER.log(Level.SEVERE, "Error closing streams ",
+             * e); throw new ServletException(e.getMessage()); }
+             */
+        }
+    }
+
+    /**
+     * @param response
+     * @param text
+     * @throws IOException
+     */
+    protected void writeResponse(HttpServletResponse response, String text) throws IOException {
+        Utilities.writeResponse(response, text, LOGGER);
+    }
 }

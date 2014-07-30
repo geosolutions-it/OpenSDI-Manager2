@@ -20,13 +20,15 @@
  */
 package it.geosolutions.opensdi2.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,49 +39,49 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Test class for the LDAP user group service
  * 
  * @author adiaz
- *
+ * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:/ldapTest-applicationContext.xml")
+@ContextConfiguration(locations = "classpath:/ldapTest-applicationContext.xml")
 public class UserGroupServiceTest {
-	
-	private static Logger LOGGER = Logger.getLogger(UserGroupServiceTest.class);
-	
-	/**
-	 * Service to be tested
-	 */
-	@Autowired
-	UserGroupService userService;
-	
-	public static final String UID_SEARCH = "admin";
-	
-	/**
-	 * Check if the list of files is correct
-	 */
-	@Test
-	public void testFileList(){
-		List<Map<String, Object>> users = userService.search(UID_SEARCH);
-		for(Map<String, Object> user: users){
-			assertNotNull(user);
-			LOGGER.info("User --> " + user);
-		}
-	}
-	
-	@Test
-	public void testAddGroups(){
-		userService.setUserGroups(UID_SEARCH, null);
-		List<String> groups = userService.getUserGroups(UID_SEARCH);
-		assertEquals(groups.size(), 0);
-		groups = new LinkedList<String>();
-		groups.add("sn-manager");
-		groups.add("va-sp");
-		userService.setUserGroups(UID_SEARCH, groups);
-		assertEquals(userService.getUserGroups(UID_SEARCH).size(), groups.size());
-	}
-	
-	@Before
-	public void cleanGroupsList(){
-		userService.setUserGroups(UID_SEARCH, null);
-	}
+
+    private static Logger LOGGER = Logger.getLogger(UserGroupServiceTest.class);
+
+    /**
+     * Service to be tested
+     */
+    @Autowired
+    UserGroupService userService;
+
+    public static final String UID_SEARCH = "admin";
+
+    /**
+     * Check if the list of files is correct
+     */
+    @Test
+    public void testFileList() {
+        List<Map<String, Object>> users = userService.search(UID_SEARCH);
+        for (Map<String, Object> user : users) {
+            assertNotNull(user);
+            LOGGER.info("User --> " + user);
+        }
+    }
+
+    @Test
+    public void testAddGroups() {
+        userService.setUserGroups(UID_SEARCH, null);
+        List<String> groups = userService.getUserGroups(UID_SEARCH);
+        assertEquals(groups.size(), 0);
+        groups = new LinkedList<String>();
+        groups.add("sn-manager");
+        groups.add("va-sp");
+        userService.setUserGroups(UID_SEARCH, groups);
+        assertEquals(userService.getUserGroups(UID_SEARCH).size(), groups.size());
+    }
+
+    @Before
+    public void cleanGroupsList() {
+        userService.setUserGroups(UID_SEARCH, null);
+    }
 
 }

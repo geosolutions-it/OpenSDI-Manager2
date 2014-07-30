@@ -15,11 +15,13 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -31,9 +33,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class FileDownloader extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+
     private final static String PROPERTY_FILE_PARAM = "app.properties";
+
     private final static Logger LOGGER = Logger.getLogger(FileDownloader.class.getSimpleName());
+
     private Properties properties = new Properties();
+
     private String tempDirectory;
 
     /**
@@ -60,8 +66,7 @@ public class FileDownloader extends HttpServlet {
                 }
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error building the proxy configuration ", e);
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
                 }
                 throw new ServletException(e.getMessage());
             }
@@ -81,7 +86,8 @@ public class FileDownloader extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         // get parameter name
         String code = request.getParameter("code");
@@ -95,7 +101,8 @@ public class FileDownloader extends HttpServlet {
             try {
                 // set reponse headers
                 response.setContentType("application/force-download");
-                response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                response.setHeader("Content-Disposition", "attachment; filename=\"" + filename
+                        + "\"");
 
                 // get file
                 file = new File(tempDirectory + File.separatorChar + code);
@@ -110,11 +117,12 @@ public class FileDownloader extends HttpServlet {
 
             } catch (IOException ex) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error encountered while downloading file");
+                    LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
                 }
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
+                                + "\"}");
             } finally {
                 br.close();
                 writer.close();
@@ -122,53 +130,50 @@ public class FileDownloader extends HttpServlet {
 
         } else {
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                        "malformed request: code param is required");
+                LOGGER.log(Level.SEVERE, "malformed request: code param is required");
             }
             response.setContentType("text/html");
-            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
         }
 
     }
 
     /**
-     * read and save on file the content of post request return a json where the
-     * name of the file is returned
-     *
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     * response)
+     * read and save on file the content of post request return a json where the name of the file is returned
+     * 
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         BufferedReader in = null;
         BufferedWriter out = null;
         try {
             // read the content data for this request
-            in = new BufferedReader(
-                    new InputStreamReader(
-                    request.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(request.getInputStream()));
             // create a file with a random name
 
             String uuid = UUID.randomUUID().toString();
             out = new BufferedWriter(new FileWriter(tempDirectory + File.separator + uuid));
 
-            // Create a factory for disk-based file items  
+            // Create a factory for disk-based file items
             DiskFileItemFactory factory = new DiskFileItemFactory();
-            // Create a new file upload handler  
+            // Create a new file upload handler
             ServletFileUpload fileUpload = new ServletFileUpload(factory);
-            // Parse the request  
+            // Parse the request
             List items = fileUpload.parseRequest(request);
 
             String fileName = null;
             String content = null;
 
-            // Process the uploaded items  
+            // Process the uploaded items
             Iterator ir = items.iterator();
             while (ir.hasNext()) {
                 FileItem item = (FileItem) ir.next();
 
-                // Process a regular form field  
-                if (item.isFormField()) { //Determines whether or not a FileItem instance represents a simple form field.  
+                // Process a regular form field
+                if (item.isFormField()) { // Determines whether or not a FileItem instance represents a simple form field.
 
                     String name = item.getFieldName();
                     if (name != null) {
@@ -181,14 +186,16 @@ public class FileDownloader extends HttpServlet {
                     }
                 } else {
                     response.setContentType("text/html");
-                    writeResponse(response, "{ \"success\":false, \"errorMessage\":\"Expected form data.\"}");
+                    writeResponse(response,
+                            "{ \"success\":false, \"errorMessage\":\"Expected form data.\"}");
                 }
             }
 
             if (content != null) {
                 out.write(content);
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid + "\"}}");
+                writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid
+                        + "\"}}");
             } else {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
                     LOGGER.log(Level.SEVERE,
@@ -196,30 +203,30 @@ public class FileDownloader extends HttpServlet {
                 }
 
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":false, \"errorMessage\":\"content is null\"}");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"content is null\"}");
             }
 
-
-            
         } catch (FileUploadException ex) {
             ex.printStackTrace();
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                        "Error encountered while uploading file: ", ex.getLocalizedMessage());
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file: ",
+                        ex.getLocalizedMessage());
             }
 
             response.setContentType("text/html");
-            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
         } catch (IOException ex) {
             ex.printStackTrace();
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                        "Error encountered while uploading file: ", ex.getLocalizedMessage());
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file: ",
+                        ex.getLocalizedMessage());
             }
 
             response.setContentType("text/html");
-            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
-
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
 
         } finally {
             try {
@@ -231,8 +238,7 @@ public class FileDownloader extends HttpServlet {
                 }
             } catch (IOException ex) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error closing streams ", ex);
+                    LOGGER.log(Level.SEVERE, "Error closing streams ", ex);
                 }
                 throw new ServletException(ex.getMessage());
             }
@@ -240,9 +246,7 @@ public class FileDownloader extends HttpServlet {
 
     }
 
-
-    private void writeResponse(HttpServletResponse response, String text)
-            throws IOException {
+    private void writeResponse(HttpServletResponse response, String text) throws IOException {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();

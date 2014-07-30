@@ -27,133 +27,136 @@ import java.util.Map;
 
 /**
  * FileManagerConfig based on two maps:
- * <ul> 
- * 	<li>permissionsByFolder: that contains permission by folder</li>
- * 	<li>permissionsByLevel: that contains permission by levels if no specific configuration found</li>
+ * <ul>
+ * <li>permissionsByFolder: that contains permission by folder</li>
+ * <li>permissionsByLevel: that contains permission by levels if no specific configuration found</li>
  * </ul>
  * 
  * @author adiaz
  * 
  */
 public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl implements Serializable,
-	FileManagerConfig {
+        FileManagerConfig {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -6199791588955305910L;
+    private static final long serialVersionUID = -6199791588955305910L;
 
-	/**
-	 * This text is used as root
-	 */
-	private String rootText = "/VA-SPs";
-	
-	/**
-	 * Default permission for the folders
-	 */
-	private FolderPermission defaultPermission;
-	
-	/**
-	 * Permissions by folder name
-	 */
-	private Map<String, FolderPermission> permissionsByFolder;
-	
-	/**
-	 * Permissions by level
-	 */
-	private Map<Integer, FolderPermission> permissionsByLevel;
-	
-	/**
-	 * Get folder permission
-	 * @param folder
-	 * 
-	 * @return permissions on the folder
-	 */
-	public FolderPermission getPermission(String folder) {
-		FolderPermission permission = defaultPermission;
-		if(permissionsByFolder != null && permissionsByFolder.containsKey(folder)){
-			permission = permissionsByFolder.get(folder);
-		}else if(permissionsByLevel != null){
-			Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1: 0;
-			if(permissionsByLevel.containsKey(level)){
-				permission = permissionsByLevel.get(level);
-			}
-		}
-		return permission;
-	}
+    /**
+     * This text is used as root
+     */
+    private String rootText = "/VA-SPs";
 
-	/**
-	 * @return the permissionsByLevel
-	 */
-	public Map<Integer, FolderPermission> getPermissionsByLevel() {
-		return permissionsByLevel;
-	}
+    /**
+     * Default permission for the folders
+     */
+    private FolderPermission defaultPermission;
 
-	/**
-	 * @param permissionsByLevel the permissionsByLevel to set
-	 */
-	public void setPermissionsByLevel(
-			Map<Integer, FolderPermission> permissionsByLevel) {
-		this.permissionsByLevel = permissionsByLevel;
-	}
+    /**
+     * Permissions by folder name
+     */
+    private Map<String, FolderPermission> permissionsByFolder;
 
-	/**
-	 * @return the permissionsByFolder
-	 */
-	public Map<String, FolderPermission> getPermissionsByFolder() {
-		return permissionsByFolder;
-	}
+    /**
+     * Permissions by level
+     */
+    private Map<Integer, FolderPermission> permissionsByLevel;
 
-	/**
-	 * @param permissionsByFolder the permissionsByFolder to set
-	 */
-	public void setPermissionsByFolder(
-			Map<String, FolderPermission> permissionsByFolder) {
-		this.permissionsByFolder = permissionsByFolder;
-	}
+    /**
+     * Get folder permission
+     * 
+     * @param folder
+     * 
+     * @return permissions on the folder
+     */
+    public FolderPermission getPermission(String folder) {
+        FolderPermission permission = defaultPermission;
+        if (permissionsByFolder != null && permissionsByFolder.containsKey(folder)) {
+            permission = permissionsByFolder.get(folder);
+        } else if (permissionsByLevel != null) {
+            Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1 : 0;
+            if (permissionsByLevel.containsKey(level)) {
+                permission = permissionsByLevel.get(level);
+            }
+        }
+        return permission;
+    }
 
-	/**
-	 * @return the defaultPermission
-	 */
-	public FolderPermission getDefaultPermission() {
-		return defaultPermission;
-	}
+    /**
+     * @return the permissionsByLevel
+     */
+    public Map<Integer, FolderPermission> getPermissionsByLevel() {
+        return permissionsByLevel;
+    }
 
-	/**
-	 * @param defaultPermission the defaultPermission to set
-	 */
-	public void setDefaultPermission(FolderPermission defaultPermission) {
-		this.defaultPermission = defaultPermission;
-	}
+    /**
+     * @param permissionsByLevel the permissionsByLevel to set
+     */
+    public void setPermissionsByLevel(Map<Integer, FolderPermission> permissionsByLevel) {
+        this.permissionsByLevel = permissionsByLevel;
+    }
 
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl#getBaseFolder()
-	 */
-	@Override
-	public String getBaseFolder() {
-		return super.getBaseFolder();
-	}
+    /**
+     * @return the permissionsByFolder
+     */
+    public Map<String, FolderPermission> getPermissionsByFolder() {
+        return permissionsByFolder;
+    }
 
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl#setBaseFolder(java.lang.String)
-	 */
-	@Override
-	public void setBaseFolder(String baseFolder) {
-		super.setBaseFolder(baseFolder);
-	}
+    /**
+     * @param permissionsByFolder the permissionsByFolder to set
+     */
+    public void setPermissionsByFolder(Map<String, FolderPermission> permissionsByFolder) {
+        this.permissionsByFolder = permissionsByFolder;
+    }
 
-	/**
-	 * @return the rootText
-	 */
-	public String getRootText() {
-		return rootText;
-	}
+    /**
+     * @return the defaultPermission
+     */
+    public FolderPermission getDefaultPermission() {
+        return defaultPermission;
+    }
 
-	/**
-	 * @param rootText the rootText to set
-	 */
-	public void setRootText(String rootText) {
-		this.rootText = rootText;
-	}
+    /**
+     * @param defaultPermission the defaultPermission to set
+     */
+    public void setDefaultPermission(FolderPermission defaultPermission) {
+        this.defaultPermission = defaultPermission;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl#getBaseFolder()
+     */
+    @Override
+    public String getBaseFolder() {
+        return super.getBaseFolder();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl#setBaseFolder(java.lang.String)
+     */
+    @Override
+    public void setBaseFolder(String baseFolder) {
+        super.setBaseFolder(baseFolder);
+    }
+
+    /**
+     * @return the rootText
+     */
+    public String getRootText() {
+        return rootText;
+    }
+
+    /**
+     * @param rootText the rootText to set
+     */
+    public void setRootText(String rootText) {
+        this.rootText = rootText;
+    }
 
 }

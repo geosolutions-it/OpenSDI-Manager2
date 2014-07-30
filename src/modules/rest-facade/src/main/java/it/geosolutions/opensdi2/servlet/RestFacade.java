@@ -39,18 +39,18 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * 
  * @author Alejandro Diaz
  */
-public class RestFacade extends HttpServlet{
-	
+public class RestFacade extends HttpServlet {
+
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -7861833641555392499L;
-	
-	/**
-	 * URL Facade service
-	 */
-	private URLFacade urlFacade;
-    
+    private static final long serialVersionUID = -7861833641555392499L;
+
+    /**
+     * URL Facade service
+     */
+    private URLFacade urlFacade;
+
     private static String PATH_SEPARATOR = "/";
 
     /**
@@ -61,14 +61,14 @@ public class RestFacade extends HttpServlet{
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
-        if(this.urlFacade == null){
+        if (this.urlFacade == null) {
             ServletContext context = getServletContext();
-        	WebApplicationContext wac = WebApplicationContextUtils.
-        			getRequiredWebApplicationContext(context);
-        	urlFacade = (URLFacade)wac.getBean("urlFacade");
+            WebApplicationContext wac = WebApplicationContextUtils
+                    .getRequiredWebApplicationContext(context);
+            urlFacade = (URLFacade) wac.getBean("urlFacade");
         }
     }
-    
+
     /**
      * Perform the request based on this.urlFacade
      * 
@@ -76,20 +76,20 @@ public class RestFacade extends HttpServlet{
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      * @throws IOException if an error occur handling the request
      */
-    public void handleRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException {
-    	
-    	String pathInfo = httpServletRequest.getPathInfo(), urlWrapped = null, path = ""; 
-    	
-    	for(String relPath: pathInfo.split(PATH_SEPARATOR)){
-    		if(urlWrapped == null){
-    			urlWrapped = StringUtils.isEmpty(relPath) ? null: relPath;
-    		}else{
-    			path += relPath + PATH_SEPARATOR;
-    		}
-    	}
-    	
-    	urlFacade.handleRequest(httpServletRequest, httpServletResponse, urlWrapped, path);
+    public void handleRequest(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException {
+
+        String pathInfo = httpServletRequest.getPathInfo(), urlWrapped = null, path = "";
+
+        for (String relPath : pathInfo.split(PATH_SEPARATOR)) {
+            if (urlWrapped == null) {
+                urlWrapped = StringUtils.isEmpty(relPath) ? null : relPath;
+            } else {
+                path += relPath + PATH_SEPARATOR;
+            }
+        }
+
+        urlFacade.handleRequest(httpServletRequest, httpServletResponse, urlWrapped, path);
     }
 
     /**
@@ -100,10 +100,8 @@ public class RestFacade extends HttpServlet{
      */
     public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
-    	handleRequest(httpServletRequest, httpServletResponse);
+        handleRequest(httpServletRequest, httpServletResponse);
     }
-    
-    
 
     /**
      * Performs an HTTP POST request
@@ -113,7 +111,7 @@ public class RestFacade extends HttpServlet{
      */
     public void doPost(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
-    	handleRequest(httpServletRequest, httpServletResponse);
+        handleRequest(httpServletRequest, httpServletResponse);
     }
 
     /**
@@ -124,7 +122,7 @@ public class RestFacade extends HttpServlet{
      */
     public void doPut(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
-    	handleRequest(httpServletRequest, httpServletResponse);
+        handleRequest(httpServletRequest, httpServletResponse);
     }
 
     /**
@@ -135,7 +133,7 @@ public class RestFacade extends HttpServlet{
      */
     public void doDelete(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
-    	handleRequest(httpServletRequest, httpServletResponse);
+        handleRequest(httpServletRequest, httpServletResponse);
     }
 
 }

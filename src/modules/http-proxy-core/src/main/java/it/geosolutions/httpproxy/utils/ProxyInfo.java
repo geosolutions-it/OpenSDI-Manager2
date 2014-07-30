@@ -19,7 +19,6 @@
  */
 package it.geosolutions.httpproxy.utils;
 
-
 /**
  * Simple placeholder class for the proxy information.
  * 

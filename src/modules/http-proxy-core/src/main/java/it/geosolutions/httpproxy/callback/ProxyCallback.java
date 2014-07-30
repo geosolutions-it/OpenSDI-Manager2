@@ -38,13 +38,13 @@ import org.apache.commons.httpclient.HttpMethod;
  * @author Alejandro Diaz
  */
 public interface ProxyCallback {
-	
-	/**
-	 * Configure a callback with a proxi configuration
-	 * 
-	 * @param config
-	 */
-	void setProxyConfig(ProxyConfig config);
+
+    /**
+     * Configure a callback with a proxi configuration
+     * 
+     * @param config
+     */
+    void setProxyConfig(ProxyConfig config);
 
     /**
      * First to be called, can be used to initialize the callback status and disallow certain requests by throwing an {@link HttpErrorException}
@@ -68,21 +68,19 @@ public interface ProxyCallback {
      * @throws IOException
      */
     void onFinish() throws IOException;
-    
-	/**
-	 * Callback method beforeExecuteProxyRequest executed before execute the
-	 * proxy request
-	 * 
-	 * @param httpMethodProxyRequest
-	 * @param httpServletRequest
-	 * @param httpServletResponse
-	 * @param user
-	 * @param password
-	 * @param proxyInfo
-	 * @return true if the proxy must continue and false otherwise
-	 */
-	boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, String user,
-			String password, ProxyInfo proxyInfo);
+
+    /**
+     * Callback method beforeExecuteProxyRequest executed before execute the proxy request
+     * 
+     * @param httpMethodProxyRequest
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param user
+     * @param password
+     * @param proxyInfo
+     * @return true if the proxy must continue and false otherwise
+     */
+    boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            String user, String password, ProxyInfo proxyInfo);
 }

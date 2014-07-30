@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * HTTPWebGISFileDownload class.
  * 
@@ -31,211 +30,202 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HTTPWebGISFileDownload extends HttpServlet {
 
-	/**
-	 * Serialization UID.
-	 */
-	private static final long serialVersionUID = -138662992151524493L;
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = -138662992151524493L;
 
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	
-	private final static Logger LOGGER = Logger
-			.getLogger(HTTPWebGISFileDownload.class.toString());
+    private final static String PROPERTY_FILE_PARAM = "app.properties";
 
-	private Properties props;
+    private final static Logger LOGGER = Logger.getLogger(HTTPWebGISFileDownload.class.toString());
 
-	/**
-	 * Initialize the <code>ProxyServlet</code>
-	 * 
-	 * @param servletConfig
-	 *            The Servlet configuration passed in by the servlet container
-	 */
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
-		
-		String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
-		InputStream inputStream = HTTPWebGISFileDownload.class.getResourceAsStream(appPropertyFile);
-		
-		Properties props = new Properties();
+    private Properties props;
 
-		try {
-			props.load(inputStream);
-			this.props = props;
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while processing properties file ",
-						e);
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error building the proxy configuration ", e);
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
+    /**
+     * Initialize the <code>ProxyServlet</code>
+     * 
+     * @param servletConfig The Servlet configuration passed in by the servlet container
+     */
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
 
-	/**
-	 * Performs an HTTP GET request
-	 * 
-	 * @param httpServletRequest
-	 *            The {@link HttpServletRequest} object passed in by the servlet
-	 *            engine representing the client request
-	 * @param httpServletResponse
-	 *            The {@link HttpServletResponse} object by which we can
-	 *            response to the client
-	 * 
-	 *            Used for download a file saved from the temp directory
-	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+        String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
+        InputStream inputStream = HTTPWebGISFileDownload.class.getResourceAsStream(appPropertyFile);
 
-		String fileName = (String) request.getParameter("file");
-                String outFileName = (String) request.getParameter("fileName");
-		String temp = this.props.getProperty("temp");
-		String filePath = temp + "/" + fileName;
-                
-                if(outFileName == null)
-                    outFileName=fileName;
+        Properties props = new Properties();
 
-		response.setContentType("application/force-download");
-		response.setHeader("Content-Disposition", "attachment; filename="
-				+ outFileName);
+        try {
+            props.load(inputStream);
+            this.props = props;
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while processing properties file ", e);
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 
-		PrintWriter out = null;
+    /**
+     * Performs an HTTP GET request
+     * 
+     * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
+     * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
+     * 
+     *        Used for download a file saved from the temp directory
+     */
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
 
-		try {
-			out = response.getWriter();
-			returnFile(filePath, out);
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE, "Error writing file to download ", e);
-			throw new ServletException(e.getMessage());
-		} finally {
-			if (out != null)
-				out.close();
-		}
+        String fileName = (String) request.getParameter("file");
+        String outFileName = (String) request.getParameter("fileName");
+        String temp = this.props.getProperty("temp");
+        String filePath = temp + "/" + fileName;
 
-		// ---------------
-		// --Delete file--
-		// ---------------
+        if (outFileName == null)
+            outFileName = fileName;
 
-		// Make sure the file or directory exists and isn't write protected
-		File f = new File(filePath);
+        response.setContentType("application/force-download");
+        response.setHeader("Content-Disposition", "attachment; filename=" + outFileName);
 
-		if (!f.exists()) {
-			throw new IllegalArgumentException(
-					"Delete: no such file or directory: " + fileName);
-		}
+        PrintWriter out = null;
 
-		if (!f.canWrite()) {
-			throw new IllegalArgumentException("Delete: write protected: "
-					+ fileName);
-		}
+        try {
+            out = response.getWriter();
+            returnFile(filePath, out);
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error writing file to download ", e);
+            throw new ServletException(e.getMessage());
+        } finally {
+            if (out != null)
+                out.close();
+        }
 
-		// Attempt to delete it
-		boolean success = f.delete();
-		if (!success) {
-			throw new IllegalArgumentException("Delete: deletion failed");
+        // ---------------
+        // --Delete file--
+        // ---------------
 
-		}
-	}
+        // Make sure the file or directory exists and isn't write protected
+        File f = new File(filePath);
 
-	/**
-	 * Performs an HTTP POST request
-	 * 
-	 * @param httpServletRequest
-	 *            The {@link HttpServletRequest} object passed in by the servlet
-	 *            engine representing the client request
-	 * @param httpServletResponse
-	 *            The {@link HttpServletResponse} object by which we can
-	 *            response to the client
-	 * 
-	 *            used to save the xml file in a temp directory.
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException {
+        if (!f.exists()) {
+            throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
+        }
 
-		String temp = this.props.getProperty("temp");
-		File tempDir = new File(temp);
+        if (!f.canWrite()) {
+            throw new IllegalArgumentException("Delete: write protected: " + fileName);
+        }
 
-		PrintWriter out = null;
-		InputStream is = null;
+        // Attempt to delete it
+        boolean success = f.delete();
+        if (!success) {
+            throw new IllegalArgumentException("Delete: deletion failed");
 
-		try {
-			if (tempDir != null && tempDir.exists()) {
-				is = request.getInputStream();
+        }
+    }
 
-				long nanoTime = System.nanoTime();
+    /**
+     * Performs an HTTP POST request
+     * 
+     * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
+     * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
+     * 
+     *        used to save the xml file in a temp directory.
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
 
-				String fileName = null;
-				
-				fileName = "context" + nanoTime + ".map";
+        String temp = this.props.getProperty("temp");
+        File tempDir = new File(temp);
 
-				IOUtil.stream2localfile(is, fileName, tempDir);
+        PrintWriter out = null;
+        InputStream is = null;
 
-				response.setContentType("text/plain");
-				response.setContentType("application/force-download");
-				if (request.getQueryString() == null || (request.getQueryString() != null && !request.getQueryString().contains("filename")))
-					response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-				else {
-					int fileNameIndex = request.getQueryString().indexOf("filename") + "filename=".length();
-					String reqfilename = request.getQueryString().substring(fileNameIndex);
-					       reqfilename = reqfilename.substring(0, reqfilename.indexOf('&') > 0 ? reqfilename.indexOf('&') : reqfilename.length());
-					response.setHeader("Content-Disposition", "attachment; filename=" + reqfilename);
-				}
+        try {
+            if (tempDir != null && tempDir.exists()) {
+                is = request.getInputStream();
 
-				out = response.getWriter();
-				out.print(fileName);
-			} else {
-				if (tempDir != null) {
-					if (!tempDir.mkdir()) throw new IOException("Unable to create temporary directory " + tempDir);
-				}
-			}
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE, e.getMessage());
-			throw new ServletException(e.getMessage());
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE, e.getMessage());
-			} finally {
-				if (out != null) {
-					out.flush();
-					out.close();
-				}
-			}
-		}
-	}
+                long nanoTime = System.nanoTime();
 
-	/**
-	 * @param filename
-	 * @param out
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	public static void returnFile(String filename, Writer out)
-			throws FileNotFoundException, IOException {
-		Reader in = null;
+                String fileName = null;
 
-		try {
-			in = new BufferedReader(new FileReader(filename));
-			char[] buf = new char[4 * 1024]; // 4K char buffer
-			int charsRead;
-			while ((charsRead = in.read(buf)) != -1) {
-				out.write(buf, 0, charsRead);
-			}
-		} finally {
-			if (in != null)
-				in.close();
-		}
-	}
+                fileName = "context" + nanoTime + ".map";
+
+                IOUtil.stream2localfile(is, fileName, tempDir);
+
+                response.setContentType("text/plain");
+                response.setContentType("application/force-download");
+                if (request.getQueryString() == null
+                        || (request.getQueryString() != null && !request.getQueryString().contains(
+                                "filename")))
+                    response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+                else {
+                    int fileNameIndex = request.getQueryString().indexOf("filename")
+                            + "filename=".length();
+                    String reqfilename = request.getQueryString().substring(fileNameIndex);
+                    reqfilename = reqfilename.substring(
+                            0,
+                            reqfilename.indexOf('&') > 0 ? reqfilename.indexOf('&') : reqfilename
+                                    .length());
+                    response.setHeader("Content-Disposition", "attachment; filename=" + reqfilename);
+                }
+
+                out = response.getWriter();
+                out.print(fileName);
+            } else {
+                if (tempDir != null) {
+                    if (!tempDir.mkdir())
+                        throw new IOException("Unable to create temporary directory " + tempDir);
+                }
+            }
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, e.getMessage());
+            throw new ServletException(e.getMessage());
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, e.getMessage());
+            } finally {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param filename
+     * @param out
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void returnFile(String filename, Writer out) throws FileNotFoundException,
+            IOException {
+        Reader in = null;
+
+        try {
+            in = new BufferedReader(new FileReader(filename));
+            char[] buf = new char[4 * 1024]; // 4K char buffer
+            int charsRead;
+            while ((charsRead = in.read(buf)) != -1) {
+                out.write(buf, 0, charsRead);
+            }
+        } finally {
+            if (in != null)
+                in.close();
+        }
+    }
 
 }

@@ -37,13 +37,13 @@ import org.apache.commons.httpclient.HttpMethod;
  * @author Tobia Di Pisa at tobia.dipisa@geo-solutions.it
  * @author Alejandro Diaz
  */
-public class HostChecker  extends AbstractProxyCallback implements ProxyCallback {
+public class HostChecker extends AbstractProxyCallback implements ProxyCallback {
 
     /**
      * Default constructor
      */
     public HostChecker() {
-    	super();
+        super();
     }
 
     /**
@@ -52,10 +52,10 @@ public class HostChecker  extends AbstractProxyCallback implements ProxyCallback
      * @param config
      */
     public HostChecker(ProxyConfig config) {
-		super(config);
-	}
+        super(config);
+    }
 
-	/*
+    /*
      * (non-Javadoc)
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

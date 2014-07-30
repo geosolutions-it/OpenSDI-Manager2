@@ -41,84 +41,79 @@ import org.apache.commons.io.FileUtils;
  * @author adiaz
  */
 public class SHP2GeoJSON extends FileUploader {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public SHP2GeoJSON() {
-		super();
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public SHP2GeoJSON() {
+        super();
+    }
 
-	/**
-	 * @param response
-	 * @param uuid
-	 * @throws IOException
-	 * @throws ServletException
-	 */
-	protected String readFileContents(HttpServletResponse response, String uuid)
-			throws IOException, ServletException {
-		StringBuilder content = new StringBuilder();
-		File file = null;
-		BufferedReader br = null;
-		PrintWriter writer = null;
-		try {
-			// get file
-			File originalFile = new File(tempDirectory + File.separatorChar
-					+ uuid);
-			File shpFile = new File(tempDirectory + File.separatorChar + uuid
-					+ ".shp");
-			FileUtils.moveFile(originalFile, shpFile);
-			// convert it to GeoJSON
-			String targetJSON = tempDirectory + File.separatorChar + uuid
-					+ ".json";
-			GeoUtil.toJson(shpFile, targetJSON, LOGGER);
-			file = new File(targetJSON);
-			br = new BufferedReader(new FileReader(file));
-			if (response != null)
-				writer = response.getWriter();
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				if (writer != null)
-					writer.println(line);
+    /**
+     * @param response
+     * @param uuid
+     * @throws IOException
+     * @throws ServletException
+     */
+    protected String readFileContents(HttpServletResponse response, String uuid)
+            throws IOException, ServletException {
+        StringBuilder content = new StringBuilder();
+        File file = null;
+        BufferedReader br = null;
+        PrintWriter writer = null;
+        try {
+            // get file
+            File originalFile = new File(tempDirectory + File.separatorChar + uuid);
+            File shpFile = new File(tempDirectory + File.separatorChar + uuid + ".shp");
+            FileUtils.moveFile(originalFile, shpFile);
+            // convert it to GeoJSON
+            String targetJSON = tempDirectory + File.separatorChar + uuid + ".json";
+            GeoUtil.toJson(shpFile, targetJSON, LOGGER);
+            file = new File(targetJSON);
+            br = new BufferedReader(new FileReader(file));
+            if (response != null)
+                writer = response.getWriter();
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                if (writer != null)
+                    writer.println(line);
 
-				content.append(line.trim().replaceAll("\"", "'"));
-			}
-			// delete files
-			file.delete();
-			shpFile.delete();
+                content.append(line.trim().replaceAll("\"", "'"));
+            }
+            // delete files
+            file.delete();
+            shpFile.delete();
 
-			return content.toString();
-		} catch (IOException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while downloading file");
-			}
+            return content.toString();
+        } catch (IOException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
+            }
 
-			if (response != null) {
-				response.setContentType("text/html");
-				writeResponse(
-						response,
-						"{ \"success\":false, \"errorMessage\":\""
-								+ ex.getLocalizedMessage() + "\"}");
-			}
+            if (response != null) {
+                response.setContentType("text/html");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
+                                + "\"}");
+            }
 
-			return null;
-		} finally {
-			try {
-				if (br != null) {
-					br.close();
-				}
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
 
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE)) {
-					LOGGER.log(Level.SEVERE, "Error closing streams ", e);
-				}
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.log(Level.SEVERE, "Error closing streams ", e);
+                }
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 }

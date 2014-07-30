@@ -33,112 +33,113 @@ import java.util.regex.Pattern;
  */
 public class FileUploadCallbackConfiguration implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -3221221019219179718L;
+    private static final long serialVersionUID = -3221221019219179718L;
 
-	private long maxSize;
-	private int maxItems;
-	private String tempFolder;
-	int buffSize;
-	private String fileTypes;
-	private List<Pattern> fileTypePatterns;
+    private long maxSize;
 
-	/**
-	 * @return the maxSize
-	 */
-	public long getMaxSize() {
-		return maxSize;
-	}
+    private int maxItems;
 
-	/**
-	 * @param maxSize
-	 *            the maxSize to set
-	 */
-	public void setMaxSize(long maxSize) {
-		this.maxSize = maxSize;
-	}
+    private String tempFolder;
 
-	/**
-	 * @return the maxItems
-	 */
-	public int getMaxItems() {
-		return maxItems;
-	}
+    int buffSize;
 
-	/**
-	 * @param maxItems
-	 *            the maxItems to set
-	 */
-	public void setMaxItems(int maxItems) {
-		this.maxItems = maxItems;
-	}
+    private String fileTypes;
 
-	/**
-	 * @return the tempFolder
-	 */
-	public String getTempFolder() {
-		return tempFolder;
-	}
+    private List<Pattern> fileTypePatterns;
 
-	/**
-	 * @param tempFolder
-	 *            the tempFolder to set
-	 */
-	public void setTempFolder(String tempFolder) {
-		this.tempFolder = tempFolder;
-	}
+    /**
+     * @return the maxSize
+     */
+    public long getMaxSize() {
+        return maxSize;
+    }
 
-	/**
-	 * @return the buffSize
-	 */
-	public int getBuffSize() {
-		return buffSize;
-	}
+    /**
+     * @param maxSize the maxSize to set
+     */
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
+    }
 
-	/**
-	 * @param buffSize
-	 *            the buffSize to set
-	 */
-	public void setBuffSize(int buffSize) {
-		this.buffSize = buffSize;
-	}
+    /**
+     * @return the maxItems
+     */
+    public int getMaxItems() {
+        return maxItems;
+    }
 
-	/**
-	 * @return the fileTypes
-	 */
-	public String getFileTypes() {
-		return fileTypes;
-	}
+    /**
+     * @param maxItems the maxItems to set
+     */
+    public void setMaxItems(int maxItems) {
+        this.maxItems = maxItems;
+    }
 
-	/**
-	 * @param fileTypes the fileTypes to set
-	 */
-	public void setFileTypes(String fileTypes) {
-		this.fileTypes = fileTypes;
-		// compile patterns
-		if(this.fileTypes != null){
-			List<Pattern> patterns = new LinkedList<Pattern>();
-			for(String fileType: this.fileTypes.split(",")){
-				patterns.add(Pattern.compile(fileType));
-			}
-			this.fileTypePatterns = patterns;
-		}
-	}
+    /**
+     * @return the tempFolder
+     */
+    public String getTempFolder() {
+        return tempFolder;
+    }
 
-	/**
-	 * @return the fileTypePatterns
-	 */
-	public List<Pattern> getFileTypePatterns() {
-		return fileTypePatterns;
-	}
+    /**
+     * @param tempFolder the tempFolder to set
+     */
+    public void setTempFolder(String tempFolder) {
+        this.tempFolder = tempFolder;
+    }
 
-	/**
-	 * @param fileTypePatterns the fileTypePatterns to set
-	 */
-	public void setFileTypePatterns(List<Pattern> fileTypePatterns) {
-		this.fileTypePatterns = fileTypePatterns;
-	}
+    /**
+     * @return the buffSize
+     */
+    public int getBuffSize() {
+        return buffSize;
+    }
+
+    /**
+     * @param buffSize the buffSize to set
+     */
+    public void setBuffSize(int buffSize) {
+        this.buffSize = buffSize;
+    }
+
+    /**
+     * @return the fileTypes
+     */
+    public String getFileTypes() {
+        return fileTypes;
+    }
+
+    /**
+     * @param fileTypes the fileTypes to set
+     */
+    public void setFileTypes(String fileTypes) {
+        this.fileTypes = fileTypes;
+        // compile patterns
+        if (this.fileTypes != null) {
+            List<Pattern> patterns = new LinkedList<Pattern>();
+            for (String fileType : this.fileTypes.split(",")) {
+                patterns.add(Pattern.compile(fileType));
+            }
+            this.fileTypePatterns = patterns;
+        }
+    }
+
+    /**
+     * @return the fileTypePatterns
+     */
+    public List<Pattern> getFileTypePatterns() {
+        return fileTypePatterns;
+    }
+
+    /**
+     * @param fileTypePatterns the fileTypePatterns to set
+     */
+    public void setFileTypePatterns(List<Pattern> fileTypePatterns) {
+        this.fileTypePatterns = fileTypePatterns;
+    }
 
 }

@@ -36,99 +36,84 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Controller for the base file manager.
- * **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757
- * Once the issue is resolved and Spring Updated, use xml configuration to map base
- * class.
+ * Controller for the base file manager. **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757 Once the issue
+ * is resolved and Spring Updated, use xml configuration to map base class.
+ * 
  * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
- *
+ * 
  */
 @Controller
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
-	
-	/**
-	 * Set the configuration to set up the base directory
-	 * @param config
-	 */
-	@Resource(name="baseConfig")
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
-	/**
-	 * Browser handler server side for ExtJS filebrowser.
-	 * 
-	 * @see https://code.google.com/p/ext-ux-filebrowserpanel/
-	 * 
-	 * @param action
-	 *            to perform
-	 * @param folder
-	 *            folder to browse
-	 * @param file
-	 *            to perform an operation
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * 
-	 * @return
-	 */
-	@RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public @ResponseBody
-	Object extJSbrowser(
-			@RequestParam(value = "action", required = false) String action,
-			@RequestParam(value = "folder", required = false) String folder,
-			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "oldName", required = false) String oldName,
-			@RequestParam(value = "file", required = false) String file,
-			HttpServletRequest request, HttpServletResponse response) {
 
-		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
+    /**
+     * Set the configuration to set up the base directory
+     * 
+     * @param config
+     */
+    @Resource(name = "baseConfig")
+    public void setBaseConfig(OpenSDIManagerConfig baseConfig) {
+        this.setRuntimeDir(baseConfig.getBaseFolder());
+    }
 
-	}
+    /**
+     * Browser handler server side for ExtJS filebrowser.
+     * 
+     * @see https://code.google.com/p/ext-ux-filebrowserpanel/
+     * 
+     * @param action to perform
+     * @param folder folder to browse
+     * @param file to perform an operation
+     * @param request servlet request
+     * @param response servlet response
+     * 
+     * @return
+     */
+    @RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET, RequestMethod.POST })
+    public @ResponseBody
+    Object extJSbrowser(@RequestParam(value = "action", required = false) String action,
+            @RequestParam(value = "folder", required = false) String folder,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "oldName", required = false) String oldName,
+            @RequestParam(value = "file", required = false) String file,
+            HttpServletRequest request, HttpServletResponse response) {
 
-	/**
-	 * Handler for upload files
-	 * 
-	 * @param operationId
-	 * @param gotHeaders
-	 * @param file
-	 *            uploaded
-	 * @param request
-	 * @param model
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "upload", method = RequestMethod.POST)
-	public void upload(
-			@RequestParam MultipartFile file,
-			@RequestParam(required = false, defaultValue = "uploadedFile") String name,
-			@RequestParam(required = false, defaultValue = "-1") int chunks,
-			@RequestParam(required = false, defaultValue = "-1") int chunk,
-			@RequestParam(required = false) String folder,
-			HttpServletRequest request, HttpServletResponse servletResponse)
-			throws IOException {
+        return super.extJSbrowser(action, folder, name, oldName, file, request, response);
 
-		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
-	}
+    }
 
-	/**
-	 * Download a file
-	 * 
-	 * @param folder
-	 *            folder for the file
-	 * @param file
-	 *            to be downloaded
-	 * @param resp
-	 *            servlet response
-	 */
-	@RequestMapping(value = "download", method = { RequestMethod.POST,
-			RequestMethod.GET })
-	public void downloadFile(
-			@RequestParam(value = "folder", required = false) String folder,
-			@RequestParam(value = "file", required = true) String file,
-			HttpServletResponse resp) {
-		super.downloadFile(folder, file, resp);
-	}
+    /**
+     * Handler for upload files
+     * 
+     * @param operationId
+     * @param gotHeaders
+     * @param file uploaded
+     * @param request
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = "upload", method = RequestMethod.POST)
+    public void upload(@RequestParam MultipartFile file,
+            @RequestParam(required = false, defaultValue = "uploadedFile") String name,
+            @RequestParam(required = false, defaultValue = "-1") int chunks,
+            @RequestParam(required = false, defaultValue = "-1") int chunk,
+            @RequestParam(required = false) String folder, HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
+
+        super.upload(file, name, chunks, chunk, folder, request, servletResponse);
+    }
+
+    /**
+     * Download a file
+     * 
+     * @param folder folder for the file
+     * @param file to be downloaded
+     * @param resp servlet response
+     */
+    @RequestMapping(value = "download", method = { RequestMethod.POST, RequestMethod.GET })
+    public void downloadFile(@RequestParam(value = "folder", required = false) String folder,
+            @RequestParam(value = "file", required = true) String file, HttpServletResponse resp) {
+        super.downloadFile(folder, file, resp);
+    }
 }

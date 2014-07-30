@@ -40,7 +40,7 @@ public abstract class AbstractProxyCallback implements ProxyCallback {
      * Default constructor
      */
     public AbstractProxyCallback() {
-    	super();
+        super();
     }
 
     /**
@@ -51,18 +51,19 @@ public abstract class AbstractProxyCallback implements ProxyCallback {
     public AbstractProxyCallback(ProxyConfig config) {
         this.config = config;
     }
-	
-	/**
-	 * Configure a callback with proxi configuration
-	 * 
-	 * @param config
-	 */
-	public void setProxyConfig(ProxyConfig config){
-		this.config = config;
-	}
-    
+
+    /**
+     * Configure a callback with proxi configuration
+     * 
+     * @param config
+     */
+    public void setProxyConfig(ProxyConfig config) {
+        this.config = config;
+    }
+
     /**
      * Callback method preExecuteProxyRequest executed before execute the proxy request
+     * 
      * @param httpMethodProxyRequest
      * @param httpServletRequest
      * @param httpServletResponse
@@ -73,8 +74,8 @@ public abstract class AbstractProxyCallback implements ProxyCallback {
      */
     public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-            String user, String password, ProxyInfo proxyInfo){
-    	return true;
+            String user, String password, ProxyInfo proxyInfo) {
+        return true;
     }
 
 }

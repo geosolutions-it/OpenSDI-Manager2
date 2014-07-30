@@ -33,207 +33,185 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
 
-	/**
-	 * Serialization UID.
-	 */
-	private static final long serialVersionUID = 2097550601489338403L;
-	
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	
-	private final static Logger LOGGER = Logger
-			.getLogger(HTTPWebGISFileDownload.class.toString());
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 2097550601489338403L;
 
-	private Properties props;
+    private final static String PROPERTY_FILE_PARAM = "app.properties";
 
-	/**
-	 * Initialize the <code>ProxyServlet</code>
-	 * 
-	 * @param servletConfig
-	 *            The Servlet configuration passed in by the servlet conatiner
-	 */
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
+    private final static Logger LOGGER = Logger.getLogger(HTTPWebGISFileDownload.class.toString());
 
-		String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
-		InputStream inputStream = HTTPWebGISFileUpload.class.getResourceAsStream(appPropertyFile);
-		
-		Properties props = new Properties();
+    private Properties props;
 
-		try {
-			props.load(inputStream);
-			this.props = props;
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while processing properties file", e);
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error building the proxy configuration ", e);
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
+    /**
+     * Initialize the <code>ProxyServlet</code>
+     * 
+     * @param servletConfig The Servlet configuration passed in by the servlet conatiner
+     */
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
 
-	/**
-	 * Performs an HTTP GET request
-	 * 
-	 * @param httpServletRequest
-	 *            The {@link HttpServletRequest} object passed in by the servlet
-	 *            engine representing the client request
-	 * @param httpServletResponse
-	 *            The {@link HttpServletResponse} object by which we can
-	 *            response to the client
-	 */
-	protected void doGetAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
-	}
+        String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
+        InputStream inputStream = HTTPWebGISFileUpload.class.getResourceAsStream(appPropertyFile);
 
-	/**
-	 * Performs an HTTP POST request
-	 * 
-	 * @param httpServletRequest
-	 *            The {@link HttpServletRequest} object passed in by the servlet
-	 *            engine representing the client request
-	 * @param httpServletResponse
-	 *            The {@link HttpServletResponse} object by which we can
-	 *            response to the client
-	 */
-	@SuppressWarnings("unchecked")
-	protected void doPostAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+        Properties props = new Properties();
 
-		String temp = this.props.getProperty("temp");
-		int buffSize = Integer.valueOf(this.props.getProperty("bufferSize"));
+        try {
+            props.load(inputStream);
+            this.props = props;
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while processing properties file", e);
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 
-		File tempDir = new File(temp);
-		List<FileItem> items = null;
+    /**
+     * Performs an HTTP GET request
+     * 
+     * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
+     * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
+     */
+    protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+    }
 
-		try {
-			
-			// File items are read only one time. Check if already exists on the actionParameters 
-			if(actionParameters != null 
-					&& actionParameters.isSuccess()
-					&& actionParameters.getItems() != null){
-				items = actionParameters.getItems();
-				
-			// see http://commons.apache.org/fileupload/using.html
-			} else if (ServletFileUpload.isMultipartContent(request)
-					&& tempDir != null && tempDir.exists()) {
-				DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+    /**
+     * Performs an HTTP POST request
+     * 
+     * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
+     * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
+     */
+    @SuppressWarnings("unchecked")
+    protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
-				/*
-				 * Set the size threshold, above which content will be stored on
-				 * disk.
-				 */
-				fileItemFactory.setSizeThreshold(buffSize); // 1 MB
+        String temp = this.props.getProperty("temp");
+        int buffSize = Integer.valueOf(this.props.getProperty("bufferSize"));
 
-				/*
-				 * Set the temporary directory to store the uploaded files of
-				 * size above threshold.
-				 */
-				fileItemFactory.setRepository(tempDir);
+        File tempDir = new File(temp);
+        List<FileItem> items = null;
 
-				ServletFileUpload uploadHandler = new ServletFileUpload(
-						fileItemFactory);
+        try {
 
-				/*
-				 * Parse the request
-				 */
-				items = uploadHandler.parseRequest(request);
-			}
+            // File items are read only one time. Check if already exists on the actionParameters
+            if (actionParameters != null && actionParameters.isSuccess()
+                    && actionParameters.getItems() != null) {
+                items = actionParameters.getItems();
 
-			// Process the uploaded items
-			if (items != null) {
-				
-				Iterator<FileItem> itr = items.iterator();
+                // see http://commons.apache.org/fileupload/using.html
+            } else if (ServletFileUpload.isMultipartContent(request) && tempDir != null
+                    && tempDir.exists()) {
+                DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
 
-				while (itr.hasNext()) {
-					FileItem item = (FileItem) itr.next();
+                /*
+                 * Set the size threshold, above which content will be stored on disk.
+                 */
+                fileItemFactory.setSizeThreshold(buffSize); // 1 MB
 
-					if (item.getName().toLowerCase().endsWith(".map")) {
-						/*
-						 * Handle Form Fields.
-						 */
-						if (!item.isFormField()) {
-							String xml = item.getString();
+                /*
+                 * Set the temporary directory to store the uploaded files of size above threshold.
+                 */
+                fileItemFactory.setRepository(tempDir);
 
-							XMLSerializer xmlSerializer = new XMLSerializer();
-							JSON json = xmlSerializer.read(xml);
+                ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
 
-							response.setContentType("text/html");
+                /*
+                 * Parse the request
+                 */
+                items = uploadHandler.parseRequest(request);
+            }
 
-							JSONObject jsonObj = new JSONObject();
-							jsonObj.put("success", true);
-							jsonObj.put("result",
-									URLEncoder.encode(json.toString(), "UTF-8"));
+            // Process the uploaded items
+            if (items != null) {
 
-							writeResponse(response, jsonObj);
-						}
-					} else {
-						throw new ServletException(
-								"Invalid file type, we have to upload an .map file");
-					}
-				}
-			} else {
-				if (tempDir != null) {
-					if (!tempDir.mkdir())
-						throw new IOException(
-								"Unable to create temporary directory "
-										+ tempDir);
-				}
-			}
-		} catch (FileUploadException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while parsing the request");
+                Iterator<FileItem> itr = items.iterator();
 
-			response.setContentType("text/html");
+                while (itr.hasNext()) {
+                    FileItem item = (FileItem) itr.next();
 
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("success", false);
-			jsonObj.put("errorMessage", ex.getLocalizedMessage());
+                    if (item.getName().toLowerCase().endsWith(".map")) {
+                        /*
+                         * Handle Form Fields.
+                         */
+                        if (!item.isFormField()) {
+                            String xml = item.getString();
 
-			writeResponse(response, jsonObj);
+                            XMLSerializer xmlSerializer = new XMLSerializer();
+                            JSON json = xmlSerializer.read(xml);
 
-		} catch (ServletException ex) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while uploading file");
+                            response.setContentType("text/html");
 
-			response.setContentType("text/html");
+                            JSONObject jsonObj = new JSONObject();
+                            jsonObj.put("success", true);
+                            jsonObj.put("result", URLEncoder.encode(json.toString(), "UTF-8"));
 
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("success", false);
-			jsonObj.put("errorMessage", ex.getLocalizedMessage());
+                            writeResponse(response, jsonObj);
+                        }
+                    } else {
+                        throw new ServletException(
+                                "Invalid file type, we have to upload an .map file");
+                    }
+                }
+            } else {
+                if (tempDir != null) {
+                    if (!tempDir.mkdir())
+                        throw new IOException("Unable to create temporary directory " + tempDir);
+                }
+            }
+        } catch (FileUploadException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while parsing the request");
 
-			writeResponse(response, jsonObj);
-		}
-	}
+            response.setContentType("text/html");
 
-	/**
-	 * @param response
-	 * @param jsonObj
-	 * @throws IOException
-	 */
-	private void writeResponse(HttpServletResponse response, JSONObject jsonObj)
-			throws IOException {
-		Writer writer = null;
-		try {
-			writer = response.getWriter();
-			writer.write(jsonObj.toString());
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE, e.getMessage());
-		} finally {
-			if (writer != null) {
-				writer.flush();
-				writer.close();
-			}
-		}
-	}
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("success", false);
+            jsonObj.put("errorMessage", ex.getLocalizedMessage());
+
+            writeResponse(response, jsonObj);
+
+        } catch (ServletException ex) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while uploading file");
+
+            response.setContentType("text/html");
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("success", false);
+            jsonObj.put("errorMessage", ex.getLocalizedMessage());
+
+            writeResponse(response, jsonObj);
+        }
+    }
+
+    /**
+     * @param response
+     * @param jsonObj
+     * @throws IOException
+     */
+    private void writeResponse(HttpServletResponse response, JSONObject jsonObj) throws IOException {
+        Writer writer = null;
+        try {
+            writer = response.getWriter();
+            writer.write(jsonObj.toString());
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, e.getMessage());
+        } finally {
+            if (writer != null) {
+                writer.flush();
+                writer.close();
+            }
+        }
+    }
 }

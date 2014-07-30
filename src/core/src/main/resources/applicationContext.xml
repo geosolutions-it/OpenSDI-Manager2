@@ -6,9 +6,15 @@
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-autowire="byName">
+
+    <!--=====================================================================-->
+    <!-- DB related stuff -->
+    <!--=====================================================================-->
+
+    <import resource="applicationContext-geostoreDatasource.xml"/>
     
+    <!--=====================================================================-->
     
-  
     <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="order" value="10"/>

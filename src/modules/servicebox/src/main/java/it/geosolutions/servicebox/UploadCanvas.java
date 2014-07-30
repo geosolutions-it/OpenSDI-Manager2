@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,261 +27,242 @@ import sun.misc.BASE64Decoder;
 //import sun.misc.IOUtils;
 
 /**
- * Gets a HTML5 Canvas getDataURL output to save a png on a directory of the
- * server
+ * Gets a HTML5 Canvas getDataURL output to save a png on a directory of the server
  * 
  * @author lorenzo
  */
 public class UploadCanvas extends ServiceBoxActionServlet {
 
-	private static final long serialVersionUID = -2477077719929697199L;
-	
-	private final static Logger LOGGER = Logger.getLogger(UploadCanvas.class.getSimpleName());
-	
-	private static final char COMMA = ',';
-	
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	
-	private static String path = null;
+    private static final long serialVersionUID = -2477077719929697199L;
 
-	private Properties props;
+    private final static Logger LOGGER = Logger.getLogger(UploadCanvas.class.getSimpleName());
 
-	/**
-	 * Initialize the <code>ProxyServlet</code>
-	 * 
-	 * @param servletConfig
-	 *            The Servlet configuration passed in by the servlet conatiner
-	 */
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
+    private static final char COMMA = ',';
 
-		String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
-		InputStream inputStream = UploadCanvas.class.getResourceAsStream(appPropertyFile);
-		
-		Properties props = new Properties();
+    private final static String PROPERTY_FILE_PARAM = "app.properties";
 
-		try {
-			props.load(inputStream);
-			this.props = props;
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE))
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while processing properties file", e);
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error building the proxy configuration ", e);
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
-	
-	/**
-	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-	 * methods.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * @throws ServletException
-	 *             if a servlet-specific error occurs
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 */
-	protected void processRequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+    private static String path = null;
 
-		//String ip = request.getRemoteAddr();
+    private Properties props;
 
-		// get raw request data
-		InputStream body = new BufferedInputStream(request.getInputStream());
-		String id = java.util.UUID.randomUUID().toString();
+    /**
+     * Initialize the <code>ProxyServlet</code>
+     * 
+     * @param servletConfig The Servlet configuration passed in by the servlet conatiner
+     */
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
 
-		File f = File.createTempFile(id, ".png", new File(this.props.getProperty("temp")));
-		if (path == null) {
-			path = f.getParent();
-		}
-		FileOutputStream fos = new FileOutputStream(f);
-		PrintWriter out = response.getWriter();
-		//System.out.println(f.getAbsoluteFile());
+        String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
+        InputStream inputStream = UploadCanvas.class.getResourceAsStream(appPropertyFile);
 
-		char c = 'd';
-		// read initials data, tipically "data:image/png;base64,"
-		try {
-			while (c != COMMA) {
-				c = (char) body.read();
-			}
-			// decose base64 data
-			BASE64Decoder decoder = new BASE64Decoder();
-			byte[] decodedBytes = decoder.decodeBuffer(body);
+        Properties props = new Properties();
 
-			// response
+        try {
+            props.load(inputStream);
+            this.props = props;
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Error encountered while processing properties file", e);
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 
-			// write png data
-			fos.write(decodedBytes);
-			response.setHeader("Content-Type", "image/png");
-			response.setContentLength(decodedBytes.length);
-			response.setHeader("Content-Disposition", "inline; filename=\""
-					+ "chart.png" + "\"");
-			out.print(f.getName());
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * 
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		} finally {
-			try {
-				if (fos != null) {
+        // String ip = request.getRemoteAddr();
 
-					fos.close();
-				}
-			} catch (Exception e) {
-				LOGGER.severe(e.getStackTrace().toString());
-			}
-			try {
-				if (out != null) {
+        // get raw request data
+        InputStream body = new BufferedInputStream(request.getInputStream());
+        String id = java.util.UUID.randomUUID().toString();
 
-					out.close();
-				}
-			} catch (Exception e) {
-				LOGGER.severe(e.getStackTrace().toString());
-			}
-			try {
-				if (body != null) {
+        File f = File.createTempFile(id, ".png", new File(this.props.getProperty("temp")));
+        if (path == null) {
+            path = f.getParent();
+        }
+        FileOutputStream fos = new FileOutputStream(f);
+        PrintWriter out = response.getWriter();
+        // System.out.println(f.getAbsoluteFile());
 
-					body.close();
-				}
-			} catch (Exception e) {
-				LOGGER.severe(e.getStackTrace().toString());
-			}
-			try {
-				if (out != null) {
+        char c = 'd';
+        // read initials data, tipically "data:image/png;base64,"
+        try {
+            while (c != COMMA) {
+                c = (char) body.read();
+            }
+            // decose base64 data
+            BASE64Decoder decoder = new BASE64Decoder();
+            byte[] decodedBytes = decoder.decodeBuffer(body);
 
-					out.close();
-				}
-			} catch (Exception e) {
-				LOGGER.severe(e.getStackTrace().toString());
-			}
-		}
-	}
+            // response
 
-	// <editor-fold defaultstate="collapsed"
-	// desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-	/**
-	 * Handles the HTTP <code>GET</code> method.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * @throws ServletException
-	 *             if a servlet-specific error occurs
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 */
-	@Override
-	protected void doGetAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
-		OutputStream out = response.getOutputStream();
-		String filename = request.getParameter("ID");
-		String fn = request.getParameter("fn");
+            // write png data
+            fos.write(decodedBytes);
+            response.setHeader("Content-Type", "image/png");
+            response.setContentLength(decodedBytes.length);
+            response.setHeader("Content-Disposition", "inline; filename=\"" + "chart.png" + "\"");
+            out.print(f.getName());
 
-		if (fn == null || fn.equals("")) {
-			fn = "image.png";
-		}
+        } finally {
+            try {
+                if (fos != null) {
 
-		File f = null;
-		InputStream in = null;
-		BufferedInputStream bin = null;
+                    fos.close();
+                }
+            } catch (Exception e) {
+                LOGGER.severe(e.getStackTrace().toString());
+            }
+            try {
+                if (out != null) {
 
-		try {
-			f = new File(path + "/" + filename);
-			//System.out.println(f.getAbsoluteFile());
-			in = new FileInputStream(f);
+                    out.close();
+                }
+            } catch (Exception e) {
+                LOGGER.severe(e.getStackTrace().toString());
+            }
+            try {
+                if (body != null) {
 
-			bin = new BufferedInputStream(in);
+                    body.close();
+                }
+            } catch (Exception e) {
+                LOGGER.severe(e.getStackTrace().toString());
+            }
+            try {
+                if (out != null) {
 
-			f.length();
-			response.setHeader("Content-Description", "File Transfer");
+                    out.close();
+                }
+            } catch (Exception e) {
+                LOGGER.severe(e.getStackTrace().toString());
+            }
+        }
+    }
 
-			response.setContentLength((int) f.length());
-			response.setHeader("Content-Transfer-Encoding", "binary");
-			response.setHeader("Content-Disposition", "attachment; filename=\""
-					+ fn + "\"");// fileName);
+    // <editor-fold defaultstate="collapsed"
+    // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * 
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+        OutputStream out = response.getOutputStream();
+        String filename = request.getParameter("ID");
+        String fn = request.getParameter("fn");
 
-			// Copy the contents of the file to the output stream
-			byte[] buf = new byte[1024];
-			int count;
-			while ((count = bin.read(buf)) >= 0) {
-				out.write(buf, 0, count);
-			}
-			out.flush();
+        if (fn == null || fn.equals("")) {
+            fn = "image.png";
+        }
 
-		} catch (FileNotFoundException e) {
-			LOGGER.info(e.getMessage());
+        File f = null;
+        InputStream in = null;
+        BufferedInputStream bin = null;
 
-			// response.getWriter().print("<html><head></head><body><h3>Couldn't download this file. </h3></body</html>");
-		} catch (IOException e) {
-			LOGGER.info(e.getMessage());
-			response.getWriter()
-					.print("<html><head></head><body><h3>Sorry. We was unable to process your request. </h3></body</html>");
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (Exception e) {
-					LOGGER.warning(e.getLocalizedMessage());
-				}
-			}
-			if (in != null) {
-				try {
-					in.close();
-				} catch (Exception e) {
-					LOGGER.warning(e.getLocalizedMessage());
-				}
-			}
-			if (bin != null) {
-				try {
-					bin.close();
-				} catch (Exception e) {
-					LOGGER.warning(e.getLocalizedMessage());
-				}
-			}
+        try {
+            f = new File(path + "/" + filename);
+            // System.out.println(f.getAbsoluteFile());
+            in = new FileInputStream(f);
 
-			try {
-				f.delete();
-			} catch (Exception e) {
-				LOGGER.warning(e.getLocalizedMessage());
-			}
-		}
-	}
+            bin = new BufferedInputStream(in);
 
-	/**
-	 * Handles the HTTP <code>POST</code> method.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * @throws ServletException
-	 *             if a servlet-specific error occurs
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 */
-	@Override
-	protected void doPostAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
-		processRequest(request, response);
-	}
+            f.length();
+            response.setHeader("Content-Description", "File Transfer");
 
-	/**
-	 * Returns a short description of the servlet.
-	 * 
-	 * @return a String containing servlet description
-	 */
-	@Override
-	public String getServletInfo() {
-		return "Save a canvas as png";
-	}// </editor-fold>
+            response.setContentLength((int) f.length());
+            response.setHeader("Content-Transfer-Encoding", "binary");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fn + "\"");// fileName);
+
+            // Copy the contents of the file to the output stream
+            byte[] buf = new byte[1024];
+            int count;
+            while ((count = bin.read(buf)) >= 0) {
+                out.write(buf, 0, count);
+            }
+            out.flush();
+
+        } catch (FileNotFoundException e) {
+            LOGGER.info(e.getMessage());
+
+            // response.getWriter().print("<html><head></head><body><h3>Couldn't download this file. </h3></body</html>");
+        } catch (IOException e) {
+            LOGGER.info(e.getMessage());
+            response.getWriter()
+                    .print("<html><head></head><body><h3>Sorry. We was unable to process your request. </h3></body</html>");
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (Exception e) {
+                    LOGGER.warning(e.getLocalizedMessage());
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                    LOGGER.warning(e.getLocalizedMessage());
+                }
+            }
+            if (bin != null) {
+                try {
+                    bin.close();
+                } catch (Exception e) {
+                    LOGGER.warning(e.getLocalizedMessage());
+                }
+            }
+
+            try {
+                f.delete();
+            } catch (Exception e) {
+                LOGGER.warning(e.getLocalizedMessage());
+            }
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * 
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     * 
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Save a canvas as png";
+    }// </editor-fold>
 }

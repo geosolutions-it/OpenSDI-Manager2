@@ -43,13 +43,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Alejandro Diaz
  */
-public class HTTPProxy extends HttpServlet{
+public class HTTPProxy extends HttpServlet {
 
     /**
      * Serialization UID.
      */
     private static final long serialVersionUID = -4770692886388850680L;
-    
+
     @Autowired
     private ProxyService proxyService;
 
@@ -61,11 +61,11 @@ public class HTTPProxy extends HttpServlet{
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
-        if(this.proxyService == null){
+        if (this.proxyService == null) {
             ServletContext context = getServletContext();
-        	WebApplicationContext wac = WebApplicationContextUtils.
-        			getRequiredWebApplicationContext(context);
-            proxyService = (ProxyServiceImpl)wac.getBean("proxyService");
+            WebApplicationContext wac = WebApplicationContextUtils
+                    .getRequiredWebApplicationContext(context);
+            proxyService = (ProxyServiceImpl) wac.getBean("proxyService");
         }
     }
 
@@ -77,7 +77,7 @@ public class HTTPProxy extends HttpServlet{
      */
     public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
-		proxyService.execute(httpServletRequest, httpServletResponse);
+        proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
     /**
@@ -88,7 +88,7 @@ public class HTTPProxy extends HttpServlet{
      */
     public void doPost(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
-		proxyService.execute(httpServletRequest, httpServletResponse);
+        proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
     /**
@@ -99,7 +99,7 @@ public class HTTPProxy extends HttpServlet{
      */
     public void doPut(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws IOException, ServletException {
-		proxyService.execute(httpServletRequest, httpServletResponse);
+        proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
     /**
@@ -110,7 +110,7 @@ public class HTTPProxy extends HttpServlet{
      */
     public void doDelete(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
-		proxyService.execute(httpServletRequest, httpServletResponse);
+        proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
 }

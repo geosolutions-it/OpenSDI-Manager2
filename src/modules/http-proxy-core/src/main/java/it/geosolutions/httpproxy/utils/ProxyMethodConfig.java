@@ -19,7 +19,6 @@
  */
 package it.geosolutions.httpproxy.utils;
 
-
 import java.net.URL;
 
 import org.apache.commons.httpclient.HttpMethod;
@@ -29,20 +28,22 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 
 /**
- * Proxy method configuration.
- * This class encapsulates the common information to execute a proxy method 
- * and is responsible of onInit call and the method generation. 
+ * Proxy method configuration. This class encapsulates the common information to execute a proxy method and is responsible of onInit call and the
+ * method generation.
  * 
  * @author <a href="mailto:aledt84@gmail.com">Alejandro Diaz Torres</a>
- *
+ * 
  */
 public class ProxyMethodConfig {
-	
-	private URL url;
-	private String user;
-	private String password = null;
-	private String method;
-    
+
+    private URL url;
+
+    private String user;
+
+    private String password = null;
+
+    private String method;
+
     /**
      * Proxy method contructor
      * 
@@ -51,60 +52,60 @@ public class ProxyMethodConfig {
      * @param password
      * @param method
      */
-	public ProxyMethodConfig(URL url, String user, String password, String method) {
-		super();
-		this.url = url;
-		this.user = user;
-		this.password = password;
-		this.method = method;
-	}
-	
-	/**
-	 * Obtain he method generation with {@link ProxyMethodConfig#method} and {@link ProxyMethodConfig#url}
-	 * 
-	 * @return HttpMethod only supports {DELETE, GET, POST and PUT} @see {@link HttpMethods}
-	 */
-	public HttpMethod getMethod(){
-		if(HttpMethods.METHOD_DELETE.equals(method)){
-			return new DeleteMethod(url.toExternalForm());
-		}else if(HttpMethods.METHOD_GET.equals(method)){
-			return new GetMethod(url.toExternalForm());
-		}else if(HttpMethods.METHOD_POST.equals(method)){
-			return new PostMethod(url.toExternalForm());
-		}else if(HttpMethods.METHOD_PUT.equals(method)){
-			return new PutMethod(url.toExternalForm());
-		}else{
-			// Default is doGet
-			return new GetMethod(url.toExternalForm());
-		}
-	}
-	
+    public ProxyMethodConfig(URL url, String user, String password, String method) {
+        super();
+        this.url = url;
+        this.user = user;
+        this.password = password;
+        this.method = method;
+    }
+
+    /**
+     * Obtain he method generation with {@link ProxyMethodConfig#method} and {@link ProxyMethodConfig#url}
+     * 
+     * @return HttpMethod only supports {DELETE, GET, POST and PUT} @see {@link HttpMethods}
+     */
+    public HttpMethod getMethod() {
+        if (HttpMethods.METHOD_DELETE.equals(method)) {
+            return new DeleteMethod(url.toExternalForm());
+        } else if (HttpMethods.METHOD_GET.equals(method)) {
+            return new GetMethod(url.toExternalForm());
+        } else if (HttpMethods.METHOD_POST.equals(method)) {
+            return new PostMethod(url.toExternalForm());
+        } else if (HttpMethods.METHOD_PUT.equals(method)) {
+            return new PutMethod(url.toExternalForm());
+        } else {
+            // Default is doGet
+            return new GetMethod(url.toExternalForm());
+        }
+    }
+
     public URL getUrl() {
-		return url;
-	}
+        return url;
+    }
 
-	public void setUrl(URL url) {
-		this.url = url;
-	}
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 
-	public String getUser() {
-		return user;
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
-    
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
 }

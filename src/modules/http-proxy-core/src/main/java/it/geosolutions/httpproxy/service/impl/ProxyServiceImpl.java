@@ -77,14 +77,14 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Alejandro Diaz
  */
-public class ProxyServiceImpl implements ProxyService, Serializable{
+public class ProxyServiceImpl implements ProxyService, Serializable {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 3318254969779984284L;
+    private static final long serialVersionUID = 3318254969779984284L;
 
-	private final static Logger LOGGER = Logger.getLogger(ProxyServiceImpl.class.toString());
+    private final static Logger LOGGER = Logger.getLogger(ProxyServiceImpl.class.toString());
 
     /**
      * The maximum size for uploaded files in bytes. Default value is 5MB.
@@ -106,12 +106,12 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
      * The proxy configuration.
      */
     private ProxyConfig proxyConfig;
-    
-	/**
+
+    /**
      * The proxy collbacks to provide checks.
      */
     private List<ProxyCallback> callbacks;
-    
+
     /**
      * Proxy helper to encapsulate proxy initialization
      */
@@ -120,96 +120,96 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
     /**
      * Default constructor
      */
-	public ProxyServiceImpl(){
-		super();
-	}
-    
-	/**
-	 * Constructor with helper
-	 */
-	public ProxyServiceImpl(ProxyHelper proxyHelper) {
-		super();
-		this.proxyHelper = proxyHelper;
+    public ProxyServiceImpl() {
+        super();
+    }
+
+    /**
+     * Constructor with helper
+     */
+    public ProxyServiceImpl(ProxyHelper proxyHelper) {
+        super();
+        this.proxyHelper = proxyHelper;
         proxyHelper.initProxy(this);
-	}
+    }
 
-	/**
-	 * Constructor with proxy configuration
-	 */
-	public ProxyServiceImpl(ProxyConfig proxyConfig) {
-		super();
-		this.setProxyConfig(proxyConfig);
-	}
-    
-	/**
-	 * Obtain proxy configuration
-	 * 
-	 * @return the proxy configuration
-	 */
-	public ProxyConfig getProxyConfig() {
-		return proxyConfig;
-	}
+    /**
+     * Constructor with proxy configuration
+     */
+    public ProxyServiceImpl(ProxyConfig proxyConfig) {
+        super();
+        this.setProxyConfig(proxyConfig);
+    }
 
-	/**
-	 * Change proxy configuration
-	 * @param new proxy configuration
-	 */
-	public void setProxyConfig(ProxyConfig proxyConfig) {
-		this.proxyConfig = proxyConfig;
-		loadProxyConfig();
-	}
-	
-	/**
-	 * Load proxy configuration when proxy config has changed
-	 */
-	private void loadProxyConfig(){
-		connectionManager = new MultiThreadedHttpConnectionManager();
-		HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+    /**
+     * Obtain proxy configuration
+     * 
+     * @return the proxy configuration
+     */
+    public ProxyConfig getProxyConfig() {
+        return proxyConfig;
+    }
 
-		params.setSoTimeout(proxyConfig.getSoTimeout());
-		params.setConnectionTimeout(proxyConfig.getConnectionTimeout());
-		params.setMaxTotalConnections(proxyConfig.getMaxTotalConnections());
-		params.setDefaultMaxConnectionsPerHost(proxyConfig
-				.getDefaultMaxConnectionsPerHost());
+    /**
+     * Change proxy configuration
+     * 
+     * @param new proxy configuration
+     */
+    public void setProxyConfig(ProxyConfig proxyConfig) {
+        this.proxyConfig = proxyConfig;
+        loadProxyConfig();
+    }
 
-		connectionManager.setParams(params);
-		httpClient = new HttpClient(connectionManager);
-		
-		configureCallbacks();
-	}
+    /**
+     * Load proxy configuration when proxy config has changed
+     */
+    private void loadProxyConfig() {
+        connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
 
-	/**
-	 * Configure the proxy callbacks
-	 */
-	private void configureCallbacks() {
-		
-		if(callbacks != null){
-			// Change callbacks configuration
-			for(ProxyCallback callback: callbacks){
-				callback.setProxyConfig(proxyConfig);
-			}
-		}
-	}
-	
-	/**
-     * Performs an HTTP request. Read <code>httpServletRequest</code> method. Default method is HTTP GET. 
+        params.setSoTimeout(proxyConfig.getSoTimeout());
+        params.setConnectionTimeout(proxyConfig.getConnectionTimeout());
+        params.setMaxTotalConnections(proxyConfig.getMaxTotalConnections());
+        params.setDefaultMaxConnectionsPerHost(proxyConfig.getDefaultMaxConnectionsPerHost());
+
+        connectionManager.setParams(params);
+        httpClient = new HttpClient(connectionManager);
+
+        configureCallbacks();
+    }
+
+    /**
+     * Configure the proxy callbacks
+     */
+    private void configureCallbacks() {
+
+        if (callbacks != null) {
+            // Change callbacks configuration
+            for (ProxyCallback callback : callbacks) {
+                callback.setProxyConfig(proxyConfig);
+            }
+        }
+    }
+
+    /**
+     * Performs an HTTP request. Read <code>httpServletRequest</code> method. Default method is HTTP GET.
      * 
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
-	public void execute(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) throws  IOException, ServletException {
-		try {
-			this.doMethod(httpServletRequest, httpServletResponse);
-		} catch (HttpErrorException ex) {
+    public void execute(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException, ServletException {
+        try {
+            this.doMethod(httpServletRequest, httpServletResponse);
+        } catch (HttpErrorException ex) {
             httpServletResponse.sendError(ex.getCode(), ex.getMessage());
-		} catch (Exception e) {
+        } catch (Exception e) {
             httpServletResponse.sendError(HttpStatus.SC_SERVICE_UNAVAILABLE, e.getMessage());
-		} finally {
+        } finally {
             onFinish();
         }
 
-	}
+    }
 
     /**
      * 
@@ -243,9 +243,10 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             callback.onFinish();
         }
     }
-    
+
     /**
      * Callback method beforeExecuteProxyRequest executed before execute the proxy request
+     * 
      * @param httpMethodProxyRequest
      * @param httpServletRequest
      * @param httpServletResponse
@@ -257,17 +258,18 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
     public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             String user, String password, ProxyInfo proxyInfo) throws IOException {
-    	boolean continueWithRequest = true;
-    	// by default we use the old implementation
-    	if (user != null && password != null) {
-			UsernamePasswordCredentials upc = new UsernamePasswordCredentials(user, password);
-			httpClient.getState().setCredentials(AuthScope.ANY, upc);
-    	}
-    	// call on beforeExecuteProxyRequest calbacks. It could stop the request, change some headers...
+        boolean continueWithRequest = true;
+        // by default we use the old implementation
+        if (user != null && password != null) {
+            UsernamePasswordCredentials upc = new UsernamePasswordCredentials(user, password);
+            httpClient.getState().setCredentials(AuthScope.ANY, upc);
+        }
+        // call on beforeExecuteProxyRequest calbacks. It could stop the request, change some headers...
         for (ProxyCallback callback : callbacks) {
-            continueWithRequest = callback.beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest, httpServletResponse, user, password, proxyInfo);
-            if(!continueWithRequest){
-            	break;
+            continueWithRequest = callback.beforeExecuteProxyRequest(httpMethodProxyRequest,
+                    httpServletRequest, httpServletResponse, user, password, proxyInfo);
+            if (!continueWithRequest) {
+                break;
             }
         }
         return continueWithRequest;
@@ -279,14 +281,14 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
-    public void doMethod(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
-    	
-    	// Create a request wrapper to allow multiple reads of input stream
-    	BufferedRequestWrapper requestWrapper = new BufferedRequestWrapper(httpServletRequest);
-    	
-		ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(
-				requestWrapper, httpServletResponse, this);
+    public void doMethod(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException, ServletException {
+
+        // Create a request wrapper to allow multiple reads of input stream
+        BufferedRequestWrapper requestWrapper = new BufferedRequestWrapper(httpServletRequest);
+
+        ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(requestWrapper,
+                httpServletResponse, this);
 
         if (methodConfig != null) {
 
@@ -300,26 +302,26 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             // Forward the request headers
             // //////////////////////////////
 
-            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(), requestWrapper,
-            		methodProxyRequest);
+            final ProxyInfo proxyInfo = setProxyRequestHeaders(methodConfig.getUrl(),
+                    requestWrapper, methodProxyRequest);
 
             // //////////////////////////////////////////////////
             // Check if this is a mulitpart (file upload) PUT | POST
             // //////////////////////////////////////////////////
 
-            if(methodProxyRequest instanceof EntityEnclosingMethod){
-	            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-	                this.handleMultipart((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
-	            } else {
-	                this.handleStandard((EntityEnclosingMethod)methodProxyRequest, requestWrapper);
-	            }
+            if (methodProxyRequest instanceof EntityEnclosingMethod) {
+                if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
+                    this.handleMultipart((EntityEnclosingMethod) methodProxyRequest, requestWrapper);
+                } else {
+                    this.handleStandard((EntityEnclosingMethod) methodProxyRequest, requestWrapper);
+                }
             }
 
             // //////////////////////////////
             // Execute the proxy request
             // //////////////////////////////
-            this.executeProxyRequest(methodProxyRequest, requestWrapper,
-                    httpServletResponse, methodConfig.getUser(), methodConfig.getPassword(), proxyInfo);
+            this.executeProxyRequest(methodProxyRequest, requestWrapper, httpServletResponse,
+                    methodConfig.getUser(), methodConfig.getPassword(), proxyInfo);
 
         }
     }
@@ -362,7 +364,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             // Get the multipart items as a list
             // /////////////////////////////////////
 
-			List<FileItem> listFileItems = (List<FileItem>) servletFileUpload
+            List<FileItem> listFileItems = (List<FileItem>) servletFileUpload
                     .parseRequest(httpServletRequest);
 
             // /////////////////////////////////////////
@@ -456,15 +458,16 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
      */
     private void handleStandard(EntityEnclosingMethod methodProxyRequest,
             HttpServletRequest httpServletRequest) throws IOException {
-		  try {
-			 
-		      methodProxyRequest.setRequestEntity(new InputStreamRequestEntity(httpServletRequest.getInputStream()));
-		      //LOGGER.info("original request content length:" + httpServletRequest.getContentLength());
-		      //LOGGER.info("proxied request content length:" +methodProxyRequest.getRequestEntity().getContentLength()+"");
-		       
-		  } catch (IOException e) {
-		      throw new IOException(e);
-		  }
+        try {
+
+            methodProxyRequest.setRequestEntity(new InputStreamRequestEntity(httpServletRequest
+                    .getInputStream()));
+            // LOGGER.info("original request content length:" + httpServletRequest.getContentLength());
+            // LOGGER.info("proxied request content length:" +methodProxyRequest.getRequestEntity().getContentLength()+"");
+
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
     }
 
     /**
@@ -480,13 +483,14 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             String user, String password, ProxyInfo proxyInfo) throws IOException, ServletException {
 
-    	// pre execute proxy request callback
-    	if(beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest, httpServletResponse, user, password, proxyInfo)){
-    		httpMethodProxyRequest.setFollowRedirects(false);
+        // pre execute proxy request callback
+        if (beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest,
+                httpServletResponse, user, password, proxyInfo)) {
+            httpMethodProxyRequest.setFollowRedirects(false);
 
             InputStream inputStreamServerResponse = null;
             ByteArrayOutputStream baos = null;
-            
+
             try {
 
                 // //////////////////////////
@@ -578,8 +582,8 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
                         continue;
                     else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_TRANSFER_ENCODING))
                         continue;
-//                    else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_WWW_AUTHENTICATE))
-//                        continue;                
+                    // else if (header.getName().equalsIgnoreCase(Utils.HTTP_HEADER_WWW_AUTHENTICATE))
+                    // continue;
                     else
                         httpServletResponse.setHeader(header.getName(), header.getValue());
                 }
@@ -587,55 +591,52 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
                 // ///////////////////////////////////
                 // Send the content to the client
                 // ///////////////////////////////////
-                
-                inputStreamServerResponse = httpMethodProxyRequest
-                		.getResponseBodyAsStream();
-                
-                if(inputStreamServerResponse != null){
+
+                inputStreamServerResponse = httpMethodProxyRequest.getResponseBodyAsStream();
+
+                if (inputStreamServerResponse != null) {
                     byte[] b = new byte[proxyConfig.getDefaultStreamByteSize()];
-                    
+
                     baos = new ByteArrayOutputStream(b.length);
-                    
+
                     int read = 0;
-        		    while((read = inputStreamServerResponse.read(b)) > 0){ 
-        		      	baos.write(b, 0, read);
-        		        baos.flush();
-        		    }
-        	            
-        		    baos.writeTo(httpServletResponse.getOutputStream());
+                    while ((read = inputStreamServerResponse.read(b)) > 0) {
+                        baos.write(b, 0, read);
+                        baos.flush();
+                    }
+
+                    baos.writeTo(httpServletResponse.getOutputStream());
                 }
-                
+
             } catch (HttpException e) {
                 if (LOGGER.isLoggable(Level.SEVERE))
                     LOGGER.log(Level.SEVERE, "Error executing HTTP method ", e);
             } finally {
-    			try {
-    	        	if(inputStreamServerResponse != null)
-    	        		inputStreamServerResponse.close();
-    			} catch (IOException e) {
-    				if (LOGGER.isLoggable(Level.SEVERE))
-    					LOGGER.log(Level.SEVERE,
-    							"Error closing request input stream ", e);
-    				throw new ServletException(e.getMessage());
-    			}
-    			
-    			try {
-    	        	if(baos != null){
-    	        		baos.flush();
-    	        		baos.close();
-    	        	}
-    			} catch (IOException e) {
-    				if (LOGGER.isLoggable(Level.SEVERE))
-    					LOGGER.log(Level.SEVERE,
-    							"Error closing response stream ", e);
-    				throw new ServletException(e.getMessage());
-    			}
-            	
+                try {
+                    if (inputStreamServerResponse != null)
+                        inputStreamServerResponse.close();
+                } catch (IOException e) {
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Error closing request input stream ", e);
+                    throw new ServletException(e.getMessage());
+                }
+
+                try {
+                    if (baos != null) {
+                        baos.flush();
+                        baos.close();
+                    }
+                } catch (IOException e) {
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Error closing response stream ", e);
+                    throw new ServletException(e.getMessage());
+                }
+
                 httpMethodProxyRequest.releaseConnection();
             }
-    	}else if (LOGGER.isLoggable(Level.FINE)){
-    		LOGGER.log(Level.FINE, "The proxy execution has been handled in a callback");
-    	}
+        } else if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "The proxy execution has been handled in a callback");
+        }
     }
 
     /**
@@ -715,19 +716,19 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
 
         return proxyInfo;
     }
-    
+
     /**
      * Add a proxy callback
      * 
      * @param callback to be added
      */
-	public void addCallback(ProxyCallback callback) {
-		if(callbacks == null){
-			callbacks = new LinkedList<ProxyCallback>();
-		}
-		callbacks.add(callback);
-	}
-    
+    public void addCallback(ProxyCallback callback) {
+        if (callbacks == null) {
+            callbacks = new LinkedList<ProxyCallback>();
+        }
+        callbacks.add(callback);
+    }
+
     /**
      * @return int the maximum file upload size.
      */
@@ -735,113 +736,113 @@ public class ProxyServiceImpl implements ProxyService, Serializable{
         return maxFileUploadSize;
     }
 
-	/**
-	 * @return the callbacks
-	 */
-	public List<ProxyCallback> getCallbacks() {
-		return callbacks;
-	}
+    /**
+     * @return the callbacks
+     */
+    public List<ProxyCallback> getCallbacks() {
+        return callbacks;
+    }
 
-	/**
-	 * @param callbacks the callbacks to set
-	 */
-	public void setCallbacks(List<ProxyCallback> callbacks) {
-		this.callbacks = callbacks;
-		configureCallbacks();
-	}
+    /**
+     * @param callbacks the callbacks to set
+     */
+    public void setCallbacks(List<ProxyCallback> callbacks) {
+        this.callbacks = callbacks;
+        configureCallbacks();
+    }
 
-	/**
-	 * @return the proxyHelper
-	 */
-	public ProxyHelper getProxyHelper() {
-		return proxyHelper;
-	}
+    /**
+     * @return the proxyHelper
+     */
+    public ProxyHelper getProxyHelper() {
+        return proxyHelper;
+    }
 
-	/**
-	 * @param proxyHelper the proxyHelper to set
-	 */
-	public void setProxyHelper(ProxyHelper proxyHelper) {
-		this.proxyHelper = proxyHelper;
-	}
-	
+    /**
+     * @param proxyHelper the proxyHelper to set
+     */
+    public void setProxyHelper(ProxyHelper proxyHelper) {
+        this.proxyHelper = proxyHelper;
+    }
 
-	/**
-	 * Request wrapper to allow input stream reads on callbacks
-	 * 
-	 * @author adiaz
-	 *
-	 */
-	private class BufferedRequestWrapper extends HttpServletRequestWrapper {
+    /**
+     * Request wrapper to allow input stream reads on callbacks
+     * 
+     * @author adiaz
+     * 
+     */
+    private class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
-		ByteArrayInputStream bais;
-		ByteArrayOutputStream baos;
-		BufferedServletInputStream bsis;
-		byte[] buffer;
-		
-		/**
-		 * Constructor
-		 * @param req
-		 * @throws IOException
-		 */
-		public BufferedRequestWrapper(HttpServletRequest req)
-				throws IOException {
-			super(req);
-			// Read InputStream and store its content in a buffer.
-			InputStream is = req.getInputStream();
-			baos = new ByteArrayOutputStream();
-			byte buf[] = new byte[1024];
-			int letti;
-			while ((letti = is.read(buf)) > 0)
-				baos.write(buf, 0, letti);
-			buffer = baos.toByteArray();
-		}
+        ByteArrayInputStream bais;
 
-		/**
-		 * Get input stream wrapped
-		 */
-		public ServletInputStream getInputStream() {
-			try {
-				// Generate a new InputStream by stored buffer
-				bais = new ByteArrayInputStream(buffer);
-				// Istantiate a subclass of ServletInputStream
-				// (Only ServletInputStream or subclasses of it are accepted by
-				// the servlet engine!)
-				bsis = new BufferedServletInputStream(bais);
-			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE,
-						"Error on input stream copy", e);
-			}
-			
-			return bsis;
-		}
+        ByteArrayOutputStream baos;
 
-	}
+        BufferedServletInputStream bsis;
 
-	/*
-	 * Subclass of ServletInputStream needed by the servlet engine. All
-	 * inputStream methods are wrapped and are delegated to the
-	 * ByteArrayInputStream (obtained as constructor parameter)!
-	 */
-	private class BufferedServletInputStream extends ServletInputStream {
+        byte[] buffer;
 
-		ByteArrayInputStream bais;
+        /**
+         * Constructor
+         * 
+         * @param req
+         * @throws IOException
+         */
+        public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
+            super(req);
+            // Read InputStream and store its content in a buffer.
+            InputStream is = req.getInputStream();
+            baos = new ByteArrayOutputStream();
+            byte buf[] = new byte[1024];
+            int letti;
+            while ((letti = is.read(buf)) > 0)
+                baos.write(buf, 0, letti);
+            buffer = baos.toByteArray();
+        }
 
-		public BufferedServletInputStream(ByteArrayInputStream bais) {
-			this.bais = bais;
-		}
+        /**
+         * Get input stream wrapped
+         */
+        public ServletInputStream getInputStream() {
+            try {
+                // Generate a new InputStream by stored buffer
+                bais = new ByteArrayInputStream(buffer);
+                // Istantiate a subclass of ServletInputStream
+                // (Only ServletInputStream or subclasses of it are accepted by
+                // the servlet engine!)
+                bsis = new BufferedServletInputStream(bais);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error on input stream copy", e);
+            }
 
-		public int available() {
-			return bais.available();
-		}
+            return bsis;
+        }
 
-		public int read() {
-			return bais.read();
-		}
+    }
 
-		public int read(byte[] buf, int off, int len) {
-			return bais.read(buf, off, len);
-		}
+    /*
+     * Subclass of ServletInputStream needed by the servlet engine. All inputStream methods are wrapped and are delegated to the ByteArrayInputStream
+     * (obtained as constructor parameter)!
+     */
+    private class BufferedServletInputStream extends ServletInputStream {
 
-	}
+        ByteArrayInputStream bais;
+
+        public BufferedServletInputStream(ByteArrayInputStream bais) {
+            this.bais = bais;
+        }
+
+        public int available() {
+            return bais.available();
+        }
+
+        public int read() {
+            return bais.read();
+        }
+
+        public int read(byte[] buf, int off, int len) {
+            return bais.read(buf, off, len);
+        }
+
+    }
 
 }

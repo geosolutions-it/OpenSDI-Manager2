@@ -33,30 +33,30 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface ServiceBoxActionHandler {
 
-	/**
-	 * Handle a GET request
-	 * 
-	 * @param request
-	 * @param response
-	 * 
-	 * @return CallbackResult
-	 * 
-	 * @throws IOException
-	 */
-	public ServiceBoxActionParameters doGet(HttpServletRequest request,
-			HttpServletResponse response) throws IOException;
+    /**
+     * Handle a GET request
+     * 
+     * @param request
+     * @param response
+     * 
+     * @return CallbackResult
+     * 
+     * @throws IOException
+     */
+    public ServiceBoxActionParameters doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException;
 
-	/**
-	 * Handle a POST request
-	 * 
-	 * @param request
-	 * @param response
-	 * 
-	 * @return CallbackResult
-	 * 
-	 * @throws IOException
-	 */
-	public ServiceBoxActionParameters doPost(HttpServletRequest request,
-			HttpServletResponse response) throws IOException;
+    /**
+     * Handle a POST request
+     * 
+     * @param request
+     * @param response
+     * 
+     * @return CallbackResult
+     * 
+     * @throws IOException
+     */
+    public ServiceBoxActionParameters doPost(HttpServletRequest request,
+            HttpServletResponse response) throws IOException;
 
 }

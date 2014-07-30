@@ -37,13 +37,13 @@ import org.apache.commons.httpclient.HttpMethod;
  * @author Tobia Di Pisa at tobia.dipisa@geo-solutions.it
  * @author Alejandro Diaz
  */
-public class HostNameChecker extends AbstractProxyCallback implements ProxyCallback{
+public class HostNameChecker extends AbstractProxyCallback implements ProxyCallback {
 
     /**
      * Default constructor
      */
     public HostNameChecker() {
-    	super();
+        super();
     }
 
     /**

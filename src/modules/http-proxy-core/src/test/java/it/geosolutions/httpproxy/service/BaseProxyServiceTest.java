@@ -34,40 +34,39 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public abstract class BaseProxyServiceTest extends BaseHttpTest {
 
-	@Autowired
-	protected ProxyService proxy;
+    @Autowired
+    protected ProxyService proxy;
 
-	protected static final String testUrl = "http://demo1.geo-solutions.it/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&version=1.3.0";
+    protected static final String testUrl = "http://demo1.geo-solutions.it/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&version=1.3.0";
 
-	/**
-	 * Test IProxyService execute as HTTP GET
-	 */
-	public void executeGet() {
-		try {
-			// Generate mocked request and response
-			MockHttpServletRequest mockRequest = new MockHttpServletRequest(
-					"GET", "/proxy/");
-			mockRequest.addParameter("url", testUrl);
-			MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+    /**
+     * Test IProxyService execute as HTTP GET
+     */
+    public void executeGet() {
+        try {
+            // Generate mocked request and response
+            MockHttpServletRequest mockRequest = new MockHttpServletRequest("GET", "/proxy/");
+            mockRequest.addParameter("url", testUrl);
+            MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
-			// Call proxy execute
-			proxy.execute(mockRequest, mockResponse);
+            // Call proxy execute
+            proxy.execute(mockRequest, mockResponse);
 
-			// Assert the response
-			assertNotNull(mockResponse);
-			assertEquals(mockResponse.getStatus(), HttpStatus.SC_OK);
-			assertNotNull(mockResponse.getOutputStream());
-			assertNotNull(mockResponse.getContentType());
-			assertTrue(mockResponse.getContentType().contains("text/xml"));
+            // Assert the response
+            assertNotNull(mockResponse);
+            assertEquals(mockResponse.getStatus(), HttpStatus.SC_OK);
+            assertNotNull(mockResponse.getOutputStream());
+            assertNotNull(mockResponse.getContentType());
+            assertTrue(mockResponse.getContentType().contains("text/xml"));
 
-			LOGGER.info("Success proxy GET in '" + testUrl + "'");
-			LOGGER.info("************************ Response ************************");
-			LOGGER.info(mockResponse.getContentAsString());
-			LOGGER.info("********************** EoF Response **********************");
+            LOGGER.info("Success proxy GET in '" + testUrl + "'");
+            LOGGER.info("************************ Response ************************");
+            LOGGER.info(mockResponse.getContentAsString());
+            LOGGER.info("********************** EoF Response **********************");
 
-		} catch (Exception e) {
-			fail("Exception executing proxy");
-		}
-	}
+        } catch (Exception e) {
+            fail("Exception executing proxy");
+        }
+    }
 
 }

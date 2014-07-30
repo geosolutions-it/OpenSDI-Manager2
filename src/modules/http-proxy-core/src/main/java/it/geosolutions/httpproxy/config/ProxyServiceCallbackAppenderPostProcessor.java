@@ -28,87 +28,82 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
- * This post processor append a list of callbacks {@link #callbacksToAdd} to a
- * specific proxy (by {@link #beanName}) or to all proxy instances in the spring
- * session
+ * This post processor append a list of callbacks {@link #callbacksToAdd} to a specific proxy (by {@link #beanName}) or to all proxy instances in the
+ * spring session
  * 
  * @author adiaz
  * 
  */
-public class ProxyServiceCallbackAppenderPostProcessor implements
-		BeanPostProcessor {
+public class ProxyServiceCallbackAppenderPostProcessor implements BeanPostProcessor {
 
-	/**
-	 * Bean name of the ProxyService
-	 */
-	private String beanName;
+    /**
+     * Bean name of the ProxyService
+     */
+    private String beanName;
 
-	/**
-	 * Proxy callbacks to add
-	 */
-	private List<ProxyCallback> callbacksToAdd;
+    /**
+     * Proxy callbacks to add
+     */
+    private List<ProxyCallback> callbacksToAdd;
 
-	/**
-	 * Add callbacks to the named bean or to all proxy implementations
-	 * 
-	 * @see org.springframework.beans.factory.config.BeanPostProcessor#
-	 *      postProcessAfterInitialization(java.lang.Object, java.lang.String)
-	 */
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
-		boolean register = false;
-		if (this.beanName != null) {
-			register = beanName.equals(this.beanName);
-		} else {
-			register = true;
-		}
-		if (register && bean instanceof ProxyService) {
-			for (ProxyCallback callback : callbacksToAdd) {
-				((ProxyService) bean).addCallback(callback);
-			}
-		}
-		return bean;
-	}
+    /**
+     * Add callbacks to the named bean or to all proxy implementations
+     * 
+     * @see org.springframework.beans.factory.config.BeanPostProcessor# postProcessAfterInitialization(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName)
+            throws BeansException {
+        boolean register = false;
+        if (this.beanName != null) {
+            register = beanName.equals(this.beanName);
+        } else {
+            register = true;
+        }
+        if (register && bean instanceof ProxyService) {
+            for (ProxyCallback callback : callbacksToAdd) {
+                ((ProxyService) bean).addCallback(callback);
+            }
+        }
+        return bean;
+    }
 
-	/**
-	 * Empty method.
-	 * 
-	 * @see BeanPostProcessor#postProcessBeforeInitialization(Object, String)
-	 */
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
-	}
+    /**
+     * Empty method.
+     * 
+     * @see BeanPostProcessor#postProcessBeforeInitialization(Object, String)
+     */
+    public Object postProcessBeforeInitialization(Object bean, String beanName)
+            throws BeansException {
+        return bean;
+    }
 
-	/**
-	 * @return the beanName
-	 */
-	public String getBeanName() {
-		return beanName;
-	}
+    /**
+     * @return the beanName
+     */
+    public String getBeanName() {
+        return beanName;
+    }
 
-	/**
-	 * @param beanName
-	 *            the beanName to set
-	 */
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
+    /**
+     * @param beanName the beanName to set
+     */
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 
-	/**
-	 * @return the callbacksToAdd
-	 */
-	public List<ProxyCallback> getCallbacksToAdd() {
-		return callbacksToAdd;
-	}
+    /**
+     * @return the callbacksToAdd
+     */
+    public List<ProxyCallback> getCallbacksToAdd() {
+        return callbacksToAdd;
+    }
 
-	/**
-	 * @param callbacksToAdd
-	 *            the callbacksToAdd to set
-	 */
-	public void setCallbacksToAdd(List<ProxyCallback> callbacksToAdd) {
-		this.callbacksToAdd = callbacksToAdd;
-	}
+    /**
+     * @param callbacksToAdd the callbacksToAdd to set
+     */
+    public void setCallbacksToAdd(List<ProxyCallback> callbacksToAdd) {
+        this.callbacksToAdd = callbacksToAdd;
+    }
 
 }

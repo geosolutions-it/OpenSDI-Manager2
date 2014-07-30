@@ -28,24 +28,24 @@ import javax.servlet.http.HttpServlet;
  */
 public class HttpMethods {
 
-	/**
-	 * {@link HttpServlet#METHOD_DELETE}
-	 */
-	public static final String METHOD_DELETE = "DELETE";
+    /**
+     * {@link HttpServlet#METHOD_DELETE}
+     */
+    public static final String METHOD_DELETE = "DELETE";
 
-	/**
-	 * {@link HttpServlet#METHOD_GET}
-	 */
-	public static final String METHOD_GET = "GET";
+    /**
+     * {@link HttpServlet#METHOD_GET}
+     */
+    public static final String METHOD_GET = "GET";
 
-	/**
-	 * {@link HttpServlet#METHOD_POST}
-	 */
-	public static final String METHOD_POST = "POST";
+    /**
+     * {@link HttpServlet#METHOD_POST}
+     */
+    public static final String METHOD_POST = "POST";
 
-	/**
-	 * {@link HttpServlet#METHOD_PUT}
-	 */
-	public static final String METHOD_PUT = "PUT";
+    /**
+     * {@link HttpServlet#METHOD_PUT}
+     */
+    public static final String METHOD_PUT = "PUT";
 
 }

@@ -34,12 +34,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration("classpath:http-proxy-default.xml")
 public class ProxyServiceDefaultTest extends BaseProxyServiceTest {
 
-	/**
-	 * Test IProxyService execute as HTTP GET
-	 */
-	@Test
-	public void testExecuteGet() {
-		super.executeGet();
-	}
+    /**
+     * Test IProxyService execute as HTTP GET
+     */
+    @Test
+    public void testExecuteGet() {
+        super.executeGet();
+    }
 
 }

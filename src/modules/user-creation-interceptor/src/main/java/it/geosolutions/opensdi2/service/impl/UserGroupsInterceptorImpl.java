@@ -45,252 +45,237 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * This user interceptor call uses an user group service to synchronize user and
- * groups on the user edition
+ * This user interceptor call uses an user group service to synchronize user and groups on the user edition
  * 
  * @author adiaz
  * 
  */
 public class UserGroupsInterceptorImpl implements UserInterceptorService {
 
-	/**
-	 * GeoStoreClient in the applicationContext
-	 */
-	AdministratorGeoStoreClient geoStoreClient;
+    /**
+     * GeoStoreClient in the applicationContext
+     */
+    AdministratorGeoStoreClient geoStoreClient;
 
-	/**
-	 * Service to save the user group relations
-	 */
-	UserGroupService userService;
+    /**
+     * Service to save the user group relations
+     */
+    UserGroupService userService;
 
-	/**
-	 * User credentials to be saved
-	 */
-	private Stack<User> usersToSave = new Stack<User>();
+    /**
+     * User credentials to be saved
+     */
+    private Stack<User> usersToSave = new Stack<User>();
 
-	/**
-	 * LDAP DN groups into users are ADMIN
-	 */
-	private List<String> userAdminGroups;
+    /**
+     * LDAP DN groups into users are ADMIN
+     */
+    private List<String> userAdminGroups;
 
-	private final static Logger LOGGER = Logger
-			.getLogger(UserGroupsInterceptorImpl.class);
+    private final static Logger LOGGER = Logger.getLogger(UserGroupsInterceptorImpl.class);
 
-	/**
-	 * Synchronize user groups when the request is finished (after other
-	 * actions)
-	 */
-	public void onFinish() {
-		if(!usersToSave.isEmpty())
-			synchronizeUserGroups(usersToSave.pop());
-	}
+    /**
+     * Synchronize user groups when the request is finished (after other actions)
+     */
+    public void onFinish() {
+        if (!usersToSave.isEmpty())
+            synchronizeUserGroups(usersToSave.pop());
+    }
 
-	/**
-	 * Synchronize user groups with the user information
-	 * 
-	 * @param user
-	 */
-	private void synchronizeUserGroups(User user) {
-		try {
-			List<String> groups = new LinkedList<String>();
-			for (UserGroup group : user.getGroups()) {
-				groups.add(group.getGroupName());
-			}
-			if (!userService.setUserGroups(user.getName(), groups)) {
-				LOGGER.error("Error synchronizing user groups for user " + user);
-			} else {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("User groups synchronized for user " + user);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error synchronizing user groups for user " + user, e);
-		}
-	}
+    /**
+     * Synchronize user groups with the user information
+     * 
+     * @param user
+     */
+    private void synchronizeUserGroups(User user) {
+        try {
+            List<String> groups = new LinkedList<String>();
+            for (UserGroup group : user.getGroups()) {
+                groups.add(group.getGroupName());
+            }
+            if (!userService.setUserGroups(user.getName(), groups)) {
+                LOGGER.error("Error synchronizing user groups for user " + user);
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("User groups synchronized for user " + user);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error synchronizing user groups for user " + user, e);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserInterceptorService#onUserCreation
-	 * (it.geosolutions.geostore.core.model.User)
-	 */
-	@Override
-	public void onUserCreation(User user) {
-		usersToSave.add(user);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserInterceptorService#onUserCreation (it.geosolutions.geostore.core.model.User)
+     */
+    @Override
+    public void onUserCreation(User user) {
+        usersToSave.add(user);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserIterceptorService#onUserUpdate(it
-	 * .geosolutions.geostore.core.model.User)
-	 */
-	@Override
-	public void onUserUpdate(User user) {
-		onUserCreation(user);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserIterceptorService#onUserUpdate(it .geosolutions.geostore.core.model.User)
+     */
+    @Override
+    public void onUserUpdate(User user) {
+        onUserCreation(user);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserIterceptorService#onUserDelete(java
-	 * .lang.Long)
-	 */
-	@Override
-	public void onUserDelete(Long userId) {
-		try {
-			User user = geoStoreClient.getUser(userId);
-			if (!userService.setUserGroups(user.getName(), null)) {
-				LOGGER.error("Error synchronizing user groups for user " + user);
-			} else {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserIterceptorService#onUserDelete(java .lang.Long)
+     */
+    @Override
+    public void onUserDelete(Long userId) {
+        try {
+            User user = geoStoreClient.getUser(userId);
+            if (!userService.setUserGroups(user.getName(), null)) {
+                LOGGER.error("Error synchronizing user groups for user " + user);
+            } else {
 
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("User groups synchronized for user " + user);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error synchronizing user groups for user " + userId,
-					e);
-		}
-	}
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("User groups synchronized for user " + user);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error synchronizing user groups for user " + userId, e);
+        }
+    }
 
-	@Override
-	public boolean onUserOperation(String operation,
-			HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    public boolean onUserOperation(String operation, HttpServletRequest request,
+            HttpServletResponse response) {
 
-		boolean continueWithRequest = true;
-		// this method cheat the ADMIN role for current LDAP admin groups,
-		SecurityContext sc = SecurityContextHolder.getContext();
-		String username = (String) sc.getAuthentication().getPrincipal();
-		User user = geoStoreClient.getUser(username);
+        boolean continueWithRequest = true;
+        // this method cheat the ADMIN role for current LDAP admin groups,
+        SecurityContext sc = SecurityContextHolder.getContext();
+        String username = (String) sc.getAuthentication().getPrincipal();
+        User user = geoStoreClient.getUser(username);
 
-		List<String> groups = userService.getUserGroups(username);
-		for (String group : groups) {
-			if (userAdminGroups != null && userAdminGroups.contains(group)) {
-				user.setRole(Role.ADMIN);
-				break;
-			}
-		}
+        List<String> groups = userService.getUserGroups(username);
+        for (String group : groups) {
+            if (userAdminGroups != null && userAdminGroups.contains(group)) {
+                user.setRole(Role.ADMIN);
+                break;
+            }
+        }
 
-		if (operation != null) {
-			if (operation.equals("details")) {
-				try {
-					response.setContentType("application/json");
+        if (operation != null) {
+            if (operation.equals("details")) {
+                try {
+                    response.setContentType("application/json");
 
-					ObjectMapper mapper = new ObjectMapper();
-					AnnotationIntrospector introspector = new JacksonAnnotationIntrospector();
-					mapper.setAnnotationIntrospector(introspector);
-					mapper.configure(
-							SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
-					mapper.writeValue(response.getOutputStream(), user);
-					response.flushBuffer();
-					continueWithRequest = false;
-				} catch (Exception e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-		return continueWithRequest;
-	}
+                    ObjectMapper mapper = new ObjectMapper();
+                    AnnotationIntrospector introspector = new JacksonAnnotationIntrospector();
+                    mapper.setAnnotationIntrospector(introspector);
+                    mapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
+                    mapper.writeValue(response.getOutputStream(), user);
+                    response.flushBuffer();
+                    continueWithRequest = false;
+                } catch (Exception e) {
+                    LOGGER.error(e);
+                }
+            }
+        }
+        return continueWithRequest;
+    }
 
-	@Override
-	public void onRemoteResponse(HttpMethod method) throws IOException {
-	}
+    @Override
+    public void onRemoteResponse(HttpMethod method) throws IOException {
+    }
 
-	/**
-	 * Get credentials for the remote operation
-	 * 
-	 * @return credentials to perform the operation
-	 */
-	public WrappedCredentials getCredentials() {
-		// Get user groups from the secure context
-		SecurityContext sc = SecurityContextHolder.getContext();
-		String username = (String) sc.getAuthentication().getPrincipal();
-		List<String> groups = userService.getUserGroups(username);
+    /**
+     * Get credentials for the remote operation
+     * 
+     * @return credentials to perform the operation
+     */
+    public WrappedCredentials getCredentials() {
+        // Get user groups from the secure context
+        SecurityContext sc = SecurityContextHolder.getContext();
+        String username = (String) sc.getAuthentication().getPrincipal();
+        List<String> groups = userService.getUserGroups(username);
 
-		// check if the group grant ADMIN role
-		for (String group : groups) {
-			if (userAdminGroups != null && userAdminGroups.contains(group)) {
-				// return a wrapped credential based on the geostore client
-				// credentials
-				return new WrappedCredentials() {
-					@Override
-					public String getUserPassword() {
-						return geoStoreClient.getPassword();
-					}
+        // check if the group grant ADMIN role
+        for (String group : groups) {
+            if (userAdminGroups != null && userAdminGroups.contains(group)) {
+                // return a wrapped credential based on the geostore client
+                // credentials
+                return new WrappedCredentials() {
+                    @Override
+                    public String getUserPassword() {
+                        return geoStoreClient.getPassword();
+                    }
 
-					@Override
-					public String getUserName() {
-						return geoStoreClient.getUsername();
-					}
-				};
-			}
-		}
+                    @Override
+                    public String getUserName() {
+                        return geoStoreClient.getUsername();
+                    }
+                };
+            }
+        }
 
-		// it isn't an admin: return null credentials
-		return null;
-	}
+        // it isn't an admin: return null credentials
+        return null;
+    }
 
-	/**
-	 * @return the geoStoreClient
-	 */
-	public AdministratorGeoStoreClient getGeoStoreClient() {
-		return geoStoreClient;
-	}
+    /**
+     * @return the geoStoreClient
+     */
+    public AdministratorGeoStoreClient getGeoStoreClient() {
+        return geoStoreClient;
+    }
 
-	/**
-	 * @param geoStoreClient
-	 *            the geoStoreClient to set
-	 */
-	public void setGeoStoreClient(AdministratorGeoStoreClient geoStoreClient) {
-		this.geoStoreClient = geoStoreClient;
-	}
+    /**
+     * @param geoStoreClient the geoStoreClient to set
+     */
+    public void setGeoStoreClient(AdministratorGeoStoreClient geoStoreClient) {
+        this.geoStoreClient = geoStoreClient;
+    }
 
-	/**
-	 * @return the userService
-	 */
-	public UserGroupService getUserService() {
-		return userService;
-	}
+    /**
+     * @return the userService
+     */
+    public UserGroupService getUserService() {
+        return userService;
+    }
 
-	/**
-	 * @param userService
-	 *            the userService to set
-	 */
-	public void setUserService(UserGroupService userService) {
-		this.userService = userService;
-	}
+    /**
+     * @param userService the userService to set
+     */
+    public void setUserService(UserGroupService userService) {
+        this.userService = userService;
+    }
 
-	/**
-	 * @return the usersToSave
-	 */
-	public Stack<User> getUsersToSave() {
-		return usersToSave;
-	}
+    /**
+     * @return the usersToSave
+     */
+    public Stack<User> getUsersToSave() {
+        return usersToSave;
+    }
 
-	/**
-	 * @param usersToSave
-	 *            the usersToSave to set
-	 */
-	public void setUsersToSave(Stack<User> usersToSave) {
-		this.usersToSave = usersToSave;
-	}
+    /**
+     * @param usersToSave the usersToSave to set
+     */
+    public void setUsersToSave(Stack<User> usersToSave) {
+        this.usersToSave = usersToSave;
+    }
 
-	/**
-	 * @return the userAdminGroups
-	 */
-	public List<String> getUserAdminGroups() {
-		return userAdminGroups;
-	}
+    /**
+     * @return the userAdminGroups
+     */
+    public List<String> getUserAdminGroups() {
+        return userAdminGroups;
+    }
 
-	/**
-	 * @param userAdminGroups
-	 *            the userAdminGroups to set
-	 */
-	public void setUserAdminGroups(List<String> userAdminGroups) {
-		this.userAdminGroups = userAdminGroups;
-	}
+    /**
+     * @param userAdminGroups the userAdminGroups to set
+     */
+    public void setUserAdminGroups(List<String> userAdminGroups) {
+        this.userAdminGroups = userAdminGroups;
+    }
 }

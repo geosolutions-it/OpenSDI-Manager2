@@ -34,74 +34,70 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ServiceBoxActionHandlerImpl implements ServiceBoxActionHandler {
 
-	private List<Callback> callbacks;
+    private List<Callback> callbacks;
 
-	/**
-	 * Handle a GET request
-	 * 
-	 * @param request
-	 * @param response
-	 * 
-	 * @return ServiceBoxActionParameters
-	 * 
-	 * @throws IOException
-	 */
-	public ServiceBoxActionParameters doGet(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
-		ServiceBoxActionParameters callbackResult = null;
-		if (callbacks != null) {
-			for (Callback callback : callbacks) {
-				callbackResult = callback.onGet(request, response,
-						callbackResult);
-				if (!callbackResult.isSuccess()) {
-					// not success: return false
-					break;
-				}
-			}
-		}
-		return callbackResult;
-	}
+    /**
+     * Handle a GET request
+     * 
+     * @param request
+     * @param response
+     * 
+     * @return ServiceBoxActionParameters
+     * 
+     * @throws IOException
+     */
+    public ServiceBoxActionParameters doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        ServiceBoxActionParameters callbackResult = null;
+        if (callbacks != null) {
+            for (Callback callback : callbacks) {
+                callbackResult = callback.onGet(request, response, callbackResult);
+                if (!callbackResult.isSuccess()) {
+                    // not success: return false
+                    break;
+                }
+            }
+        }
+        return callbackResult;
+    }
 
-	/**
-	 * Handle a POST request
-	 * 
-	 * @param request
-	 * @param responsetrue
-	 *            if the request can continue or false otherwise
-	 * 
-	 * @return ServiceBoxActionParameters
-	 * 
-	 * @throws IOException
-	 */
-	public ServiceBoxActionParameters doPost(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
-		ServiceBoxActionParameters callbackResult = null;
-		if (callbacks != null) {
-			for (Callback callback : callbacks) {
-				callbackResult = callback.onPost(request, response,
-						callbackResult);
-				if (!callbackResult.isSuccess()) {
-					// not success: return false
-					break;
-				}
-			}
-		}
-		return callbackResult;
-	}
+    /**
+     * Handle a POST request
+     * 
+     * @param request
+     * @param responsetrue if the request can continue or false otherwise
+     * 
+     * @return ServiceBoxActionParameters
+     * 
+     * @throws IOException
+     */
+    public ServiceBoxActionParameters doPost(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        ServiceBoxActionParameters callbackResult = null;
+        if (callbacks != null) {
+            for (Callback callback : callbacks) {
+                callbackResult = callback.onPost(request, response, callbackResult);
+                if (!callbackResult.isSuccess()) {
+                    // not success: return false
+                    break;
+                }
+            }
+        }
+        return callbackResult;
+    }
 
-	/**
-	 * @return the callbacks
-	 */
-	public List<Callback> getCallbacks() {
-		return callbacks;
-	}
+    /**
+     * @return the callbacks
+     */
+    public List<Callback> getCallbacks() {
+        return callbacks;
+    }
 
-	/**
-	 * @param callbacks
-	 *            the callbacks to set
-	 */
-	public void setCallbacks(List<Callback> callbacks) {
-		this.callbacks = callbacks;
-	}
+    /**
+     * @param callbacks the callbacks to set
+     */
+    public void setCallbacks(List<Callback> callbacks) {
+        this.callbacks = callbacks;
+    }
 
 }
