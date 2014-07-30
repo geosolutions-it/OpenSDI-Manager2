@@ -1,0 +1,55 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    ">
+	<!-- Maps -->
+	<util:map id="map1">
+				<entry key="attribute1" value="mockMap1.test1" />
+				<entry key="attribute2" value="mockMap1.test2" />
+				<entry key="attribute3" value="mockMap1.test3" />
+				<entry key="nested">
+					<util:map>
+						<entry key="attribute1" value="nested1" />
+						<entry key="attribute2" value="nested2" />
+						<entry key="attribute3" value="nested3" />
+						<entry key="attributeint">
+							<value type="int">4</value>
+						</entry>
+
+					</util:map>
+				</entry>
+			</util:map>
+	<util:map id="rules1">
+		<entry key="attribute1" value="'replace1'" />
+		<entry key="attribute2" value="'replace2'" />
+		<entry key="attribute3" value="'replace3'" />
+		<entry key="attribute4" value="nested.attributeint" />
+		<entry key="attribute5" value="nested.attributeint +1" /> <!-- 5 -->
+		<entry key="attribute6" value="attribute1 + ' ' + nested.attribute1"></entry>
+		<entry key="nested.attribute1" value="attribute1" />
+		<entry key="nested.attribute2" value="nested.attribute2" />
+		
+	</util:map>
+	<util:map id="rules2">
+		<entry key="out1" value="'second1'" /> <!-- second1 -->
+		<entry key="out2" value="attribute1" /> <!-- replace1 -->
+		<entry key="out3" value="'second3'" /> <!-- second3 -->
+		<entry key="out4" value="attribute5+1" /> <!-- 6  -->
+		<entry key="out5" value="attribute4 +1" /> <!-- 5 -->
+		
+		
+	</util:map>
+	<!-- Map rules for the whole context -->
+	<util:map id="rules3">
+		<entry key="out1" value="contextElements.map.attribute1" /> <!-- mockMap1.test1 -->
+		<entry key="out2" value="contextElements.out1.attribute1" /> <!-- replace1 -->
+		<entry key="out3" value="contextElements.out2.out3" /> <!-- attribute1 -->
+
+	</util:map>
+	<!-- beans -->
+	<bean id="reflectionPropertyAccessor" class="org.springframework.expression.spel.support.ReflectivePropertyAccessor"></bean>
+	<bean id="mapPropertyAccessor" class="it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
+	<bean id="mapPreBuilder" class="it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
+</beans>
