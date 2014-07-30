@@ -301,7 +301,7 @@ public class ServiceManager extends BaseFileManager {
         if (EXTJS_FOLDER_NEW.equals(action)) {
             if (finalFolder != null) {
                 if(serviceDAO.findByServiceId("just_a_test") == null) {
-                    serviceDAO.insert(new Service("just_a_test", "/share/ftp/just_a_test"));
+                    serviceDAO.insert(new Service("just_a_test", finalFolder));
                 }
             }
         }

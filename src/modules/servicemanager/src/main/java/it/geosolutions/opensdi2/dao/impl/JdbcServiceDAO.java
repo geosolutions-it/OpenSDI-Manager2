@@ -52,7 +52,7 @@ public class JdbcServiceDAO implements ServiceDAO {
     @Override
     public void insert(Service service) {
 
-        String sql = "INSERT INTO SERVICE (SERVICE_ID, PARENT) VALUES (?, ?)";
+        String sql = "INSERT INTO SERVICE (\"SERVICE_ID\", \"PARENT\") VALUES (?, ?)";
         Connection conn = null;
 
         try {
