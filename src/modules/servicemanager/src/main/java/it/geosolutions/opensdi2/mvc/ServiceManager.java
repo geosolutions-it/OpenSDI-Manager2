@@ -300,12 +300,12 @@ public class ServiceManager extends BaseFileManager {
 
         String finalFolder = folder != null && !folder.equals("root") ? folder : null;
         Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1 : 0;
-        String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1] : null;
         
         if (EXTJS_FOLDER_NEW.equals(action)) {
             if (finalFolder != null && level == 2) {
                 String serviceId = FilenameUtils.getName(finalFolder);
                 String parent = FilenameUtils.getFullPathNoEndSeparator(finalFolder);
+                String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1] : null;
                 if(serviceDAO.findByServiceId(serviceId) == null) {
                     serviceDAO.insert(new Service(serviceId, parent, user, "NEW"));
                 }
