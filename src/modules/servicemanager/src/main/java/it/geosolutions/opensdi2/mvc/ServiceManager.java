@@ -28,6 +28,7 @@ import it.geosolutions.opensdi2.config.FileManagerConfig;
 import it.geosolutions.opensdi2.config.FolderPermission;
 import it.geosolutions.opensdi2.dao.ServiceDAO;
 import it.geosolutions.opensdi2.model.Service;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContext;
@@ -297,11 +299,15 @@ public class ServiceManager extends BaseFileManager {
             HttpServletRequest request, HttpServletResponse response) {
 
         String finalFolder = folder != null && !folder.equals("root") ? folder : null;
+        Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1 : 0;
+        String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1] : null;
         
         if (EXTJS_FOLDER_NEW.equals(action)) {
-            if (finalFolder != null) {
-                if(serviceDAO.findByServiceId("just_a_test") == null) {
-                    serviceDAO.insert(new Service("just_a_test", finalFolder));
+            if (finalFolder != null && level == 2) {
+                String serviceId = FilenameUtils.getName(finalFolder);
+                String parent = FilenameUtils.getFullPathNoEndSeparator(finalFolder);
+                if(serviceDAO.findByServiceId(serviceId) == null) {
+                    serviceDAO.insert(new Service(serviceId, parent, user, "NEW"));
                 }
             }
         }

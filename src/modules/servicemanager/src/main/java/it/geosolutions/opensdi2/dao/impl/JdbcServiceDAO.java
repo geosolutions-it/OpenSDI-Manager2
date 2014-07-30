@@ -29,13 +29,21 @@ import javax.sql.DataSource;
 /**
  * <pre>
  * {@code
- * CREATE TABLE service (
- *  "ID" serial,
- *  "SERVICE_ID" text not null,
- *  "PARENT" text not null,
- *  PRIMARY KEY ("ID")
- * )
- * }
+ *  CREATE TYPE service_status AS ENUM ('NEW', 'AOI', 'ACQUISITIONLIST', 'ACQUISITIONPLAN', 'INGESTED');
+ *  CREATE TABLE service
+ *    (
+ *      "ID" serial NOT NULL,
+ *      "SERVICE_ID" text NOT NULL,
+ *      "PARENT" text NOT NULL,
+ *      "USER" varchar(80) NOT NULL,
+ *      "STATUS" service_status DEFAULT 'NEW',
+ *      CONSTRAINT service_pkey PRIMARY KEY ("ID")
+ *    )
+ *    WITH (
+ *      OIDS=FALSE
+ *    );
+ *    ALTER TABLE service
+ *      OWNER TO mariss;
  * </pre>
  * 
  * @author Alessio
@@ -52,7 +60,7 @@ public class JdbcServiceDAO implements ServiceDAO {
     @Override
     public void insert(Service service) {
 
-        String sql = "INSERT INTO SERVICE (\"SERVICE_ID\", \"PARENT\") VALUES (?, ?)";
+        String sql = "INSERT INTO SERVICE (\"SERVICE_ID\", \"PARENT\", \"USER\", \"STATUS\") VALUES (?, ?, ?, ?)";
         Connection conn = null;
 
         try {
@@ -60,6 +68,8 @@ public class JdbcServiceDAO implements ServiceDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, service.getServiceId());
             ps.setString(2, service.getParent());
+            ps.setString(3, service.getUser());
+            ps.setString(4, service.getStatus());
             ps.executeUpdate();
             ps.close();
 
@@ -91,7 +101,8 @@ public class JdbcServiceDAO implements ServiceDAO {
             Service service = null;
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                service = new Service(rs.getString("SERVICE_ID"), rs.getString("PARENT"));
+                service = new Service(rs.getString("SERVICE_ID"), rs.getString("PARENT"),
+                                      rs.getString("USER"), rs.getString("STATUS"));
                 service.setId(rs.getInt("ID"));
             }
             rs.close();

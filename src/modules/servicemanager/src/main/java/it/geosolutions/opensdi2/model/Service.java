@@ -21,17 +21,21 @@ package it.geosolutions.opensdi2.model;
  *
  */
 public class Service {
-
+    
     private int id;
     private String serviceId;
     private String parent;
+    private String user;
+    private String status;
     
     /**
      * 
      */
-    public Service(String serviceId, String parent) {
+    public Service(String serviceId, String parent, String user, String status) {
         this.serviceId = serviceId;
         this.parent = parent;
+        this.user = user;
+        this.status = status;
     }
 
     /**
@@ -76,6 +80,34 @@ public class Service {
         this.parent = parent;
     }
 
+    /**
+     * @return the user
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    /**
+     * @return the status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -83,6 +115,8 @@ public class Service {
         result = prime * result + id;
         result = prime * result + ((parent == null) ? 0 : parent.hashCode());
         result = prime * result + ((serviceId == null) ? 0 : serviceId.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
     }
 
@@ -115,6 +149,20 @@ public class Service {
         } else if (!serviceId.equals(other.serviceId)) {
             return false;
         }
+        if (status == null) {
+            if (other.status != null) {
+                return false;
+            }
+        } else if (!status.equals(other.status)) {
+            return false;
+        }
+        if (user == null) {
+            if (other.user != null) {
+                return false;
+            }
+        } else if (!user.equals(other.user)) {
+            return false;
+        }
         return true;
     }
 
@@ -125,7 +173,11 @@ public class Service {
         if (serviceId != null)
             builder.append("serviceId=").append(serviceId).append(", ");
         if (parent != null)
-            builder.append("parent=").append(parent);
+            builder.append("parent=").append(parent).append(", ");
+        if (user != null)
+            builder.append("user=").append(user).append(", ");
+        if (status != null)
+            builder.append("status=").append(status);
         builder.append("]");
         return builder.toString();
     }
