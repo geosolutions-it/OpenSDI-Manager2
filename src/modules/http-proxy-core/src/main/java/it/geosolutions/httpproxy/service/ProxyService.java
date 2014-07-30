@@ -34,32 +34,32 @@ import org.apache.commons.httpclient.HttpMethod;
  * Proxy common interface
  * 
  * @author <a href="mailto:aledt84@gmail.com">Alejandro Diaz Torres</a>
- *
+ * 
  */
 public interface ProxyService {
 
-	/**
-	 * Change proxy configuration
-	 * 
-	 * @param new proxy configuration
-	 */
-	public void setProxyConfig(ProxyConfig proxyConfig);
-
-	/**
-	 * Obtain proxy configuration
-	 * 
-	 * @return proxy configuration
-	 */
-	public ProxyConfig getProxyConfig();
+    /**
+     * Change proxy configuration
+     * 
+     * @param new proxy configuration
+     */
+    public void setProxyConfig(ProxyConfig proxyConfig);
 
     /**
-     * Performs an HTTP request. Read <code>httpServletRequest</code> method. Default method is HTTP GET. 
+     * Obtain proxy configuration
+     * 
+     * @return proxy configuration
+     */
+    public ProxyConfig getProxyConfig();
+
+    /**
+     * Performs an HTTP request. Read <code>httpServletRequest</code> method. Default method is HTTP GET.
      * 
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
-    public void execute(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws  IOException, ServletException;
+    public void execute(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException, ServletException;
 
     /**
      * Method to be called on execute method initialization
@@ -85,7 +85,7 @@ public interface ProxyService {
      * @throws IOException
      */
     public void onFinish() throws IOException;
-    
+
     /**
      * Add a proxy callback
      * 

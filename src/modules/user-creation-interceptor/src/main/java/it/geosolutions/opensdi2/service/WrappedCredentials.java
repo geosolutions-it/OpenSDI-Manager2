@@ -23,18 +23,18 @@ package it.geosolutions.opensdi2.service;
  * Wrapped credentials for the user interceptors
  * 
  * @author adiaz
- *
+ * 
  */
 public interface WrappedCredentials {
-	
-	/**
-	 * @return user name 
-	 */
-	String getUserName();
-	
-	/**
-	 * @return user password
-	 */
-	String getUserPassword();
+
+    /**
+     * @return user name
+     */
+    String getUserName();
+
+    /**
+     * @return user password
+     */
+    String getUserPassword();
 
 }

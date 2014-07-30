@@ -27,29 +27,27 @@ import java.util.List;
  * Model to hold uploaded files
  * 
  * @author Lorenzo Pini
- *
+ * 
  */
 public class FileUpload {
 
+    private List<File> files;
 
-	private List<File> files;
+    public FileUpload() {
+    }
 
-	
-	public FileUpload() {
-	}
+    /**
+     * @return the files
+     */
+    public List<File> getFiles() {
+        return files;
+    }
 
-	/**
-	 * @return the files
-	 */
-	public List<File> getFiles() {
-		return files;
-	}
-
-	/**
-	 * @param files the files to set
-	 */
-	public void setFiles(List<File> files) {
-		this.files = files;
-	}
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(List<File> files) {
+        this.files = files;
+    }
 
 }

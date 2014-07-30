@@ -92,10 +92,10 @@ final class ProxyConfig {
      * The maximum connections available per host
      */
     private int defaultMaxConnectionsPerHost = 6;
-    
+
     private int defaultStreamByteSize = 1024;
 
-	/**
+    /**
      * @param context
      * @param propertiesFilePath
      */
@@ -151,11 +151,11 @@ final class ProxyConfig {
             s = props.getProperty("reqtypeWhitelist.csw");
             if (s != null)
                 rt.add(s);
-            
+
             s = props.getProperty("reqtypeWhitelist.featureinfo");
             if (s != null)
                 rt.add(s);
-            
+
             s = props.getProperty("reqtypeWhitelist.generic");
             if (s != null)
                 rt.add(s);
@@ -167,16 +167,16 @@ final class ProxyConfig {
                 // Load byte size configuration from
                 // properties file.
                 // /////////////////////////////////////////////////
-            	
+
                 String bytesSize = props.getProperty("defaultStreamByteSize");
-                this.setDefaultStreamByteSize(bytesSize != null ? Integer.parseInt(bytesSize) : 
-                	this.defaultStreamByteSize);
-                
+                this.setDefaultStreamByteSize(bytesSize != null ? Integer.parseInt(bytesSize)
+                        : this.defaultStreamByteSize);
+
                 // /////////////////////////////////////////////////
                 // Load connection manager configuration from
                 // properties file.
                 // /////////////////////////////////////////////////
-                
+
                 String timeout = props.getProperty("timeout");
                 this.setSoTimeout(timeout != null ? Integer.parseInt(timeout) : this.soTimeout);
 
@@ -360,11 +360,11 @@ final class ProxyConfig {
             s = props.getProperty("reqtypeWhitelist.csw");
             if (s != null)
                 rt.add(s);
-            
+
             s = props.getProperty("reqtypeWhitelist.featureinfo");
             if (s != null)
                 rt.add(s);
-            
+
             s = props.getProperty("reqtypeWhitelist.generic");
             if (s != null)
                 rt.add(s);
@@ -453,19 +453,19 @@ final class ProxyConfig {
     public void setPropertiesFilePath(String propertiesFilePath) {
         this.propertiesFilePath = propertiesFilePath;
     }
-    
-    /**
-	 * @return the defaultStreamByteSize
-	 */
-	public int getDefaultStreamByteSize() {
-		return defaultStreamByteSize;
-	}
 
-	/**
-	 * @param defaultStreamByteSize the defaultStreamByteSize to set
-	 */
-	public void setDefaultStreamByteSize(int defaultStreamByteSize) {
-		this.defaultStreamByteSize = defaultStreamByteSize;
-	}
+    /**
+     * @return the defaultStreamByteSize
+     */
+    public int getDefaultStreamByteSize() {
+        return defaultStreamByteSize;
+    }
+
+    /**
+     * @param defaultStreamByteSize the defaultStreamByteSize to set
+     */
+    public void setDefaultStreamByteSize(int defaultStreamByteSize) {
+        this.defaultStreamByteSize = defaultStreamByteSize;
+    }
 
 }

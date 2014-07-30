@@ -38,117 +38,115 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class URLFacadeImpl implements URLFacade {
 
-	/**
-	 * Urls wrapped in this implementation of the URL Facade (relative url as key and target url as value)
-	 */
-	private Map<String, String> urlsWrapped;
+    /**
+     * Urls wrapped in this implementation of the URL Facade (relative url as key and target url as value)
+     */
+    private Map<String, String> urlsWrapped;
 
-	/**
-	 * Proxy service to be used
-	 */
-	protected ProxyService proxy;
-	
-	/**
-	 * Custom proxies by url
-	 */
-	private Map<String, ProxyService> customizedProxies;
+    /**
+     * Proxy service to be used
+     */
+    protected ProxyService proxy;
 
-	/**
-	 * Request parameter for the URL
-	 */
-	private static final String URL_NAME = "url";
+    /**
+     * Custom proxies by url
+     */
+    private Map<String, ProxyService> customizedProxies;
 
-	/**
-	 * Handle a request in the URL wrapped
-	 * 
-	 * @param request
-	 * @param response
-	 * @param subPath
-	 *            in the URL
-	 * 
-	 * @throws IOException
-	 */
-	public void handleRequest(HttpServletRequest request,
-			HttpServletResponse response, String urlWrapped, String... subPath) throws IOException {
-		
-		if(isWrappedURL(urlWrapped)){
-			// prepare final url and put in the request
-			String finalURL = urlsWrapped.get(urlWrapped);
-			if (subPath != null) {
-				for (String path : subPath) {
-					finalURL += "/" + path;
-				}
-			}
-			request.setAttribute(URL_NAME, finalURL);
+    /**
+     * Request parameter for the URL
+     */
+    private static final String URL_NAME = "url";
 
-			try {
-				// customized or default proxy
-				if(customizedProxies != null && customizedProxies.containsKey(urlWrapped)){
-					customizedProxies.get(urlWrapped).execute(request, response);
-				}else{
-					proxy.execute(request, response);
-				}
-			} catch (ServletException e) {
-				throw new IOException(e);
-			}
-		}else{
-			throw new IOException("Url not wrapped in this facade");
-		}
-		
-	}
+    /**
+     * Handle a request in the URL wrapped
+     * 
+     * @param request
+     * @param response
+     * @param subPath in the URL
+     * 
+     * @throws IOException
+     */
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response,
+            String urlWrapped, String... subPath) throws IOException {
 
-	/**
-	 * @return the proxy
-	 */
-	public ProxyService getProxy() {
-		return proxy;
-	}
+        if (isWrappedURL(urlWrapped)) {
+            // prepare final url and put in the request
+            String finalURL = urlsWrapped.get(urlWrapped);
+            if (subPath != null) {
+                for (String path : subPath) {
+                    finalURL += "/" + path;
+                }
+            }
+            request.setAttribute(URL_NAME, finalURL);
 
-	/**
-	 * @param proxy
-	 *            the proxy to set
-	 */
-	public void setProxy(ProxyService proxy) {
-		this.proxy = proxy;
-	}
+            try {
+                // customized or default proxy
+                if (customizedProxies != null && customizedProxies.containsKey(urlWrapped)) {
+                    customizedProxies.get(urlWrapped).execute(request, response);
+                } else {
+                    proxy.execute(request, response);
+                }
+            } catch (ServletException e) {
+                throw new IOException(e);
+            }
+        } else {
+            throw new IOException("Url not wrapped in this facade");
+        }
 
-	/**
-	 * @return the urlsWrapped
-	 */
-	public Map<String, String> getUrlsWrapped() {
-		return urlsWrapped;
-	}
+    }
 
-	/**
-	 * @param urlsWrapped the urlsWrapped to set
-	 */
-	public void setUrlsWrapped(Map<String, String> urlsWrapped) {
-		this.urlsWrapped = urlsWrapped;
-	}
+    /**
+     * @return the proxy
+     */
+    public ProxyService getProxy() {
+        return proxy;
+    }
 
-	/**
-	 * @return the customizedProxies
-	 */
-	public Map<String, ProxyService> getCustomizedProxies() {
-		return customizedProxies;
-	}
+    /**
+     * @param proxy the proxy to set
+     */
+    public void setProxy(ProxyService proxy) {
+        this.proxy = proxy;
+    }
 
-	/**
-	 * @param customizedProxies the customizedProxies to set
-	 */
-	public void setCustomizedProxies(Map<String, ProxyService> customizedProxies) {
-		this.customizedProxies = customizedProxies;
-	}
-	
-	/**
-	 * Check if an URL is a wrapped one
-	 * 
-	 * @param url relative URL to check
-	 * 
-	 * @return true if is a wrapped one or false otherwise
-	 */
-	public boolean isWrappedURL(String url) {
-		return urlsWrapped != null && urlsWrapped.containsKey(url);
-	}
+    /**
+     * @return the urlsWrapped
+     */
+    public Map<String, String> getUrlsWrapped() {
+        return urlsWrapped;
+    }
+
+    /**
+     * @param urlsWrapped the urlsWrapped to set
+     */
+    public void setUrlsWrapped(Map<String, String> urlsWrapped) {
+        this.urlsWrapped = urlsWrapped;
+    }
+
+    /**
+     * @return the customizedProxies
+     */
+    public Map<String, ProxyService> getCustomizedProxies() {
+        return customizedProxies;
+    }
+
+    /**
+     * @param customizedProxies the customizedProxies to set
+     */
+    public void setCustomizedProxies(Map<String, ProxyService> customizedProxies) {
+        this.customizedProxies = customizedProxies;
+    }
+
+    /**
+     * Check if an URL is a wrapped one
+     * 
+     * @param url relative URL to check
+     * 
+     * @return true if is a wrapped one or false otherwise
+     */
+    public boolean isWrappedURL(String url) {
+        return urlsWrapped != null && urlsWrapped.containsKey(url);
+    }
 
 }

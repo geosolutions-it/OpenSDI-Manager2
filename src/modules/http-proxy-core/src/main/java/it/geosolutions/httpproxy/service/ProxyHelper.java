@@ -29,44 +29,42 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Proxy helper interface.
- * This interface can initialize the proxy and prepare proxy method execution
+ * Proxy helper interface. This interface can initialize the proxy and prepare proxy method execution
  * 
  * @author <a href="mailto:aledt84@gmail.com">Alejandro Diaz Torres</a>
- *
+ * 
  */
 public interface ProxyHelper {
-	
-	/**
-	 * Initialize proxy
-	 * 
-	 * @param proxy to be initialized
-	 */
-	public void initProxy(ProxyService proxy);
-	
-	/**
-	 * Initialize proxy
-	 * 
-	 * @param proxy to be initialized
-	 * @param context of the proxy
-	 */
-	public void initProxy(ProxyService proxy, ServletContext context);
-	
-	/**
-	 * Prepare a proxy method execution
-	 * 
-	 * @param httpServletRequest
-	 * @param httpServletResponse
-	 * @param proxy
-	 * 
-	 * @return ProxyMethodConfig to execute the method
-	 * 
-	 * @throws IOException
-	 * @throws ServletException
-	 */
-	public ProxyMethodConfig prepareProxyMethod(
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, ProxyService proxy)
-			throws IOException, ServletException;
+
+    /**
+     * Initialize proxy
+     * 
+     * @param proxy to be initialized
+     */
+    public void initProxy(ProxyService proxy);
+
+    /**
+     * Initialize proxy
+     * 
+     * @param proxy to be initialized
+     * @param context of the proxy
+     */
+    public void initProxy(ProxyService proxy, ServletContext context);
+
+    /**
+     * Prepare a proxy method execution
+     * 
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param proxy
+     * 
+     * @return ProxyMethodConfig to execute the method
+     * 
+     * @throws IOException
+     * @throws ServletException
+     */
+    public ProxyMethodConfig prepareProxyMethod(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse, ProxyService proxy) throws IOException,
+            ServletException;
 
 }

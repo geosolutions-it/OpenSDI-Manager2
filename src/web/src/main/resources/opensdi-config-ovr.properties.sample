@@ -1,9 +1,22 @@
 # Base configuration for OpenSDI-Manager
 baseConfig.baseFolder=/tmp/test
+
+# Data Source
+openSDI2DataSource.driverClassName=org.postgresql.Driver
+openSDI2DataSource.url=jdbc:postgresql://localhost:5432/mariss
+openSDI2DataSource.username=mariss
+openSDI2DataSource.password=mariss
+
 # geostore wrapper
 urlFacade.urlsWrapped["geostore"]=http://localhost:9191/geostore
 
-# service manager folder (need -PserviceManager)
+# file upload temp folder
+fileUploadService.temporaryFolder=/opt/tomcat/opensdi2-manager/temp/
+
+################################################
+## service manager folder                     ## 
+## (needs -PserviceManager maven profile)     ##
+################################################
 #serviceManagerConfig.baseFolder=/share/ftp/
 
 # login control
@@ -16,8 +29,10 @@ geoStoreAuthenticationProvider.geoStoreRestURL=http://localhost:9191/geostore/re
 userCreationInterceptor.enabled=true
 userCreationInterceptor.interceptedURL=http://localhost:9191/geostore/rest/users/
 userCreationInterceptor.notWrappedUrls[0]=http://localhost:9191/geostore/rest/extjs/
+
 # Path that contains the scripts
 userInterceptor1.libPath=/opt/ldap_manager/scripts
+
 # Libraries path used inside the script. You can use <code>echo $PATH</code> executed in bash
 userInterceptor1.systemPath=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
 userInterceptor1.createUserScript=/opt/ldap_manager/scripts/create_user.sh
@@ -30,16 +45,19 @@ geoStoreClient.geostoreRestUrl=http://localhost:9191/geostore/rest
 geoStoreClient.username=admin
 geoStoreClient.password=theslap
 #
+
 # LDAP integration
 contextSource.url=ldap://84.33.2.24:389/dc=mariss,dc=egeos,dc=it
 contextSource.userDn=uid=admin,ou=people,dc=mariss,dc=egeos,dc=it
 contextSource.password=theslap
+
 # User creation interceptor for GeoStore
 userGroupService.LDAP_USER_BASE_SEARCH=
 userGroupService.LDAP_PROPERTIES_SEARCH=cn,uid
 userGroupService.LDAP_CN_PROPERTY=cn
 userGroupService.LDAP_UID_PROPERTY=uid
-# users in group SN-MANAGER work as ADMIN
+
+# Users in group SN-MANAGER work as ADMIN
 userInterceptor2.userAdminGroups[0]=cn=sn-manager,ou=groups
 ##########################################
 ##        End of user interceptor.      ##

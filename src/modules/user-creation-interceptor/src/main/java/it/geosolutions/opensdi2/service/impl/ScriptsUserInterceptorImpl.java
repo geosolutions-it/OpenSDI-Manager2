@@ -41,381 +41,357 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.log4j.Logger;
 
 /**
- * This user interceptor call customized scripts in the user management
- * interception
+ * This user interceptor call customized scripts in the user management interception
  * 
  * @author adiaz
  * 
  */
 public class ScriptsUserInterceptorImpl implements UserInterceptorService {
 
-	/**
-	 * GeoStoreClient in the applicationContext
-	 */
-	AdministratorGeoStoreClient geoStoreClient;
+    /**
+     * GeoStoreClient in the applicationContext
+     */
+    AdministratorGeoStoreClient geoStoreClient;
 
-	/**
-	 * '=' String
-	 */
-	private static final String EQUALS = "=";
+    /**
+     * '=' String
+     */
+    private static final String EQUALS = "=";
 
-	/**
-	 * User identifier parameter for the scripts
-	 */
-	private static final String USERNAME = "USERNAME";
+    /**
+     * User identifier parameter for the scripts
+     */
+    private static final String USERNAME = "USERNAME";
 
-        /**
-         * User identifier parameter for the scripts
-         */
-        private static final String UIDNUMBER = "UIDNUMBER";
-	
-	/**
-	 * User name parameter for the scripts
-	 */
-	private static final String NAME = "NAME";
+    /**
+     * User identifier parameter for the scripts
+     */
+    private static final String UIDNUMBER = "UIDNUMBER";
 
-	/**
-	 * User surname parameter for the scripts
-	 */
-	private static final String SURNAME = "SURNAME";
+    /**
+     * User name parameter for the scripts
+     */
+    private static final String NAME = "NAME";
 
-	/**
-	 * User email parameter for the scripts
-	 */
-	private static final String EMAIL = "EMAIL";
+    /**
+     * User surname parameter for the scripts
+     */
+    private static final String SURNAME = "SURNAME";
 
-	/**
-	 * User password parameter for the scripts
-	 */
-	private static final String PASS = "PASS";
+    /**
+     * User email parameter for the scripts
+     */
+    private static final String EMAIL = "EMAIL";
 
-	/**
-	 * Library path parameter
-	 */
-	private static final String LIB_PATH = "LIB_PATH";
+    /**
+     * User password parameter for the scripts
+     */
+    private static final String PASS = "PASS";
 
-	/**
-	 * Path system parameter
-	 */
-	private static final String PATH = "PATH";
+    /**
+     * Library path parameter
+     */
+    private static final String LIB_PATH = "LIB_PATH";
 
-	/**
-	 * Known extra attributes in user attributes for the scripts
-	 */
-	private static final List<String> USER_KNOWN_ATTRIBUTES;
-	static {
-		USER_KNOWN_ATTRIBUTES = new LinkedList<String>();
-		USER_KNOWN_ATTRIBUTES.add(NAME);
-		USER_KNOWN_ATTRIBUTES.add(SURNAME);
-		USER_KNOWN_ATTRIBUTES.add(EMAIL);
-	}
+    /**
+     * Path system parameter
+     */
+    private static final String PATH = "PATH";
 
-	/**
-	 * Encoding for the password in the script. Default is "{SSHA}"
-	 */
-	private String passwordEncoding = "{SSHA}";
+    /**
+     * Known extra attributes in user attributes for the scripts
+     */
+    private static final List<String> USER_KNOWN_ATTRIBUTES;
+    static {
+        USER_KNOWN_ATTRIBUTES = new LinkedList<String>();
+        USER_KNOWN_ATTRIBUTES.add(NAME);
+        USER_KNOWN_ATTRIBUTES.add(SURNAME);
+        USER_KNOWN_ATTRIBUTES.add(EMAIL);
+    }
 
-	private final static Logger LOGGER = Logger
-			.getLogger(ScriptsUserInterceptorImpl.class);
-	/**
-	 * # Creating a new user - the script will create also the FTP folder and
-	 * will restart the ProFTP Service UIDNUMBER=UIDNUMBER USERNAME=THEUSERNAME 
-	 * NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL
-	 * PASS={SSHA}P7BcwmTJLUJQzXAjVJ4N3nTnY68CkY0m ./create_user.sh
-	 */
-	private String createUserScript = "sh create_user.sh";
+    /**
+     * Encoding for the password in the script. Default is "{SSHA}"
+     */
+    private String passwordEncoding = "{SSHA}";
 
-	/**
-	 * # The function updates the user entries. The USERNAME must exist on LDAP,
-	 * the other properties can be customized but all specified # - the
-	 * following examples updates the User password - WARNING: this function
-	 * does not affect the LDAP groups at all UIDNUMBER=UIDNUMBER USERNAME=THEUSERNAME 
-	 * NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL
-	 * PASS={SSHA}L6lReG1EUTC0g8Ps9HgJGDc4bMttlA/9 modify_user.sh
-	 */
-	private String updateUserScript = "sh modify_user.sh";
+    private final static Logger LOGGER = Logger.getLogger(ScriptsUserInterceptorImpl.class);
 
-	/**
-	 * # The function removes the user from LDAP people and deletes ALL the user
-	 * folder contents - WARNING: this function does not cleanup the LDAP groups
-	 * USERNAME=THEUSERNAME remove_user.sh
-	 */
-	private String deleteUserScript = "sh remove_user.sh";
+    /**
+     * # Creating a new user - the script will create also the FTP folder and will restart the ProFTP Service UIDNUMBER=UIDNUMBER USERNAME=THEUSERNAME
+     * NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL PASS={SSHA}P7BcwmTJLUJQzXAjVJ4N3nTnY68CkY0m ./create_user.sh
+     */
+    private String createUserScript = "sh create_user.sh";
 
-	/**
-	 * Path that contains the scripts
-	 */
-	private String libPath = "/opt/ldap_manager/scripts";
+    /**
+     * # The function updates the user entries. The USERNAME must exist on LDAP, the other properties can be customized but all specified # - the
+     * following examples updates the User password - WARNING: this function does not affect the LDAP groups at all UIDNUMBER=UIDNUMBER
+     * USERNAME=THEUSERNAME NAME=THENAME SURNAME=THESURNAME EMAIL=THEMAIL PASS={SSHA}L6lReG1EUTC0g8Ps9HgJGDc4bMttlA/9 modify_user.sh
+     */
+    private String updateUserScript = "sh modify_user.sh";
 
-	/**
-	 * Libraries path used inside the script. You can use
-	 * <code>echo $PATH</code> executed in bash
-	 */
-	private String systemPath = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin";
+    /**
+     * # The function removes the user from LDAP people and deletes ALL the user folder contents - WARNING: this function does not cleanup the LDAP
+     * groups USERNAME=THEUSERNAME remove_user.sh
+     */
+    private String deleteUserScript = "sh remove_user.sh";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserInterceptorService#onUserCreation
-	 * (it.geosolutions.geostore.core.model.User)
-	 */
-	@Override
-	public void onUserCreation(User user) {
-		try {
-			callScript(getUserInformation(user, true, true), createUserScript);
-		} catch (Exception e) {
-			LOGGER.error("Error calling to " + createUserScript, e);
-		}
-	}
+    /**
+     * Path that contains the scripts
+     */
+    private String libPath = "/opt/ldap_manager/scripts";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserIterceptorService#onUserUpdate(it
-	 * .geosolutions.geostore.core.model.User)
-	 */
-	@Override
-	public void onUserUpdate(User user) {
-		try {
-			callScript(getUserInformation(user, true, true), updateUserScript);
-		} catch (Exception e) {
-			LOGGER.error("Error calling to " + updateUserScript, e);
-		}
-	}
+    /**
+     * Libraries path used inside the script. You can use <code>echo $PATH</code> executed in bash
+     */
+    private String systemPath = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.service.UserIterceptorService#onUserDelete(java
-	 * .lang.Long)
-	 */
-	@Override
-	public void onUserDelete(Long userId) {
-		try {
-			User user = geoStoreClient.getUser(userId);
-			callScript(getUserInformation(user, false, false), deleteUserScript);
-		} catch (Exception e) {
-			LOGGER.error("Error calling to " + deleteUserScript, e);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserInterceptorService#onUserCreation (it.geosolutions.geostore.core.model.User)
+     */
+    @Override
+    public void onUserCreation(User user) {
+        try {
+            callScript(getUserInformation(user, true, true), createUserScript);
+        } catch (Exception e) {
+            LOGGER.error("Error calling to " + createUserScript, e);
+        }
+    }
 
-	/**
-	 * Get user information in a map
-	 * 
-	 * @param user
-	 * @param copyPassword
-	 * @param copyKnownAttributes
-	 * @return user information to call the scripts
-	 */
-	public Map<String, String> getUserInformation(User user,
-			boolean copyPassword, boolean copyKnownAttributes) {
-		Map<String, String> userInformation = new HashMap<String, String>();
-		userInformation.put(USERNAME, user.getName());
-		userInformation.put(UIDNUMBER, String.valueOf(System.nanoTime()));
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserIterceptorService#onUserUpdate(it .geosolutions.geostore.core.model.User)
+     */
+    @Override
+    public void onUserUpdate(User user) {
+        try {
+            callScript(getUserInformation(user, true, true), updateUserScript);
+        } catch (Exception e) {
+            LOGGER.error("Error calling to " + updateUserScript, e);
+        }
+    }
 
-		// default information
-		userInformation.put("NAME", user.getName());
-		userInformation.put("SURNAME", "THESURNAME");
-		userInformation.put("EMAIL", "THEMAIL");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.service.UserIterceptorService#onUserDelete(java .lang.Long)
+     */
+    @Override
+    public void onUserDelete(Long userId) {
+        try {
+            User user = geoStoreClient.getUser(userId);
+            callScript(getUserInformation(user, false, false), deleteUserScript);
+        } catch (Exception e) {
+            LOGGER.error("Error calling to " + deleteUserScript, e);
+        }
+    }
 
-		if (copyPassword)
-			userInformation.put(PASS, passwordEncoding
-					+ (user.getNewPassword() != null ? user.getNewPassword()
-							: user.getPassword()));
-		if (copyKnownAttributes && user.getAttribute() != null) {
-			for (UserAttribute ua : user.getAttribute()) {
-				if (USER_KNOWN_ATTRIBUTES.contains(ua.getName().toUpperCase())
-						&& ua.getValue() != null && !ua.getValue().equals("")) {
-					userInformation.put(ua.getName().toUpperCase(),
-							ua.getValue());
-				}
-			}
-		}
+    /**
+     * Get user information in a map
+     * 
+     * @param user
+     * @param copyPassword
+     * @param copyKnownAttributes
+     * @return user information to call the scripts
+     */
+    public Map<String, String> getUserInformation(User user, boolean copyPassword,
+            boolean copyKnownAttributes) {
+        Map<String, String> userInformation = new HashMap<String, String>();
+        userInformation.put(USERNAME, user.getName());
+        userInformation.put(UIDNUMBER, String.valueOf(System.nanoTime()));
 
-		return userInformation;
-	}
+        // default information
+        userInformation.put("NAME", user.getName());
+        userInformation.put("SURNAME", "THESURNAME");
+        userInformation.put("EMAIL", "THEMAIL");
 
-	/**
-	 * Call bash script with parameters
-	 * 
-	 * @param parameters
-	 *            to call the script
-	 * @param scriptPath
-	 *            absolute path to the script
-	 * @return process
-	 * @throws IOException
-	 */
-	public Process callScript(Map<String, String> parameters, String scriptPath)
-			throws IOException {
+        if (copyPassword)
+            userInformation.put(
+                    PASS,
+                    passwordEncoding
+                            + (user.getNewPassword() != null ? user.getNewPassword() : user
+                                    .getPassword()));
+        if (copyKnownAttributes && user.getAttribute() != null) {
+            for (UserAttribute ua : user.getAttribute()) {
+                if (USER_KNOWN_ATTRIBUTES.contains(ua.getName().toUpperCase())
+                        && ua.getValue() != null && !ua.getValue().equals("")) {
+                    userInformation.put(ua.getName().toUpperCase(), ua.getValue());
+                }
+            }
+        }
 
-		String[] env = new String[parameters != null ? parameters.size() + 2
-				: 2];
+        return userInformation;
+    }
 
-		String envParams = "";
-		int i = 0;
-		env[i++] = LIB_PATH + EQUALS + libPath;
-		envParams += env[i - 1] + " ";
-		env[i++] = PATH + EQUALS + systemPath + ":$" + LIB_PATH;
-		envParams += env[i - 1] + " ";
-		for (String key : parameters.keySet()) {
-			env[i++] = key + EQUALS + parameters.get(key);
-			envParams += env[i - 1] + " ";
-		}
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Running script: '" + envParams + scriptPath + "'");
-		}
-		Process process = Runtime.getRuntime().exec(scriptPath, env);
+    /**
+     * Call bash script with parameters
+     * 
+     * @param parameters to call the script
+     * @param scriptPath absolute path to the script
+     * @return process
+     * @throws IOException
+     */
+    public Process callScript(Map<String, String> parameters, String scriptPath) throws IOException {
 
-		// DEBUG the process execution
-		if (LOGGER.isDebugEnabled()) {
-			InputStream is = process.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line;
+        String[] env = new String[parameters != null ? parameters.size() + 2 : 2];
 
-			while ((line = br.readLine()) != null) {
-				LOGGER.debug(line);
-			}
-			LOGGER.debug("Script terminated!");
+        String envParams = "";
+        int i = 0;
+        env[i++] = LIB_PATH + EQUALS + libPath;
+        envParams += env[i - 1] + " ";
+        env[i++] = PATH + EQUALS + systemPath + ":$" + LIB_PATH;
+        envParams += env[i - 1] + " ";
+        for (String key : parameters.keySet()) {
+            env[i++] = key + EQUALS + parameters.get(key);
+            envParams += env[i - 1] + " ";
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Running script: '" + envParams + scriptPath + "'");
+        }
+        Process process = Runtime.getRuntime().exec(scriptPath, env);
 
-		}
+        // DEBUG the process execution
+        if (LOGGER.isDebugEnabled()) {
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
 
-		return process;
-	}
+            while ((line = br.readLine()) != null) {
+                LOGGER.debug(line);
+            }
+            LOGGER.debug("Script terminated!");
 
-	/**
-	 * @return the geoStoreClient
-	 */
-	public AdministratorGeoStoreClient getGeoStoreClient() {
-		return geoStoreClient;
-	}
+        }
 
-	/**
-	 * @param geoStoreClient
-	 *            the geoStoreClient to set
-	 */
-	public void setGeoStoreClient(AdministratorGeoStoreClient geoStoreClient) {
-		this.geoStoreClient = geoStoreClient;
-	}
+        return process;
+    }
 
-	/**
-	 * @return the createUserScript
-	 */
-	public String getCreateUserScript() {
-		return createUserScript;
-	}
+    /**
+     * @return the geoStoreClient
+     */
+    public AdministratorGeoStoreClient getGeoStoreClient() {
+        return geoStoreClient;
+    }
 
-	/**
-	 * @param createUserScript
-	 *            the createUserScript to set
-	 */
-	public void setCreateUserScript(String createUserScript) {
-		this.createUserScript = createUserScript;
-	}
+    /**
+     * @param geoStoreClient the geoStoreClient to set
+     */
+    public void setGeoStoreClient(AdministratorGeoStoreClient geoStoreClient) {
+        this.geoStoreClient = geoStoreClient;
+    }
 
-	/**
-	 * @return the updateUserScript
-	 */
-	public String getUpdateUserScript() {
-		return updateUserScript;
-	}
+    /**
+     * @return the createUserScript
+     */
+    public String getCreateUserScript() {
+        return createUserScript;
+    }
 
-	/**
-	 * @param updateUserScript
-	 *            the updateUserScript to set
-	 */
-	public void setUpdateUserScript(String updateUserScript) {
-		this.updateUserScript = updateUserScript;
-	}
+    /**
+     * @param createUserScript the createUserScript to set
+     */
+    public void setCreateUserScript(String createUserScript) {
+        this.createUserScript = createUserScript;
+    }
 
-	/**
-	 * @return the deleteUserScript
-	 */
-	public String getDeleteUserScript() {
-		return deleteUserScript;
-	}
+    /**
+     * @return the updateUserScript
+     */
+    public String getUpdateUserScript() {
+        return updateUserScript;
+    }
 
-	/**
-	 * @param deleteUserScript
-	 *            the deleteUserScript to set
-	 */
-	public void setDeleteUserScript(String deleteUserScript) {
-		this.deleteUserScript = deleteUserScript;
-	}
+    /**
+     * @param updateUserScript the updateUserScript to set
+     */
+    public void setUpdateUserScript(String updateUserScript) {
+        this.updateUserScript = updateUserScript;
+    }
 
-	/**
-	 * @return the passwordEncoding
-	 */
-	public String getPasswordEncoding() {
-		return passwordEncoding;
-	}
+    /**
+     * @return the deleteUserScript
+     */
+    public String getDeleteUserScript() {
+        return deleteUserScript;
+    }
 
-	/**
-	 * @param passwordEncoding
-	 *            the passwordEncoding to set
-	 */
-	public void setPasswordEncoding(String passwordEncoding) {
-		this.passwordEncoding = passwordEncoding;
-	}
+    /**
+     * @param deleteUserScript the deleteUserScript to set
+     */
+    public void setDeleteUserScript(String deleteUserScript) {
+        this.deleteUserScript = deleteUserScript;
+    }
 
-	/**
-	 * @return the libPath
-	 */
-	public String getLibPath() {
-		return libPath;
-	}
+    /**
+     * @return the passwordEncoding
+     */
+    public String getPasswordEncoding() {
+        return passwordEncoding;
+    }
 
-	/**
-	 * @param libPath
-	 *            the libPath to set
-	 */
-	public void setLibPath(String libPath) {
-		this.libPath = libPath;
-	}
+    /**
+     * @param passwordEncoding the passwordEncoding to set
+     */
+    public void setPasswordEncoding(String passwordEncoding) {
+        this.passwordEncoding = passwordEncoding;
+    }
 
-	/**
-	 * @return the systemPath
-	 */
-	public String getSystemPath() {
-		return systemPath;
-	}
+    /**
+     * @return the libPath
+     */
+    public String getLibPath() {
+        return libPath;
+    }
 
-	/**
-	 * @param systemPath
-	 *            the systemPath to set
-	 */
-	public void setSystemPath(String systemPath) {
-		this.systemPath = systemPath;
-	}
+    /**
+     * @param libPath the libPath to set
+     */
+    public void setLibPath(String libPath) {
+        this.libPath = libPath;
+    }
 
-	@Override
-	public void onFinish() {
-		// nothing on complete
-	}
+    /**
+     * @return the systemPath
+     */
+    public String getSystemPath() {
+        return systemPath;
+    }
 
-	@Override
-	public void onRemoteResponse(HttpMethod method) throws IOException {
-		// TODO Auto-generated method stub
+    /**
+     * @param systemPath the systemPath to set
+     */
+    public void setSystemPath(String systemPath) {
+        this.systemPath = systemPath;
+    }
 
-	}
+    @Override
+    public void onFinish() {
+        // nothing on complete
+    }
 
-	@Override
-	public boolean onUserOperation(String operation,
-			HttpServletRequest request, HttpServletResponse response) {
-		return true;
-	}
+    @Override
+    public void onRemoteResponse(HttpMethod method) throws IOException {
+        // TODO Auto-generated method stub
 
-	/**
-	 * Get credentials for the remote operation
-	 * 
-	 * @return credentials to perform the operation
-	 */
-	public WrappedCredentials getCredentials() {
-		// Wrapped on user groups interceptor
-		return null;
-	}
+    }
+
+    @Override
+    public boolean onUserOperation(String operation, HttpServletRequest request,
+            HttpServletResponse response) {
+        return true;
+    }
+
+    /**
+     * Get credentials for the remote operation
+     * 
+     * @return credentials to perform the operation
+     */
+    public WrappedCredentials getCredentials() {
+        // Wrapped on user groups interceptor
+        return null;
+    }
 
 }

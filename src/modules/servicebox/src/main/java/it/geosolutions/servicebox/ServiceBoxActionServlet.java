@@ -44,175 +44,163 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public abstract class ServiceBoxActionServlet extends HttpServlet {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 8403642389129639997L;
+    private static final long serialVersionUID = 8403642389129639997L;
 
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	private final static Logger LOGGER = Logger
-			.getLogger(ServiceBoxActionServlet.class.getSimpleName());
+    private final static String PROPERTY_FILE_PARAM = "app.properties";
 
-	/**
-	 * Service box properties
-	 */
-	protected Properties properties = new Properties();
+    private final static Logger LOGGER = Logger.getLogger(ServiceBoxActionServlet.class
+            .getSimpleName());
 
-	/**
-	 * Default action handler name. Used to read from the spring context when
-	 * another one is defined
-	 */
-	protected static final String DEFAULT_ACTION_HANDLER = "serviceBoxActionHandler";
+    /**
+     * Service box properties
+     */
+    protected Properties properties = new Properties();
 
-	/**
-	 * Temporal folder for the file upload
-	 */
-	protected static final String DEFAULT_TMP_FOLDER = "temp";
+    /**
+     * Default action handler name. Used to read from the spring context when another one is defined
+     */
+    protected static final String DEFAULT_ACTION_HANDLER = "serviceBoxActionHandler";
 
-	/**
-	 * Service box action handler for this action.
-	 */
-	protected ServiceBoxActionHandler serviceBoxActionHandler;
+    /**
+     * Temporal folder for the file upload
+     */
+    protected static final String DEFAULT_TMP_FOLDER = "temp";
 
-	/**
-	 * Name of this action. You must change this name on each action before on
-	 * init method. It's used to save specific configuration by action. If you
-	 * don't change it, it use the simple class name of the runtime servlet
-	 */
-	protected String actionName;
+    /**
+     * Service box action handler for this action.
+     */
+    protected ServiceBoxActionHandler serviceBoxActionHandler;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ServiceBoxActionServlet() {
-		super();
-	}
+    /**
+     * Name of this action. You must change this name on each action before on init method. It's used to save specific configuration by action. If you
+     * don't change it, it use the simple class name of the runtime servlet
+     */
+    protected String actionName;
 
-	/**
-	 * Init method of the servlet. Don't forgot override it on the actions and
-	 * change the action name
-	 */
-	public void init(ServletConfig servletConfig) throws ServletException {
-		this.actionName = this.getClass().getSimpleName();
-		super.init(servletConfig);
-		String appPropertyFile = getServletContext().getInitParameter(
-				PROPERTY_FILE_PARAM);
-		InputStream inputStream = ServiceBoxActionServlet.class
-				.getResourceAsStream(appPropertyFile);
-		try {
-			properties.load(inputStream);
-			ServletContext context = getServletContext();
-			WebApplicationContext wac = WebApplicationContextUtils
-					.getRequiredWebApplicationContext(context);
-			String actionHandler = DEFAULT_ACTION_HANDLER;
-			if (actionName != null
-					&& properties != null
-					&& properties.containsKey(actionName + "."
-							+ DEFAULT_ACTION_HANDLER)) {
-				actionHandler = properties.getProperty(actionName + "."
-						+ DEFAULT_ACTION_HANDLER);
-			}
-			serviceBoxActionHandler = (ServiceBoxActionHandler) wac
-					.getBean(actionHandler);
-			initTemporalFolder();
-		} catch (IOException e) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE,
-						"Error encountered while processing properties file", e);
-			}
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				if (LOGGER.isLoggable(Level.SEVERE))
-					LOGGER.log(Level.SEVERE,
-							"Error building the action configuration ", e);
-				throw new ServletException(e.getMessage());
-			}
-		}
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ServiceBoxActionServlet() {
+        super();
+    }
 
-	/**
-	 * Do GET envelope
-	 */
-	protected final void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		ServiceBoxActionParameters actionParameters = serviceBoxActionHandler
-				.doGet(request, response);
-		if (actionParameters.isSuccess()) {
-			doGetAction(request, response, actionParameters);
-		}
-	}
+    /**
+     * Init method of the servlet. Don't forgot override it on the actions and change the action name
+     */
+    public void init(ServletConfig servletConfig) throws ServletException {
+        this.actionName = this.getClass().getSimpleName();
+        super.init(servletConfig);
+        String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
+        InputStream inputStream = ServiceBoxActionServlet.class
+                .getResourceAsStream(appPropertyFile);
+        try {
+            properties.load(inputStream);
+            ServletContext context = getServletContext();
+            WebApplicationContext wac = WebApplicationContextUtils
+                    .getRequiredWebApplicationContext(context);
+            String actionHandler = DEFAULT_ACTION_HANDLER;
+            if (actionName != null && properties != null
+                    && properties.containsKey(actionName + "." + DEFAULT_ACTION_HANDLER)) {
+                actionHandler = properties.getProperty(actionName + "." + DEFAULT_ACTION_HANDLER);
+            }
+            serviceBoxActionHandler = (ServiceBoxActionHandler) wac.getBean(actionHandler);
+            initTemporalFolder();
+        } catch (IOException e) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "Error encountered while processing properties file", e);
+            }
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Error building the action configuration ", e);
+                throw new ServletException(e.getMessage());
+            }
+        }
+    }
 
-	/**
-	 * Do POST envelope
-	 */
-	protected final void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		ServiceBoxActionParameters actionParameters = serviceBoxActionHandler
-				.doPost(request, response);
-		if (actionParameters.isSuccess()) {
-			doPostAction(request, response, actionParameters);
-		}
-	}
+    /**
+     * Do GET envelope
+     */
+    protected final void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ServiceBoxActionParameters actionParameters = serviceBoxActionHandler.doGet(request,
+                response);
+        if (actionParameters.isSuccess()) {
+            doGetAction(request, response, actionParameters);
+        }
+    }
 
-	/**
-	 * Check if the temporal folder exists and create it
-	 */
-	private void initTemporalFolder() {
-		String path = null;
-		try {
-			path = properties.getProperty(DEFAULT_TMP_FOLDER);
-			File tempFolder = new File(path);
-			if (!tempFolder.exists()) {
-				if (LOGGER.isLoggable(Level.INFO)) {
-					LOGGER.info("Creating temporal folder: '" + path + "'");
-				}
-				tempFolder.mkdir();
-			} else {
-				if (LOGGER.isLoggable(Level.INFO)) {
-					LOGGER.info("Temporal folder: '" + path
-							+ "' already exists");
-				}
-			}
-		} catch (Exception e) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				if (path != null) {
-					LOGGER.info("Can't create temporal folder: '" + path + "'");
-				} else {
+    /**
+     * Do POST envelope
+     */
+    protected final void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ServiceBoxActionParameters actionParameters = serviceBoxActionHandler.doPost(request,
+                response);
+        if (actionParameters.isSuccess()) {
+            doPostAction(request, response, actionParameters);
+        }
+    }
 
-					LOGGER.info("Can't create temporal folder");
-				}
-			}
-		}
-	}
+    /**
+     * Check if the temporal folder exists and create it
+     */
+    private void initTemporalFolder() {
+        String path = null;
+        try {
+            path = properties.getProperty(DEFAULT_TMP_FOLDER);
+            File tempFolder = new File(path);
+            if (!tempFolder.exists()) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Creating temporal folder: '" + path + "'");
+                }
+                tempFolder.mkdir();
+            } else {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Temporal folder: '" + path + "' already exists");
+                }
+            }
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                if (path != null) {
+                    LOGGER.info("Can't create temporal folder: '" + path + "'");
+                } else {
 
-	/**
-	 * Do GET enveloped method
-	 * 
-	 * @param request
-	 * @param response
-	 * @param serviceBoxActionParameters
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	protected abstract void doGetAction(HttpServletRequest request,
-			HttpServletResponse response,
-			ServiceBoxActionParameters serviceBoxActionParameters)
-			throws ServletException, IOException;
+                    LOGGER.info("Can't create temporal folder");
+                }
+            }
+        }
+    }
 
-	/**
-	 * Do POST enveloped method
-	 * 
-	 * @param request
-	 * @param response
-	 * @param serviceBoxActionParameters
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	protected abstract void doPostAction(HttpServletRequest request,
-			HttpServletResponse response,
-			ServiceBoxActionParameters serviceBoxActionParameters)
-			throws ServletException, IOException;
+    /**
+     * Do GET enveloped method
+     * 
+     * @param request
+     * @param response
+     * @param serviceBoxActionParameters
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected abstract void doGetAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters serviceBoxActionParameters) throws ServletException,
+            IOException;
+
+    /**
+     * Do POST enveloped method
+     * 
+     * @param request
+     * @param response
+     * @param serviceBoxActionParameters
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected abstract void doPostAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters serviceBoxActionParameters) throws ServletException,
+            IOException;
 }

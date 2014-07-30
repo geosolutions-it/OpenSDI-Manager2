@@ -45,19 +45,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * 
  * @author marco
  */
 public class KMZUploader extends ServiceBoxActionServlet {
 
-	private static final long serialVersionUID = 1L;
-	
-	private final static String PROPERTY_FILE_PARAM = "app.properties";
-	
+    private static final long serialVersionUID = 1L;
+
+    private final static String PROPERTY_FILE_PARAM = "app.properties";
+
     private final static Logger LOGGER = Logger.getLogger(KMZUploader.class.getSimpleName());
-    
+
     private Properties properties = new Properties();
-    
+
     private String tempDirectory;
 
     public KMZUploader() {
@@ -69,7 +69,7 @@ public class KMZUploader extends ServiceBoxActionServlet {
         super.init(servletConfig);
         String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
         InputStream inputStream = KMZUploader.class.getResourceAsStream(appPropertyFile);
-        
+
         try {
             properties.load(inputStream);
         } catch (IOException e) {
@@ -83,8 +83,7 @@ public class KMZUploader extends ServiceBoxActionServlet {
                 }
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error building the proxy configuration ", e);
+                    LOGGER.log(Level.SEVERE, "Error building the proxy configuration ", e);
                 }
                 throw new ServletException(e.getMessage());
             }
@@ -107,11 +106,11 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
     }
 
-	protected void doGetAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+    protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
         String code = request.getParameter("code");
-        
+
         String filename = request.getParameter("filename");
 
         if (code != null) {
@@ -120,7 +119,8 @@ public class KMZUploader extends ServiceBoxActionServlet {
             BufferedReader br = null;
             PrintWriter writer = null;
             try {
-                file = new File(tempDirectory + File.separatorChar + code + File.separatorChar + filename);
+                file = new File(tempDirectory + File.separatorChar + code + File.separatorChar
+                        + filename);
                 br = new BufferedReader(new FileReader(file));
                 writer = response.getWriter();
                 String line = null;
@@ -129,19 +129,19 @@ public class KMZUploader extends ServiceBoxActionServlet {
                 }
             } catch (IOException ex) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error encountered while downloading file");
+                    LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
                 }
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
+                                + "\"}");
             } finally {
                 try {
                     br.close();
                     writer.close();
                 } catch (IOException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE,
-                                "Error closing streams ", e);
+                        LOGGER.log(Level.SEVERE, "Error closing streams ", e);
                     }
                     throw new ServletException(e.getMessage());
                 }
@@ -150,54 +150,55 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
         } else {
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                        "malformed request: code param is required");
+                LOGGER.log(Level.SEVERE, "malformed request: code param is required");
             }
             response.setContentType("text/html");
-            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"malformed request: code param is required\"}");
         }
 
     }
 
     @Override
     @SuppressWarnings({ "unchecked" })
-	protected void doPostAction(HttpServletRequest request,
-			HttpServletResponse response, ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
+    protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
         // random name for the directory where I store KMZ uncompressed files
         String uuid = UUID.randomUUID().toString();
-		List<FileItem> items = null;
-		
-		// File items are read only one time. Check if already exists on the actionParameters 
-		if(actionParameters != null 
-				&& actionParameters.isSuccess()
-				&& actionParameters.getItems() != null){
-			items = actionParameters.getItems();
-			
-		// see http://commons.apache.org/fileupload/using.html
-		}else if (ServletFileUpload.isMultipartContent(request)) {
-			// Create a factory for disk-based file items
-			FileItemFactory factory = new DiskFileItemFactory();
-			// Create a new file upload handler
-			ServletFileUpload upload = new ServletFileUpload(factory);
-			// Parse the request
-			try {
-				items = upload.parseRequest(request);
-			} catch (FileUploadException e) {
+        List<FileItem> items = null;
+
+        // File items are read only one time. Check if already exists on the actionParameters
+        if (actionParameters != null && actionParameters.isSuccess()
+                && actionParameters.getItems() != null) {
+            items = actionParameters.getItems();
+
+            // see http://commons.apache.org/fileupload/using.html
+        } else if (ServletFileUpload.isMultipartContent(request)) {
+            // Create a factory for disk-based file items
+            FileItemFactory factory = new DiskFileItemFactory();
+            // Create a new file upload handler
+            ServletFileUpload upload = new ServletFileUpload(factory);
+            // Parse the request
+            try {
+                items = upload.parseRequest(request);
+            } catch (FileUploadException e) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE, "Error encountered while uploading file: {0}", e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error encountered while uploading file: {0}",
+                            e.getMessage());
                 }
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":false, \"errorMessage\":\"Error encountered while uploading file.\"}");
-			}
-		}
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"Error encountered while uploading file.\"}");
+            }
+        }
 
-		// Process the uploaded items
-		if (items != null) {
+        // Process the uploaded items
+        if (items != null) {
             try {
                 // Process the uploaded items
                 @SuppressWarnings("rawtypes")
-				Iterator iter = items.iterator();
+                Iterator iter = items.iterator();
                 while (iter.hasNext()) {
                     FileItem item = (FileItem) iter.next();
 
@@ -212,10 +213,10 @@ public class KMZUploader extends ServiceBoxActionServlet {
                             String kmlFileName = null;
 
                             String newFileName = null;
-                            
-                            //get the zip file content
+
+                            // get the zip file content
                             zis = new ZipInputStream(item.getInputStream());
-                            //get the zipped file list entry
+                            // get the zipped file list entry
                             ZipEntry ze = zis.getNextEntry();
 
                             while (ze != null) {
@@ -224,14 +225,15 @@ public class KMZUploader extends ServiceBoxActionServlet {
                                     String fileName = ze.getName();
                                     File dir = new File(tempDirectory);
 
-
                                     // save file "as is" in the temporary directory
-                                    File originalFile = new File(tempDirectory + File.separatorChar + uuid + File.separatorChar + fileName);
+                                    File originalFile = new File(tempDirectory + File.separatorChar
+                                            + uuid + File.separatorChar + fileName);
                                     if (LOGGER.isLoggable(Level.INFO)) {
-                                        LOGGER.log(Level.INFO, "file unzip: {0}", originalFile.getAbsoluteFile());
+                                        LOGGER.log(Level.INFO, "file unzip: {0}",
+                                                originalFile.getAbsoluteFile());
                                     }
-                                    //create all non exists folders
-                                    //else you will hit FileNotFoundException for compressed folder
+                                    // create all non exists folders
+                                    // else you will hit FileNotFoundException for compressed folder
                                     new File(originalFile.getParent()).mkdirs();
 
                                     fos = new FileOutputStream(originalFile);
@@ -243,14 +245,13 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
                                     fos.close();
 
-
                                     if (fileName.toLowerCase().endsWith(".kml")) {
-
 
                                         // if the file is a kml file, read its content and modify its dom
                                         fis = new FileInputStream(originalFile);
 
-                                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                                        DocumentBuilderFactory dbf = DocumentBuilderFactory
+                                                .newInstance();
                                         DocumentBuilder db = null;
                                         db = dbf.newDocumentBuilder();
                                         Document doc = db.parse(fis);
@@ -265,15 +266,13 @@ public class KMZUploader extends ServiceBoxActionServlet {
                                                 if (child.getNodeName().equals("href")) {
                                                     String urlString = child.getTextContent();
                                                     if (!urlString.startsWith("http")) {
-                                                        child.setTextContent(
-                                                                request.getScheme() + "://"
-                                                                + request.getServerName() + ":"
-                                                                + request.getServerPort()
+                                                        child.setTextContent(request.getScheme()
+                                                                + "://" + request.getServerName()
+                                                                + ":" + request.getServerPort()
                                                                 + request.getContextPath() + "/"
-                                                                + dir.getName() + "/"
-                                                                + uuid + "/" + urlString);
+                                                                + dir.getName() + "/" + uuid + "/"
+                                                                + urlString);
                                                     }
-
 
                                                 }
                                             }
@@ -281,11 +280,12 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
                                         newFileName = "new_" + fileName;
                                         kmlFileName = uuid + File.separatorChar + newFileName;
-                                        File newFile = new File(tempDirectory + File.separatorChar + kmlFileName);
+                                        File newFile = new File(tempDirectory + File.separatorChar
+                                                + kmlFileName);
                                         fos = new FileOutputStream(newFile);
 
-                                        TransformerFactory tFactory =
-                                                TransformerFactory.newInstance();
+                                        TransformerFactory tFactory = TransformerFactory
+                                                .newInstance();
                                         Transformer transformer = tFactory.newTransformer();
 
                                         DOMSource source = new DOMSource(doc);
@@ -298,7 +298,6 @@ public class KMZUploader extends ServiceBoxActionServlet {
                                     }
                                 }
 
-
                                 ze = zis.getNextEntry();
                             }
 
@@ -306,62 +305,67 @@ public class KMZUploader extends ServiceBoxActionServlet {
                             zis.close();
 
                             response.setContentType("text/html");
-                            writeResponse(response, "{ \"success\":true, \"result\":{\"code\":\"" + uuid + "\",\"newFileName\":\"" + newFileName + "\"}}");
+                            writeResponse(response, "{ \"success\":true, \"result\":{\"code\":\""
+                                    + uuid + "\",\"newFileName\":\"" + newFileName + "\"}}");
 
                         } catch (IOException ex) {
                             if (LOGGER.isLoggable(Level.SEVERE)) {
-                                LOGGER.log(Level.SEVERE, "Error encountered while uploading file: {0}", ex.getMessage());
+                                LOGGER.log(Level.SEVERE,
+                                        "Error encountered while uploading file: {0}",
+                                        ex.getMessage());
                             }
                             response.setContentType("text/html");
-                            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"Error encountered while uploading file.\"}");
+                            writeResponse(response,
+                                    "{ \"success\":false, \"errorMessage\":\"Error encountered while uploading file.\"}");
                         } finally {
                             try {
                                 if (zis != null) {
                                     zis.close();
                                 }
-                                if ( fos != null ){
+                                if (fos != null) {
                                     fos.close();
                                 }
-                                if ( fis != null ){
+                                if (fis != null) {
                                     fis.close();
                                 }
                             } catch (IOException ex) {
                                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                                    LOGGER.log(Level.SEVERE,
-                                            "Error closing streams ", ex);
+                                    LOGGER.log(Level.SEVERE, "Error closing streams ", ex);
                                 }
                                 throw new ServletException(ex.getMessage());
                             }
                         }
                     } else {
                         response.setContentType("text/html");
-                        writeResponse(response, "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
+                        writeResponse(response,
+                                "{ \"success\":false, \"errorMessage\":\"This servlet can be used only to upload files.\"}");
 
                     }
                 }
 
-
             } catch (Exception ex) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE, "Error encountered while uploading file{0}", ex.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error encountered while uploading file{0}",
+                            ex.getMessage());
                 }
 
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage() + "\"}");
+                writeResponse(response,
+                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
+                                + "\"}");
             } finally {
                 // do nothing
             }
 
         } else {
             response.setContentType("text/html");
-            writeResponse(response, "{ \"success\":false, \"errorMessage\":\"Expected multipart/form-data type.\"}");
+            writeResponse(response,
+                    "{ \"success\":false, \"errorMessage\":\"Expected multipart/form-data type.\"}");
         }
-
 
     }
 
-    private void writeResponse(HttpServletResponse response, String text)
-            throws IOException {
+    private void writeResponse(HttpServletResponse response, String text) throws IOException {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
@@ -378,8 +382,7 @@ public class KMZUploader extends ServiceBoxActionServlet {
                 }
             } catch (Exception e) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error closing response stream ", e);
+                    LOGGER.log(Level.SEVERE, "Error closing response stream ", e);
                 }
             }
 

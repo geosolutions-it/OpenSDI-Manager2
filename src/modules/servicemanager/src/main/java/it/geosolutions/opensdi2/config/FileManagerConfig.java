@@ -20,26 +20,26 @@
  */
 package it.geosolutions.opensdi2.config;
 
-
 /**
  * File manager config
  * 
  * @author adiaz
- *
+ * 
  */
 public interface FileManagerConfig extends OpenSDIManagerConfig {
-	
-	/**
-	 * @return text to be handled as root
-	 */
-	String getRootText();
-	
-	/**
-	 * Get folder permission
-	 * @param folder
-	 * 
-	 * @return permissions on the folder
-	 */
-	FolderPermission getPermission(String folder);
+
+    /**
+     * @return text to be handled as root
+     */
+    String getRootText();
+
+    /**
+     * Get folder permission
+     * 
+     * @param folder
+     * 
+     * @return permissions on the folder
+     */
+    FolderPermission getPermission(String folder);
 
 }

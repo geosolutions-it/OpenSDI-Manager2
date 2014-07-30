@@ -33,26 +33,25 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface URLFacade {
 
-	/**
-	 * Handle a request in the URL wrapped
-	 * 
-	 * @param request
-	 * @param response
-	 * @param subPath
-	 *            in the URL
-	 * 
-	 * @throws IOException
-	 */
-	void handleRequest(HttpServletRequest request,
-			HttpServletResponse response, String urlWrapped, String... path) throws IOException;
-	
-	/**
-	 * Check if an URL is a wrapped one
-	 * 
-	 * @param url relative URL to check
-	 * 
-	 * @return true if is a wrapped one or false otherwise
-	 */
-	boolean isWrappedURL(String url);
+    /**
+     * Handle a request in the URL wrapped
+     * 
+     * @param request
+     * @param response
+     * @param subPath in the URL
+     * 
+     * @throws IOException
+     */
+    void handleRequest(HttpServletRequest request, HttpServletResponse response, String urlWrapped,
+            String... path) throws IOException;
+
+    /**
+     * Check if an URL is a wrapped one
+     * 
+     * @param url relative URL to check
+     * 
+     * @return true if is a wrapped one or false otherwise
+     */
+    boolean isWrappedURL(String url);
 
 }

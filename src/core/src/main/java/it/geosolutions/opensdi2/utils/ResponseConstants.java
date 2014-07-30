@@ -24,29 +24,33 @@ package it.geosolutions.opensdi2.utils;
  * Response constants for JSON responses
  * 
  * @author adiaz
- *
+ * 
  */
 public class ResponseConstants {
 
-	/**
-	 * SUCCESS key. Possible values for this key is <code>true</code> or <code>false</code> 
-	 */
-	public static final String SUCCESS = "success";
-	/**
-	 * RESULTS key. Common response for this key is the number of records on {@link ResponseConstants#ROOT} 
-	 */
-	public static final String RESULTS = "results";
-	/**
-	 * ROOT key. This key is used for the data at response.
-	 */
-	public static final String ROOT = "root";
-	/**
-	 * DATA key. This key is used for the data at response.
-	 */
-	public static final String DATA = "data";
-	/**
-	 * COUNT key. Common response for this key is the number of records on {@link ResponseConstants#DATA}
-	 */
-	public static final String COUNT = "count";
-	
+    /**
+     * SUCCESS key. Possible values for this key is <code>true</code> or <code>false</code>
+     */
+    public static final String SUCCESS = "success";
+
+    /**
+     * RESULTS key. Common response for this key is the number of records on {@link ResponseConstants#ROOT}
+     */
+    public static final String RESULTS = "results";
+
+    /**
+     * ROOT key. This key is used for the data at response.
+     */
+    public static final String ROOT = "root";
+
+    /**
+     * DATA key. This key is used for the data at response.
+     */
+    public static final String DATA = "data";
+
+    /**
+     * COUNT key. Common response for this key is the number of records on {@link ResponseConstants#DATA}
+     */
+    public static final String COUNT = "count";
+
 }

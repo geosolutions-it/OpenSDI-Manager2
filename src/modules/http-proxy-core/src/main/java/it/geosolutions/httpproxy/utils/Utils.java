@@ -19,7 +19,6 @@
  */
 package it.geosolutions.httpproxy.utils;
 
-
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
@@ -68,7 +67,7 @@ public final class Utils {
     public static final String HTTP_HEADER_CONTENT_ENCODING = "content-encoding";
 
     public static final String HTTP_HEADER_TRANSFER_ENCODING = "transfer-encoding";
-    
+
     public static final String HTTP_HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
 
     public static final int DEFAULT_PROXY_PORT = 80;
@@ -143,7 +142,7 @@ public final class Utils {
             return null;
         }
     }
-    
+
     /**
      * Obtain a property value as Set of String from a properties configuration
      * 
@@ -152,23 +151,23 @@ public final class Utils {
      * 
      * @return Set with all values as String or null if the key can't be found
      */
-    public static final Set<String> getProperty(Configuration props, String key){
+    public static final Set<String> getProperty(Configuration props, String key) {
         Object tmpProperty = props.getProperty(key);
-        if(tmpProperty != null){
+        if (tmpProperty != null) {
             Set<String> set = new HashSet<String>();
-            if(tmpProperty instanceof Collection<?>){
-                for (Object tmpElement: (Collection<?>) tmpProperty) {
-                    if (tmpElement != null){
-                    	String element = tmpElement.toString();
+            if (tmpProperty instanceof Collection<?>) {
+                for (Object tmpElement : (Collection<?>) tmpProperty) {
+                    if (tmpElement != null) {
+                        String element = tmpElement.toString();
                         set.add(element);
                     }
                 }
-            }else{
-            	set.add(tmpProperty.toString());
+            } else {
+                set.add(tmpProperty.toString());
             }
             return set;
-        }else{
-        	return null;
+        } else {
+            return null;
         }
     }
 }

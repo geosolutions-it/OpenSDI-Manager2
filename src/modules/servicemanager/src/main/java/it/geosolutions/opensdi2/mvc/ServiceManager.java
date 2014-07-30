@@ -26,6 +26,8 @@ import it.geosolutions.httpproxy.service.ProxyService;
 import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.opensdi2.config.FileManagerConfig;
 import it.geosolutions.opensdi2.config.FolderPermission;
+import it.geosolutions.opensdi2.dao.ServiceDAO;
+import it.geosolutions.opensdi2.model.Service;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.io.File;
@@ -67,430 +69,432 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/serviceManager")
 public class ServiceManager extends BaseFileManager {
 
-	/**
-	 * Base configuration for the service manager
-	 */
-	private FileManagerConfig fileManagerConfig;
+    /**
+     * Base configuration for the service manager
+     */
+    private FileManagerConfig fileManagerConfig;
+    
+    /**
+     * Spring JDBC DAOs
+     */
+    private ServiceDAO serviceDAO;
 
-	
-	/**
-	 * Confirmed AOI names
-	 */
-	private static String CONFIRMED_AOI_NAME = "AOI.zip";
-	
-	/**
-	 * Confirmed ACQ_PLAN names
-	 */
-	private static String CONFIRMED_ACQ_PLAN = "ACQ_PLAN.zip";
-	private static String CONFIRMED_ACQ_PLAN_NAME = "ACQ_PLAN.xml";
-	
-	/**
-	 * METHODS to change service status
-	 */
-	private static String METHOD_CONFIRMED_ACQ_PLAN = "ACQ_PLAN";
-	private static String METHOD_CONFIRMED_AOI = "METHOD_CONFIRMED_AOI";
-	
-	private ProxyService proxyService;
+    /**
+     * Confirmed AOI names
+     */
+    private static String CONFIRMED_AOI_NAME = "AOI.zip";
 
-	/**
-	 * Set the configuration to set up the base directory
-	 * 
-	 * @param config
-	 */
-	@Resource(name = "serviceManagerConfig")
-	public void setBaseConfig(FileManagerConfig baseConfig) {
-		this.fileManagerConfig = baseConfig;
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
-	
-	ProxyCallback callback;
-	String downloadMethod;
+    /**
+     * Confirmed ACQ_PLAN names
+     */
+    private static String CONFIRMED_ACQ_PLAN = "ACQ_PLAN.zip";
 
-	/**
-	 * @param proxyService the proxyService to set
-	 */
-	@Resource(name = "serviceManagerProxy")
-	public void setProxyService(ProxyService proxyService) {
-		 	callback = new ProxyCallback() {
-			 	String user;
-				String service;
-				
-				@Override
-				public void setProxyConfig(ProxyConfig config) {
-				}
-				
-				/**
-				 * On request we save current call
-				 */
-				public void onRequest(HttpServletRequest request,
-						HttpServletResponse response, URL url) throws IOException {
-					service = request.getParameter("service");
-					user = request.getParameter("user");
-				}
-				
-				/**
-				 * On remote response we download the files and manipulate it
-				 */
-				public void onRemoteResponse(HttpMethod method) throws IOException {
-					if(METHOD_CONFIRMED_ACQ_PLAN.endsWith(downloadMethod)){
-						downloadConfirmedAcqPLan(method);
-					}else{
-						downloadConfirmedAOI(method);
-					}	
-				}
-				
-				/**
-				 * Download the shape-zip for the AOI of the plan
-				 * @param method
-				 * @throws IOException
-				 */
-				private void downloadConfirmedAOI(HttpMethod method) throws IOException{
-					String filePath = fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service + File.separator + CONFIRMED_AOI_NAME;
-					if(LOGGER.isInfoEnabled())
-						LOGGER.info("Download confirmed AOI to "+ filePath);
-					InputStream is = method.getResponseBodyAsStream();
-					byte[] bytes = IOUtils.toByteArray(is);
-					createCommittedFile(filePath, bytes);	
-				}
-				
-				/**
-				 * Download the acquisition list for the plan
-				 * @param method
-				 * @throws IOException
-				 */
-				private void downloadConfirmedAcqPLan(HttpMethod method) throws IOException{
-					String filePath = fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service + File.separator + CONFIRMED_ACQ_PLAN;
-					if(LOGGER.isInfoEnabled())
-						LOGGER.info("Generating acquisition list to "+ filePath);
-					byte[] buffer = new byte[1024];
-					InputStream is = method.getResponseBodyAsStream();
-					
-					// Generate the zip
-					FileOutputStream fos = new FileOutputStream(filePath);
-					ZipOutputStream zos = new ZipOutputStream(fos);
-		    		ZipEntry ze= new ZipEntry(CONFIRMED_ACQ_PLAN_NAME);
-		    		zos.putNextEntry(ze);
-		 
-		    		int len;
-		    		while ((len = is.read(buffer)) > 0) {
-		    			zos.write(buffer, 0, len);
-		    		}
-		 
-		    		is.close();
-		    		zos.closeEntry();
-		 
-		    		//remember close it
-		    		zos.close();
-		    		
-					if(LOGGER.isInfoEnabled())
-						LOGGER.info("Acquisition list available in "+ filePath);
-				}
-	
-				/**
-				 * Create committed file with byte array with a byte array
-				 * 
-				 * @param filePath of the file
-				 * @param bytes to write
-				 * @return absolute path to the file
-				 * @throws IOException
-				 */
-				private String createCommittedFile(String filePath, byte[] bytes)
-				        throws IOException {
-				
-				    try {
-				
-				        // write bytes
-				        File tmpFile = new File(filePath);
-				        
-				        if(LOGGER.isTraceEnabled()){
-				            LOGGER.trace("Appending bytes to " + tmpFile.getAbsolutePath());
-				        }
-				        
-				        // File channel to append bytes
-				        @SuppressWarnings("resource")
-						FileChannel channel = new FileOutputStream(tmpFile, true).getChannel();
-				        ByteBuffer buf = ByteBuffer.allocateDirect((int)bytes.length);
-				        
-				        // put bytes
-				        buf.put(bytes);
-				        
-				        // Flips this buffer.  The limit is set to the current position and then
-				        // the position is set to zero.  If the mark is defined then it is discarded.
-				        buf.flip();
-				        
-				        // Writes a sequence of bytes to this channel from the given buffer.
-				        channel.write(buf);
-				     
-				        // close the channel
-				        channel.close();
-				        
-				    } catch (IOException e) {
-				        LOGGER.error("Error writing file bytes", e);
-				    }
-					
-				    return filePath;
-				}
-				
-				@Override
-				public void onFinish() throws IOException {
-				}
-				
-				@Override
-				public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
-						HttpServletRequest httpServletRequest,
-						HttpServletResponse httpServletResponse, String user,
-						String password, ProxyInfo proxyInfo) {
-					return true;
-				}
-		};
-		proxyService.addCallback(callback);
-		this.proxyService = proxyService;
-	}
+    private static String CONFIRMED_ACQ_PLAN_NAME = "ACQ_PLAN.xml";
 
-	/**
-	 * Browser handler server side for ExtJS filebrowser.
-	 * 
-	 * @see https://code.google.com/p/ext-ux-filebrowserpanel/
-	 * 
-	 * @param action
-	 *            to perform
-	 * @param folder
-	 *            folder to browse
-	 * @param file
-	 *            to perform an operation
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * 
-	 * @return
-	 */
-	@RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public @ResponseBody
-	Object extJSbrowser(
-			@RequestParam(value = "action", required = false) String action,
-			@RequestParam(value = "folder", required = false) String folder,
-			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "oldName", required = false) String oldName,
-			@RequestParam(value = "file", required = false) String file,
-			HttpServletRequest request, HttpServletResponse response) {
+    /**
+     * METHODS to change service status
+     */
+    private static String METHOD_CONFIRMED_ACQ_PLAN = "ACQ_PLAN";
 
-		if (EXTJS_FILE_DOWNLOAD.equals(action)) {
-			String finalFolder = folder != null && !folder.equals("root") ? folder
-					: null;
-			if (finalFolder != null) {
-				if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
-					finalFolder = finalFolder.replace(
-							fileManagerConfig.getRootText(), "");
-				}
-			}
-			String finalFile = file;
-			if (finalFile != null) {
-				if (finalFile.startsWith(fileManagerConfig.getRootText())) {
-					finalFile = finalFile.replace(
-							fileManagerConfig.getRootText(), "");
-				}
-			}
-			download(response, finalFile, getFilePath(finalFile, finalFolder));
-			return null;
-		} else {
-			return super.extJSbrowser(action, folder, name, oldName, file,
-					request, response);
-		}
-	}
+    private static String METHOD_CONFIRMED_AOI = "METHOD_CONFIRMED_AOI";
 
-	/**
-	 * Download a confirmed AOI to target folder
-	 * 
-	 * @param user
-	 * @param service
-	 * @param request
-	 * @param httpServletResponse
-	 * @return
-	 */
-	@RequestMapping(value = "confirmServiceAOI", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public @ResponseBody
-	Object confirmService(
-			@RequestParam(value = "user", required = true) String user,
-			@RequestParam(value = "service", required = true) String service,
-			HttpServletRequest request, HttpServletResponse httpServletResponse) {
+    private ProxyService proxyService;
 
-		Map<String, Object> response = new HashMap<String, Object>();
-		try {
-			if(checkUserAndService(user, service)){
-				downloadMethod = METHOD_CONFIRMED_AOI;
-				proxyService.execute(request, new MockHttpServletResponse());
-				response.put(ResponseConstants.SUCCESS, true);
-			}else{
-				response.put(ResponseConstants.SUCCESS, false);
-				response.put(ResponseConstants.ROOT, "Wrong user or service");
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error downloading finished AOI", e);
-			response.put(ResponseConstants.SUCCESS, false);
-		}
-		return response;
-	}
+    /**
+     * Set the configuration to set up the base directory
+     * 
+     * @param config
+     */
+    @Resource(name = "serviceManagerConfig")
+    public void setBaseConfig(FileManagerConfig baseConfig) {
+        this.fileManagerConfig = baseConfig;
+        this.setRuntimeDir(baseConfig.getBaseFolder());
+    }
 
-	/**
-	 * Download a confirmed AOI to target folder
-	 * 
-	 * @param user
-	 * @param service
-	 * @param request
-	 * @param httpServletResponse
-	 * @return
-	 */
-	@RequestMapping(value = "confirmServiceAcqPlan", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public @ResponseBody
-	Object confirmServiceAcqPlan(
-			@RequestParam(value = "user", required = true) String user,
-			@RequestParam(value = "service", required = true) String service,
-			HttpServletRequest request, HttpServletResponse httpServletResponse) {
+    /**
+     * @param serviceDAO the serviceDAO to set
+     */
+    @Resource(name = "osdi2ServiceDAO")
+    public void setServiceDAO(ServiceDAO serviceDAO) {
+        this.serviceDAO = serviceDAO;
+    }
 
-		Map<String, Object> response = new HashMap<String, Object>();
-		try {
-			if(checkUserAndService(user, service)){
-				downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
-				proxyService.execute(request, new MockHttpServletResponse());
-				response.put(ResponseConstants.SUCCESS, true);
-			}else{
-				response.put(ResponseConstants.SUCCESS, false);
-				response.put(ResponseConstants.ROOT, "Wrong user or service");
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error on acquisition list generation", e);
-			response.put(ResponseConstants.SUCCESS, false);
-		}
-		return response;
-	}
-	
-	/**
-	 * Check if the user is the logged one and exists the service
-	 * @param user
-	 * @param service
-	 * 
-	 * @return true if the logged user is the user and exists the service for the user
-	 */
-	private boolean checkUserAndService(String user, String service){
-		boolean checked = false;
-		try{
-			SecurityContext sc = SecurityContextHolder.getContext();
-			String username = (String) sc.getAuthentication().getPrincipal();
-			if(user != null 
-					&& username != null 
-					&& user.equals(username)
-					&& service != null){
-				checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user + File.separator + service)).exists();
-			}
-		}catch (Exception e){
-			LOGGER.error("Ungranted access", e);
-		}
-		return checked;
-	}
+    /**
+     * @return the serviceDAO
+     */
+    public ServiceDAO getServiceDAO() {
+        return serviceDAO;
+    }
 
-	/**
-	 * Handler for upload files
-	 * 
-	 * @param operationId
-	 * @param gotHeaders
-	 * @param file
-	 *            uploaded
-	 * @param request
-	 * @param model
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "upload", method = RequestMethod.POST)
-	public void upload(
-			@RequestParam MultipartFile file,
-			@RequestParam(required = false, defaultValue = "uploadedFile") String name,
-			@RequestParam(required = false, defaultValue = "-1") int chunks,
-			@RequestParam(required = false, defaultValue = "-1") int chunk,
-			@RequestParam(required = false) String folder,
-			HttpServletRequest request, HttpServletResponse servletResponse)
-			throws IOException {
-		String finalFolder = folder;
-		if (finalFolder != null) {
-			if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
-				finalFolder = finalFolder.replace(
-						fileManagerConfig.getRootText(), "");
-			}
-		}
-		super.upload(file, name, chunks, chunk, finalFolder, request,
-				servletResponse);
-	}
+    ProxyCallback callback;
 
-	/**
-	 * Download a file
-	 * 
-	 * @param folder
-	 *            folder for the file
-	 * @param file
-	 *            to be downloaded
-	 * @param resp
-	 *            servlet response
-	 */
-	@RequestMapping(value = "download", method = { RequestMethod.POST,
-			RequestMethod.GET })
-	public void downloadFile(
-			@RequestParam(value = "folder", required = false) String folder,
-			@RequestParam(value = "file", required = true) String file,
-			HttpServletResponse resp) {
-		String finalFolder = folder;
-		if (finalFolder != null) {
-			if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
-				finalFolder = finalFolder.replace(
-						fileManagerConfig.getRootText(), "");
-			}
-		}
-		String finalFile = file;
-		if (finalFile != null) {
-			if (finalFile.startsWith(fileManagerConfig.getRootText())) {
-				finalFile = finalFile.replace(fileManagerConfig.getRootText(),
-						"");
-			}
-		}
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Download file "
-					+ ((finalFolder != null) ? finalFolder + finalFile
-							: finalFile));
-		}
-		super.downloadFile(finalFolder, finalFile, resp);
-	}
+    String downloadMethod;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.geosolutions.opensdi2.mvc.BaseFileManager#getFolderList(java.lang.
-	 * String)
-	 */
-	@Override
-	protected List<Map<String, Object>> getFolderList(String folder) {
-		List<Map<String, Object>> currenteFolderList = super
-				.getFolderList(folder);
+    /**
+     * @param proxyService the proxyService to set
+     */
+    @Resource(name = "serviceManagerProxy")
+    public void setProxyService(ProxyService proxyService) {
+        callback = new ProxyCallback() {
+            String user;
 
-		FolderPermission permission = fileManagerConfig.getPermission(folder);
+            String service;
 
-		// write operations available
-		for (Map<String, Object> rootElement : currenteFolderList) {
-			rootElement.put("canRename", permission.canRename());
-			rootElement.put("canDelete", permission.canDelete());
-			rootElement.put("canCreateFolder", permission.canCreateFolder());
-			rootElement.put("canUpload", permission.canUpload());
-		}
+            @Override
+            public void setProxyConfig(ProxyConfig config) {
+            }
 
-		return currenteFolderList;
-	}
+            /**
+             * On request we save current call
+             */
+            public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
+                    throws IOException {
+                service = request.getParameter("service");
+                user = request.getParameter("user");
+            }
 
-	/**
-	 * @return the proxyService
-	 */
-	public ProxyService getProxyService() {
-		return proxyService;
-	}
+            /**
+             * On remote response we download the files and manipulate it
+             */
+            public void onRemoteResponse(HttpMethod method) throws IOException {
+                if (METHOD_CONFIRMED_ACQ_PLAN.endsWith(downloadMethod)) {
+                    downloadConfirmedAcqPLan(method);
+                } else {
+                    downloadConfirmedAOI(method);
+                }
+            }
+
+            /**
+             * Download the shape-zip for the AOI of the plan
+             * 
+             * @param method
+             * @throws IOException
+             */
+            private void downloadConfirmedAOI(HttpMethod method) throws IOException {
+                String filePath = fileManagerConfig.getBaseFolder() + File.separator + user
+                        + File.separator + service + File.separator + CONFIRMED_AOI_NAME;
+                if (LOGGER.isInfoEnabled())
+                    LOGGER.info("Download confirmed AOI to " + filePath);
+                InputStream is = method.getResponseBodyAsStream();
+                byte[] bytes = IOUtils.toByteArray(is);
+                createCommittedFile(filePath, bytes);
+            }
+
+            /**
+             * Download the acquisition list for the plan
+             * 
+             * @param method
+             * @throws IOException
+             */
+            private void downloadConfirmedAcqPLan(HttpMethod method) throws IOException {
+                String filePath = fileManagerConfig.getBaseFolder() + File.separator + user
+                        + File.separator + service + File.separator + CONFIRMED_ACQ_PLAN;
+                if (LOGGER.isInfoEnabled())
+                    LOGGER.info("Generating acquisition list to " + filePath);
+                byte[] buffer = new byte[1024];
+                InputStream is = method.getResponseBodyAsStream();
+
+                // Generate the zip
+                FileOutputStream fos = new FileOutputStream(filePath);
+                ZipOutputStream zos = new ZipOutputStream(fos);
+                ZipEntry ze = new ZipEntry(CONFIRMED_ACQ_PLAN_NAME);
+                zos.putNextEntry(ze);
+
+                int len;
+                while ((len = is.read(buffer)) > 0) {
+                    zos.write(buffer, 0, len);
+                }
+
+                is.close();
+                zos.closeEntry();
+
+                // remember close it
+                zos.close();
+
+                if (LOGGER.isInfoEnabled())
+                    LOGGER.info("Acquisition list available in " + filePath);
+            }
+
+            /**
+             * Create committed file with byte array with a byte array
+             * 
+             * @param filePath of the file
+             * @param bytes to write
+             * @return absolute path to the file
+             * @throws IOException
+             */
+            private String createCommittedFile(String filePath, byte[] bytes) throws IOException {
+
+                try {
+
+                    // write bytes
+                    File tmpFile = new File(filePath);
+
+                    if (LOGGER.isTraceEnabled()) {
+                        LOGGER.trace("Appending bytes to " + tmpFile.getAbsolutePath());
+                    }
+
+                    // File channel to append bytes
+                    @SuppressWarnings("resource")
+                    FileChannel channel = new FileOutputStream(tmpFile, true).getChannel();
+                    ByteBuffer buf = ByteBuffer.allocateDirect((int) bytes.length);
+
+                    // put bytes
+                    buf.put(bytes);
+
+                    // Flips this buffer. The limit is set to the current position and then
+                    // the position is set to zero. If the mark is defined then it is discarded.
+                    buf.flip();
+
+                    // Writes a sequence of bytes to this channel from the given buffer.
+                    channel.write(buf);
+
+                    // close the channel
+                    channel.close();
+
+                } catch (IOException e) {
+                    LOGGER.error("Error writing file bytes", e);
+                }
+
+                return filePath;
+            }
+
+            @Override
+            public void onFinish() throws IOException {
+            }
+
+            @Override
+            public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
+                    HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                    String user, String password, ProxyInfo proxyInfo) {
+                return true;
+            }
+        };
+        proxyService.addCallback(callback);
+        this.proxyService = proxyService;
+    }
+
+    /**
+     * Browser handler server side for ExtJS filebrowser.
+     * 
+     * @see https://code.google.com/p/ext-ux-filebrowserpanel/
+     * 
+     * @param action to perform
+     * @param folder folder to browse
+     * @param file to perform an operation
+     * @param request servlet request
+     * @param response servlet response
+     * 
+     * @return
+     */
+    @RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET, RequestMethod.POST })
+    public @ResponseBody
+    Object extJSbrowser(@RequestParam(value = "action", required = false) String action,
+            @RequestParam(value = "folder", required = false) String folder,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "oldName", required = false) String oldName,
+            @RequestParam(value = "file", required = false) String file,
+            HttpServletRequest request, HttpServletResponse response) {
+
+        String finalFolder = folder != null && !folder.equals("root") ? folder : null;
+        
+        if (EXTJS_FOLDER_NEW.equals(action)) {
+            if (finalFolder != null) {
+                if(serviceDAO.findByServiceId("just_a_test") == null) {
+                    serviceDAO.insert(new Service("just_a_test", "/share/ftp/just_a_test"));
+                }
+            }
+        }
+        else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
+            if (finalFolder != null) {
+                if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+                    finalFolder = finalFolder.replace(fileManagerConfig.getRootText(), "");
+                }
+            }
+            String finalFile = file;
+            if (finalFile != null) {
+                if (finalFile.startsWith(fileManagerConfig.getRootText())) {
+                    finalFile = finalFile.replace(fileManagerConfig.getRootText(), "");
+                }
+            }
+            download(response, finalFile, getFilePath(finalFile, finalFolder));
+            return null;
+        }
+        
+        //----
+        return super.extJSbrowser(action, folder, name, oldName, file, request, response);
+    }
+
+    /**
+     * Download a confirmed AOI to target folder
+     * 
+     * @param user
+     * @param service
+     * @param request
+     * @param httpServletResponse
+     * @return
+     */
+    @RequestMapping(value = "confirmServiceAOI", method = { RequestMethod.GET, RequestMethod.POST })
+    public @ResponseBody
+    Object confirmService(@RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "service", required = true) String service,
+            HttpServletRequest request, HttpServletResponse httpServletResponse) {
+
+        Map<String, Object> response = new HashMap<String, Object>();
+        try {
+            if (checkUserAndService(user, service)) {
+                downloadMethod = METHOD_CONFIRMED_AOI;
+                proxyService.execute(request, new MockHttpServletResponse());
+                response.put(ResponseConstants.SUCCESS, true);
+            } else {
+                response.put(ResponseConstants.SUCCESS, false);
+                response.put(ResponseConstants.ROOT, "Wrong user or service");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error downloading finished AOI", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+        return response;
+    }
+
+    /**
+     * Download a confirmed AOI to target folder
+     * 
+     * @param user
+     * @param service
+     * @param request
+     * @param httpServletResponse
+     * @return
+     */
+    @RequestMapping(value = "confirmServiceAcqPlan", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public @ResponseBody
+    Object confirmServiceAcqPlan(@RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "service", required = true) String service,
+            HttpServletRequest request, HttpServletResponse httpServletResponse) {
+
+        Map<String, Object> response = new HashMap<String, Object>();
+        try {
+            if (checkUserAndService(user, service)) {
+                downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
+                proxyService.execute(request, new MockHttpServletResponse());
+                response.put(ResponseConstants.SUCCESS, true);
+            } else {
+                response.put(ResponseConstants.SUCCESS, false);
+                response.put(ResponseConstants.ROOT, "Wrong user or service");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error on acquisition list generation", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+        return response;
+    }
+
+    /**
+     * Check if the user is the logged one and exists the service
+     * 
+     * @param user
+     * @param service
+     * 
+     * @return true if the logged user is the user and exists the service for the user
+     */
+    private boolean checkUserAndService(String user, String service) {
+        boolean checked = false;
+        try {
+            SecurityContext sc = SecurityContextHolder.getContext();
+            String username = (String) sc.getAuthentication().getPrincipal();
+            if (user != null && username != null && user.equals(username) && service != null) {
+                checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                        + File.separator + service)).exists();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Ungranted access", e);
+        }
+        return checked;
+    }
+
+    /**
+     * Handler for upload files
+     * 
+     * @param operationId
+     * @param gotHeaders
+     * @param file uploaded
+     * @param request
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = "upload", method = RequestMethod.POST)
+    public void upload(@RequestParam MultipartFile file,
+            @RequestParam(required = false, defaultValue = "uploadedFile") String name,
+            @RequestParam(required = false, defaultValue = "-1") int chunks,
+            @RequestParam(required = false, defaultValue = "-1") int chunk,
+            @RequestParam(required = false) String folder, HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
+        String finalFolder = folder;
+        if (finalFolder != null) {
+            if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+                finalFolder = finalFolder.replace(fileManagerConfig.getRootText(), "");
+            }
+        }
+        super.upload(file, name, chunks, chunk, finalFolder, request, servletResponse);
+    }
+
+    /**
+     * Download a file
+     * 
+     * @param folder folder for the file
+     * @param file to be downloaded
+     * @param resp servlet response
+     */
+    @RequestMapping(value = "download", method = { RequestMethod.POST, RequestMethod.GET })
+    public void downloadFile(@RequestParam(value = "folder", required = false) String folder,
+            @RequestParam(value = "file", required = true) String file, HttpServletResponse resp) {
+        String finalFolder = folder;
+        if (finalFolder != null) {
+            if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
+                finalFolder = finalFolder.replace(fileManagerConfig.getRootText(), "");
+            }
+        }
+        String finalFile = file;
+        if (finalFile != null) {
+            if (finalFile.startsWith(fileManagerConfig.getRootText())) {
+                finalFile = finalFile.replace(fileManagerConfig.getRootText(), "");
+            }
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Download file "
+                    + ((finalFolder != null) ? finalFolder + finalFile : finalFile));
+        }
+        super.downloadFile(finalFolder, finalFile, resp);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.mvc.BaseFileManager#getFolderList(java.lang. String)
+     */
+    @Override
+    protected List<Map<String, Object>> getFolderList(String folder) {
+        List<Map<String, Object>> currenteFolderList = super.getFolderList(folder);
+
+        FolderPermission permission = fileManagerConfig.getPermission(folder);
+
+        // write operations available
+        for (Map<String, Object> rootElement : currenteFolderList) {
+            rootElement.put("canRename", permission.canRename());
+            rootElement.put("canDelete", permission.canDelete());
+            rootElement.put("canCreateFolder", permission.canCreateFolder());
+            rootElement.put("canUpload", permission.canUpload());
+        }
+
+        return currenteFolderList;
+    }
+
+    /**
+     * @return the proxyService
+     */
+    public ProxyService getProxyService() {
+        return proxyService;
+    }
 }

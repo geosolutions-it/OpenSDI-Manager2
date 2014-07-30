@@ -29,40 +29,38 @@ import it.geosolutions.opensdi2.utils.ControllerUtils;
  * 
  */
 public abstract class AbstractFileController {
-	
-	private String runtimeDir;
 
-	
-	/**
-	 * Obtain file path for a file in a folder inside defaultFolderDir
-	 * 
-	 * @param fileName
-	 * @param subFolder
-	 * @return
-	 */
-	public String getFilePath(String fileName, String subFolder) {
-		String filePath = getRuntimeDir();
-		if (subFolder != null) {
-			filePath += subFolder + ControllerUtils.SEPARATOR;
-		}
-		filePath += fileName;
-		filePath = ControllerUtils.cleanDuplicateSeparators(filePath);
-		return filePath;
-	}
+    private String runtimeDir;
 
-	/**
-	 * @return the config
-	 */
-	public String getRuntimeDir() {
-		return this.runtimeDir;
-	}
+    /**
+     * Obtain file path for a file in a folder inside defaultFolderDir
+     * 
+     * @param fileName
+     * @param subFolder
+     * @return
+     */
+    public String getFilePath(String fileName, String subFolder) {
+        String filePath = getRuntimeDir();
+        if (subFolder != null) {
+            filePath += subFolder + ControllerUtils.SEPARATOR;
+        }
+        filePath += fileName;
+        filePath = ControllerUtils.cleanDuplicateSeparators(filePath);
+        return filePath;
+    }
 
-	/**
-	 * @param config the config to set
-	 */
-	public void setRuntimeDir(String runtimeDir){
-		this.runtimeDir = runtimeDir;
-	}
-	
+    /**
+     * @return the config
+     */
+    public String getRuntimeDir() {
+        return this.runtimeDir;
+    }
+
+    /**
+     * @param config the config to set
+     */
+    public void setRuntimeDir(String runtimeDir) {
+        this.runtimeDir = runtimeDir;
+    }
 
 }

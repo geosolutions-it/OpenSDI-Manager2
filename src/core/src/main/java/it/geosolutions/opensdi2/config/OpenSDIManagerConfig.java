@@ -20,19 +20,17 @@
  */
 package it.geosolutions.opensdi2.config;
 
-
 /**
- * Base configuration for OpenSDI-Manager2
- * This bean could centralize all common configuration
+ * Base configuration for OpenSDI-Manager2 This bean could centralize all common configuration
  * 
  * @author adiaz
- *
+ * 
  */
 public interface OpenSDIManagerConfig {
 
-	/**
-	 * @return base folder for the application
-	 */
-	String getBaseFolder();
+    /**
+     * @return base folder for the application
+     */
+    String getBaseFolder();
 
 }

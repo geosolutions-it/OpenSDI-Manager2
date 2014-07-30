@@ -34,7 +34,7 @@ public interface ProxyConfig {
      * 
      * @throws IOException
      */
-	public void configProxy();
+    public void configProxy();
 
     /**
      * @return the soTimeout
@@ -75,15 +75,15 @@ public interface ProxyConfig {
      * @return the methodsWhitelist
      */
     public Set<String> getMethodsWhitelist();
-    
+
     /**
      * @return the hostsWhitelist
      */
     public Set<String> getHostsWhitelist();
-    
+
     /**
-	 * @return the defaultStreamByteSize
-	 */
-	public int getDefaultStreamByteSize();
+     * @return the defaultStreamByteSize
+     */
+    public int getDefaultStreamByteSize();
 
 }

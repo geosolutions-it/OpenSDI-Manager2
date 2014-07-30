@@ -40,74 +40,72 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Repository;
 
 /**
- * Proxy helper implementation.
- * This implementation loads a PropertyConfiguration from Spring context to the proxy config 
+ * Proxy helper implementation. This implementation loads a PropertyConfiguration from Spring context to the proxy config
  * 
  * @author <a href="mailto:aledt84@gmail.com">Alejandro Diaz Torres</a>
- *
+ * 
  */
 @Repository
 public class ProxyHelperImpl implements ProxyHelper {
-    
+
     /**
      * Proxy properties autowired
      */
     private ProxyConfig proxyConfig;
-	
-	/**
-	 * Initialize proxy
-	 * 
-	 * @param proxy to be initialized
-	 */
-	public void initProxy(ProxyService proxy) {
-		this.initProxy(proxy, null);
-	}
-	
-	/**
-	 * Initialize proxy
-	 * 
-	 * @param proxy to be initialized
-	 * @param context of the proxy
-	 */
-	public void initProxy(ProxyService proxy, ServletContext context) {
-		proxy.setProxyConfig(proxyConfig);
-	}
-	
-	/**
-	 * Prepare a proxy method execution
-	 * 
-	 * @param httpServletRequest
-	 * @param httpServletResponse
-	 * @param proxy
-	 * 
-	 * @return ProxyMethodConfig to execute the method
-	 * 
-	 * @throws IOException
-	 * @throws ServletException
-	 */
-	public ProxyMethodConfig prepareProxyMethod(
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, ProxyService proxy) throws IOException,
-			ServletException {
-    	URL url = null;
+
+    /**
+     * Initialize proxy
+     * 
+     * @param proxy to be initialized
+     */
+    public void initProxy(ProxyService proxy) {
+        this.initProxy(proxy, null);
+    }
+
+    /**
+     * Initialize proxy
+     * 
+     * @param proxy to be initialized
+     * @param context of the proxy
+     */
+    public void initProxy(ProxyService proxy, ServletContext context) {
+        proxy.setProxyConfig(proxyConfig);
+    }
+
+    /**
+     * Prepare a proxy method execution
+     * 
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param proxy
+     * 
+     * @return ProxyMethodConfig to execute the method
+     * 
+     * @throws IOException
+     * @throws ServletException
+     */
+    public ProxyMethodConfig prepareProxyMethod(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse, ProxyService proxy) throws IOException,
+            ServletException {
+        URL url = null;
         String user = null, password = null;
         Map<?, ?> pars;
         String method = httpServletRequest.getMethod();
-        
-        if (HttpMethods.METHOD_GET.equals(method)){
-        	// Obtain pars from parameter map
-        	pars = httpServletRequest.getParameterMap();
-        }else{
-            //Parse the queryString to not read the request body calling getParameter from httpServletRequest
+
+        if (HttpMethods.METHOD_GET.equals(method)) {
+            // Obtain pars from parameter map
+            pars = httpServletRequest.getParameterMap();
+        } else {
+            // Parse the queryString to not read the request body calling getParameter from httpServletRequest
             // so the method can simply forward the request body
-        	pars=  splitQuery(httpServletRequest.getQueryString());
+            pars = splitQuery(httpServletRequest.getQueryString());
         }
 
         // Obtain ProxyMethodConfig from pars
-        for (Object  key : pars.keySet()) {
-        	
-            String value = (pars.get(key) instanceof String) ?
-            			(String) pars.get(key) : ((String[]) pars.get(key))[0];
+        for (Object key : pars.keySet()) {
+
+            String value = (pars.get(key) instanceof String) ? (String) pars.get(key)
+                    : ((String[]) pars.get(key))[0];
 
             if ("user".equals(key)) {
                 user = value;
@@ -117,58 +115,59 @@ public class ProxyHelperImpl implements ProxyHelper {
                 url = new URL(value);
             }
         }
-        
+
         // get url from the attribute if present
-        if(url == null){
-        	String urlString = (String) httpServletRequest.getAttribute("url");
-        	if(urlString != null)
-        		url = new URL(urlString);
+        if (url == null) {
+            String urlString = (String) httpServletRequest.getAttribute("url");
+            if (urlString != null)
+                url = new URL(urlString);
         }
 
         if (url != null) {
-        	// init and return the config
+            // init and return the config
             proxy.onInit(httpServletRequest, httpServletResponse, url);
             return new ProxyMethodConfig(url, user, password, method);
-        } else{
-        	return null;
+        } else {
+            return null;
         }
-	}
+    }
 
-	/**
-	 * Split a queryString with ','
-	 * 
-	 * @param query
-	 * 
-	 * @return Map with keys and values
-	 * 
-	 * @throws UnsupportedEncodingException
-	 */
-    private Map<String,String> splitQuery(String query) throws UnsupportedEncodingException {
+    /**
+     * Split a queryString with ','
+     * 
+     * @param query
+     * 
+     * @return Map with keys and values
+     * 
+     * @throws UnsupportedEncodingException
+     */
+    private Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
         Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-        
-        if(query != null){
+
+        if (query != null) {
             String[] pairs = query.split("&");
             for (String pair : pairs) {
                 int idx = pair.indexOf("=");
-                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
+                        URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
             }
         }
-        
+
         return query_pairs;
     }
 
-	/**
-	 * @return the proxyConfig
-	 */
-	public ProxyConfig getProxyConfig() {
-		return proxyConfig;
-	}
+    /**
+     * @return the proxyConfig
+     */
+    public ProxyConfig getProxyConfig() {
+        return proxyConfig;
+    }
 
-	/**
-	 * @param proxyConfig the proxyConfig to set
-	 */
-	public void setProxyConfig(ProxyConfig proxyConfig) {
-		this.proxyConfig = proxyConfig;
-	}
+    /**
+     * @param proxyConfig the proxyConfig to set
+     */
+    public void setProxyConfig(ProxyConfig proxyConfig) {
+        this.proxyConfig = proxyConfig;
+    }
 
 }

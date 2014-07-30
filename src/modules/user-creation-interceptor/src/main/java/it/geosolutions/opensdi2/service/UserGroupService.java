@@ -29,31 +29,31 @@ import java.util.Map;
  */
 public interface UserGroupService {
 
-	/**
-	 * Search an user by uid
-	 * 
-	 * @param uid
-	 * 
-	 * @return Map with the user attributes
-	 */
-	List<Map<String, Object>> search(String uid);
+    /**
+     * Search an user by uid
+     * 
+     * @param uid
+     * 
+     * @return Map with the user attributes
+     */
+    List<Map<String, Object>> search(String uid);
 
-	/**
-	 * Save user groups for an user
-	 * 
-	 * @param uid
-	 * @param groups 
-	 *  
-	 * @return flag that indicates if the operation could be performed
-	 */
-	boolean setUserGroups(String uid, List<String> groups);
-	
-	/**
-	 * Get groups for an user 
-	 * 
-	 * @param uid
-	 * 
-	 * @return groups that the user is member of
-	 */
-	List<String> getUserGroups(String uid);
+    /**
+     * Save user groups for an user
+     * 
+     * @param uid
+     * @param groups
+     * 
+     * @return flag that indicates if the operation could be performed
+     */
+    boolean setUserGroups(String uid, List<String> groups);
+
+    /**
+     * Get groups for an user
+     * 
+     * @param uid
+     * 
+     * @return groups that the user is member of
+     */
+    List<String> getUserGroups(String uid);
 }

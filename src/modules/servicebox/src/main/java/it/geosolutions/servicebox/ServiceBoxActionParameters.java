@@ -33,53 +33,52 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class ServiceBoxActionParameters {
 
-	private boolean success = false;
-	private List<FileItem> items;
-	private Map<String, Object> extensions;
+    private boolean success = false;
 
-	/**
-	 * @return the extensions
-	 */
-	public Map<String, Object> getExtensions() {
-		return extensions;
-	}
+    private List<FileItem> items;
 
-	/**
-	 * @param extensions
-	 *            the extensions to set
-	 */
-	public void setExtensions(Map<String, Object> extensions) {
-		this.extensions = extensions;
-	}
+    private Map<String, Object> extensions;
 
-	/**
-	 * @return the success
-	 */
-	public boolean isSuccess() {
-		return success;
-	}
+    /**
+     * @return the extensions
+     */
+    public Map<String, Object> getExtensions() {
+        return extensions;
+    }
 
-	/**
-	 * @param success
-	 *            the success to set
-	 */
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    /**
+     * @param extensions the extensions to set
+     */
+    public void setExtensions(Map<String, Object> extensions) {
+        this.extensions = extensions;
+    }
 
-	/**
-	 * @return the items
-	 */
-	public List<FileItem> getItems() {
-		return items;
-	}
+    /**
+     * @return the success
+     */
+    public boolean isSuccess() {
+        return success;
+    }
 
-	/**
-	 * @param items
-	 *            the items to set
-	 */
-	public void setItems(List<FileItem> items) {
-		this.items = items;
-	}
+    /**
+     * @param success the success to set
+     */
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    /**
+     * @return the items
+     */
+    public List<FileItem> getItems() {
+        return items;
+    }
+
+    /**
+     * @param items the items to set
+     */
+    public void setItems(List<FileItem> items) {
+        this.items = items;
+    }
 
 }

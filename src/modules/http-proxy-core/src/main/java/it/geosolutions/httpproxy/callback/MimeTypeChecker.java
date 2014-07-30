@@ -44,7 +44,7 @@ public class MimeTypeChecker extends AbstractProxyCallback implements ProxyCallb
      * Default constructor
      */
     public MimeTypeChecker() {
-    	super();
+        super();
     }
 
     /**

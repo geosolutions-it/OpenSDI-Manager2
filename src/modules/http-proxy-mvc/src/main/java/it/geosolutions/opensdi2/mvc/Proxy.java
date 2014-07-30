@@ -44,34 +44,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/proxy")
 public class Proxy {
 
-	@Resource(name="proxyService")
-	protected ProxyService proxy;
+    @Resource(name = "proxyService")
+    protected ProxyService proxy;
 
-	private final static Logger LOGGER = Logger.getLogger(Proxy.class);
-	
-	/**
-	 * Handle proxy reqquest.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * 
-	 * @return
-	 * @throws ServletException 
-	 * @throws IOException 
-	 */
-	@RequestMapping(value = "/", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public void proxy(
-			HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private final static Logger LOGGER = Logger.getLogger(Proxy.class);
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Calling proxy");
-		}
-		
-		proxy.execute(request, response);
-		
-	}
+    /**
+     * Handle proxy reqquest.
+     * 
+     * @param request servlet request
+     * @param response servlet response
+     * 
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
+    @RequestMapping(value = "/", method = { RequestMethod.GET, RequestMethod.POST })
+    public void proxy(HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Calling proxy");
+        }
+
+        proxy.execute(request, response);
+
+    }
 
 }

@@ -33,36 +33,32 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface Callback {
 
-	/**
-	 * Handle a GET request
-	 * 
-	 * @param request
-	 * @param response
-	 * @param callbackResult
-	 *            last callback result
-	 * 
-	 * @return CallbackResult
-	 * 
-	 * @throws IOException
-	 */
-	ServiceBoxActionParameters onGet(HttpServletRequest request,
-			HttpServletResponse response,
-			ServiceBoxActionParameters callbackResult) throws IOException;
+    /**
+     * Handle a GET request
+     * 
+     * @param request
+     * @param response
+     * @param callbackResult last callback result
+     * 
+     * @return CallbackResult
+     * 
+     * @throws IOException
+     */
+    ServiceBoxActionParameters onGet(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters callbackResult) throws IOException;
 
-	/**
-	 * Handle a POST request
-	 * 
-	 * @param request
-	 * @param response
-	 * @param callbackResult
-	 *            last callback result
-	 * 
-	 * @return CallbackResult
-	 * 
-	 * @throws IOException
-	 */
-	ServiceBoxActionParameters onPost(HttpServletRequest request,
-			HttpServletResponse response,
-			ServiceBoxActionParameters callbackResult) throws IOException;
+    /**
+     * Handle a POST request
+     * 
+     * @param request
+     * @param response
+     * @param callbackResult last callback result
+     * 
+     * @return CallbackResult
+     * 
+     * @throws IOException
+     */
+    ServiceBoxActionParameters onPost(HttpServletRequest request, HttpServletResponse response,
+            ServiceBoxActionParameters callbackResult) throws IOException;
 
 }
