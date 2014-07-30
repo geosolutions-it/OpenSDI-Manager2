@@ -8,12 +8,6 @@
        default-autowire="byName">
 
     <!--=====================================================================-->
-    <!-- DB related stuff -->
-    <!--=====================================================================-->
-
-    <import resource="applicationContext-geostoreDatasource.xml"/>
-    
-    <!--=====================================================================-->
     
     <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
         <property name="ignoreResourceNotFound" value="true"/>
@@ -27,5 +21,11 @@
             </list>
         </property>
     </bean>
-		
+
+    <!--=====================================================================-->
+    <!-- DB related stuff -->
+    <!--=====================================================================-->
+
+    <import resource="applicationContext-openSDI2Datasource.xml"/>
+    
 </beans>
