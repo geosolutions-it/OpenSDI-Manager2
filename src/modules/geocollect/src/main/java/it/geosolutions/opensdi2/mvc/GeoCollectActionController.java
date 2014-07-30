@@ -18,9 +18,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.mvc;
+package it.geosolutions.opensdi2.mvc;
 
 
+import it.geosolutions.geocollect.model.http.CommitResponse;
+import it.geosolutions.geocollect.model.http.Status;
+
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,16 +40,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/geocollect/action")
 public class GeoCollectActionController {
+	private final static Logger LOGGER = Logger
+			.getLogger(GeoCollectActionController.class);
 	@RequestMapping(value = "/{action}", method = { RequestMethod.GET,
 			RequestMethod.POST })
-	public @ResponseBody Object performAction(@PathVariable String template,
-			@PathVariable String username,@RequestBody Object body){
+	public @ResponseBody Object performAction(@PathVariable("action") String action,
+			@RequestBody Object body){
 		/* get user details
 		 * UserDetails userDetails =
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			
 		*/
+		LOGGER.info(body);
+		CommitResponse r = new CommitResponse();
+		r.setId("2");
 		
-		return null;
+		r.setStatus(Status.SUCCESS);
+		return r;
 	}
 }
