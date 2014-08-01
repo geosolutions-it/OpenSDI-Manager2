@@ -19,7 +19,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package it.geosolutions.opensdi2.workflow;
-
+/**
+ * Status of the workflow to place in the execution context
+ * This is only a draft
+ * @author lorenzo
+ *
+ */
 public class WorkflowStatus {
 	private int scheduledOperations =1;
 	private int progress = 0;

@@ -25,6 +25,7 @@ package it.geosolutions.opensdi2.worflow.transform;
  */
 
 import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
+import it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.DefaultPreBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,27 @@ public class DefaultSpelTransformerTest {
 		DefaultSpelTestObj result = (DefaultSpelTestObj) transformer
 				.transform(in);
 
+	}
+	/**
+	 * Test the default perbuilder
+	 */
+	@Test
+	public void preBuilderTest(){
+		
+		DefaultPreBuilder<DefaultSpelTestObj> t = new DefaultPreBuilder<DefaultSpelTestObj>(DefaultSpelTestObj.class);
+		DefaultSpelTestObj obj = t.build(rules);
+		SpelTransformer<DefaultSpelTestObj, DefaultSpelTestObj> transformer = new SpelTransformer<DefaultSpelTestObj, DefaultSpelTestObj>();
+
+		transformer.setRules(rules);
+		List<PropertyAccessor> l = new ArrayList<PropertyAccessor>();
+		l.add(new ReflectivePropertyAccessor());
+		transformer.setInputaccessors(l);
+		transformer.setOutputaccessors(l);
+		transformer.setOutputPreBuilder(t);
+
+		DefaultSpelTestObj result = (DefaultSpelTestObj) transformer
+				.transform(in);
+		
 	}
 
 	

@@ -78,6 +78,9 @@ public class ActionSequenceTest {
 			
 			//get input
 			ctx.addContextElement("map", map1);
+			assertNotNull(sequence1);
+			assertEquals("sequence1", sequence1.getId());
+			assertNotNull(sequence1.getActions());
 			//execute sequence
 			sequence1.execute(ctx);
 			//test results

@@ -44,14 +44,12 @@
 		</property>
 	</bean>
 	<bean id="action2" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
-		<property name="configuration" ref="action2Config">
-			
-		</property>
+		<property name="configuration" ref="action2Config"></property>
+		<property name="id" value="action1"></property>
 	</bean>
 	<bean id="action3" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
-		<property name="configuration" ref="action3Config">
-			
-		</property>
+		<property name="configuration" ref="action3Config"></property>
+		<property name="id" value="action2"></property>
 	</bean>
 	<!-- list of actions for the action sequence -->
 	<util:list id="actions1">
@@ -66,9 +64,11 @@
 	</util:list>
 	<bean id="sequence1" class="it.geosolutions.opensdi2.workflow.ActionSequence">
 		<property name="actions" ref="actions1" />
+		<property name="id" value="sequence1"></property>
 	</bean>
 	<bean id="sequence2" class="it.geosolutions.opensdi2.workflow.ActionSequence">
 		<property name="actions" ref="actions2" />
+		<property name="id" value="sequence2"></property>
 	</bean>
 	
 	

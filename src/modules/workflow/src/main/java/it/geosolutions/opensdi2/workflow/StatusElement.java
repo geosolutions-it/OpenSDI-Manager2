@@ -22,10 +22,10 @@ package it.geosolutions.opensdi2.workflow;
 
 
 /**
- * Element of the status
+ * Element of the status. This is only a draft
  * @author lorenzo
  *
  */
 public class StatusElement {
-	WorkflowStatus status;
+	private WorkflowStatus status;
 }
