@@ -1,0 +1,80 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    ">
+	
+	
+	<bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">
+		<property name="inputObjectId" value="input"></property>
+		<property name="outputObjectId" value="feature"></property>
+	</bean>
+	
+	<bean id="action2Config" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="outputObjectId" value="transformed"></property>
+        <property name="inputPropertyAccessor" >
+            <util:list>
+                <ref bean="featurePropertyAccessor"></ref>
+            </util:list>
+        </property>
+        <property name="outputPropertyAccessor" ref="featurePropertyAccessor" />
+        <property name="rules" ref="rules"></property>
+        <property name="preBuilder" ref="featurePreBuilder"></property>
+    </bean>
+	
+	<util:map id="rules">
+        <entry key="prop0" value="text" />
+        <entry key="prop1" value="number" />
+        <entry key="geometry" value="geometry" />
+    </util:map>
+    
+    <bean id="featurePropertyAccessor" class="it.geosolutions.opensdi2.workflow.transform.spel.accessors.SimpleFeaturePropertyAccessor"></bean>
+    
+    <bean id="featurePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
+        <constructor-arg ref="action3Config"/>
+        <constructor-arg value="feature"/>
+    </bean>
+	
+	<bean id="action3Config" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+		<property name="inputObjectId" value="transformed"></property>
+		<property name="connectionProperties" ref="connectionProperties"/>
+	</bean>
+	
+	
+	
+	<util:map id="connectionProperties">
+	   <entry key="dbtype" value="h2"/>
+	   <entry key="database" value="mem:test"/>
+	</util:map>
+	
+	<bean id="action1" class="it.geosolutions.opensdi2.workflow.action.GeoJSONReader">
+		<property name="configuration" ref="action1Config">
+			
+		</property>
+	</bean>
+	
+	<bean id="action2" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
+        <property name="configuration" ref="action2Config"></property>
+        <property name="id" value="action2"></property>
+    </bean>
+	
+	<bean id="action3" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+		<property name="configuration" ref="action3Config"></property>
+		<property name="id" value="writer"></property>
+	</bean>
+	
+	<!-- list of actions for the action sequence -->
+	<util:list id="actions">
+			<ref bean="action1"></ref>
+			<ref bean="action2"></ref>
+			<ref bean="action3"></ref>
+	</util:list>
+	
+	<bean id="sequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+		<property name="actions" ref="actions" />
+		<property name="id" value="sequence"></property>
+	</bean>
+	
+</beans>

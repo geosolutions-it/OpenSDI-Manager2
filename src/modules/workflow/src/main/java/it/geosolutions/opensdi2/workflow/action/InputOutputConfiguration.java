@@ -18,20 +18,36 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.workflow;
+package it.geosolutions.opensdi2.workflow.action;
 
+import it.geosolutions.opensdi2.workflow.BlockConfiguration;
 
 /**
- * Element of the status. This is only a draft
- * @author lorenzo
+ * Basic Workflow configuration class for blocks with an input and an output (both optionals).
+ * 
+ * @author Mauro Bartolomeoli
  *
  */
-public class StatusElement {
-	private WorkflowStatus status;
-
-	public WorkflowStatus getStatus() {
-		return status;
+public class InputOutputConfiguration implements BlockConfiguration {
+	/**
+	 * identifier of the input object from context
+	 */
+	private String inputObjectId;
+	/**
+	 * identifier of the output object in context
+	 */
+	private String outputObjectId;
+	
+	public String getInputObjectId() {
+		return inputObjectId;
 	}
-	
-	
+	public void setInputObjectId(String inputObjectId) {
+		this.inputObjectId = inputObjectId;
+	}
+	public String getOutputObjectId() {
+		return outputObjectId;
+	}
+	public void setOutputObjectId(String outputObjectId) {
+		this.outputObjectId = outputObjectId;
+	}
 }

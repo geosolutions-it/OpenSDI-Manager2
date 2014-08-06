@@ -31,16 +31,16 @@ public class WorkflowContext {
 	/**
 	 * Status Elements, TODO manage them to get the status of the workflow
 	 */
-	private Map<String,StatusElement> statusElements= new HashMap<String,StatusElement>();
+	private Map<String,WorkflowStatus> statusElements= new HashMap<String,WorkflowStatus>();
 	/**
 	 * Context Elements, this contains the status of the flow
 	 */
 	private Map<String,Object> contextElements = new HashMap<String,Object>();
 	
-	public Map<String, StatusElement> getStatusElements() {
+	public Map<String, WorkflowStatus> getStatusElements() {
 		return statusElements;
 	}
-	public void addStatusElement(String name,StatusElement e){
+	public void addStatusElement(String name,WorkflowStatus e){
 		statusElements.put(name,e);
 	}
 	public void addContextElement(String name,Object o){

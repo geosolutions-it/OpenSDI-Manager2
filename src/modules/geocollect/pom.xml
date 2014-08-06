@@ -14,6 +14,11 @@
 
     <name>OpenSDI Manager 2 - GeoCollect</name>
 
+	<!-- properties -->
+    <properties>
+        <geotools.version>12-SNAPSHOT</geotools.version>
+    </properties>
+	
 	<dependencies>
         <!-- JUnit dependencies -->
 		<dependency>
@@ -62,7 +67,42 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-core</artifactId>
 		</dependency>
+		<!-- GEOTOOLS -->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-api</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-main</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojson</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-cql</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-h2</artifactId>
+			<version>${geotools.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
+	
 	 
 
 </project>

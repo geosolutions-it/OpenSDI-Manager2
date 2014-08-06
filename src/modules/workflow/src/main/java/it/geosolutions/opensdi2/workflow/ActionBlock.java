@@ -33,5 +33,5 @@ public interface ActionBlock extends WorkflowBlock {
 	/**
 	 * Executes the block
 	 */
-	public void execute(WorkflowContext ctx) throws IllegalArgumentException;
+	public void execute(WorkflowContext ctx) throws IllegalArgumentException, WorkflowException;
 }
