@@ -101,8 +101,12 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+		<!-- dependencies for email module  -->
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+    		<artifactId>opensdi2-user-management</artifactId>
+    		<version>1.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
-	
-	 
 
 </project>

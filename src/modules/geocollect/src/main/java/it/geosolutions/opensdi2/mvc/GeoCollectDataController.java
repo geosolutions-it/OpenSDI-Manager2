@@ -57,7 +57,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/geocollect/data")
 public class GeoCollectDataController extends BaseFileManager {
 	
-	private static final String GC_BASE_DIR = "geocollect/data";
+	private static final String GC_BASE_DIR = "geocollect";
+	private static final String GC_MEDIA_DIR = "media";
+	private static final String GC_CONFIG_DIR = "config";
 
 	/**
 	 * Upload a media content in the upload folder
@@ -94,17 +96,18 @@ public class GeoCollectDataController extends BaseFileManager {
 			@PathVariable("mission") String mission,
 			@PathVariable("source") String source,
 			HttpServletRequest request, HttpServletResponse response){
-		String finalFolder = mission ;
-		String sourcePath = getGeoCollectPath(mission, source, null);
+		
+		String sourcePath = getGeoCollectPath(GC_MEDIA_DIR,mission, source, null);
 		Map<String, Object> folders = getFileList(sourcePath);
 		Map<String,Object> result = new HashMap<String,Object>();
-		//TODO make it recoursive to explore the whole files
+		//TODO make it recursive to explore the whole files
 		for (String folderName: folders.keySet()){
 			if(folders.get(folderName) instanceof Map){
 				Map<String, Object> objectData = (Map<String, Object>) folders.get(folderName);
-				if( "folder".equals(objectData.get("iconCls") )){
+				if( "folder".equals(objectData.get("iconCls") )){//TODO do a better check
 					Map<String, Object> detailobj = getFileList(sourcePath + objectData.get("name"));
-					result.putAll(detailobj);
+					
+					result.putAll(getImages(detailobj));
 				}else{
 					result.put(folderName, objectData);
 				}
@@ -112,6 +115,28 @@ public class GeoCollectDataController extends BaseFileManager {
 		}
 		return result;
 	}
+	private Map<? extends String, ? extends Object> getImages(
+			Map<String, Object> detailobj) {
+		 Map<String,Object> res = new HashMap<String,Object>();
+		 for(String key : detailobj.keySet()){
+			 Map<String,Object> current = (Map<String,Object>) detailobj.get(key);
+			 if(isImage(current)){
+				 res.put(key,current);
+			 }
+		 }
+		 return res;
+	}
+	/**
+	 * Check type from the object descriptor
+	 * @param current
+	 * @return
+	 */
+	private boolean isImage(Map<String,Object> current) {
+		String name  =(String) current.get("name");
+		return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif");
+		
+	}
+
 	/**
 	 * Generate the folder for the file to upload (in the runtimedir under geocollect directory
 	 * @param mission the mission
@@ -120,14 +145,23 @@ public class GeoCollectDataController extends BaseFileManager {
 	 * @return
 	 */
 	private String generateFolder(String mission, String source, String id) {
-		String rel_path = getGeoCollectPath(mission, source, id);
+		String rel_path = getGeoCollectPath(GC_MEDIA_DIR,mission, source, id);
 		String path = getFilePath("",rel_path);
 		new File(path).mkdirs();
 		return rel_path;
 	}
-
-	private String getGeoCollectPath(String mission, String source, String id) {
-		String rel_path =  GC_BASE_DIR + File.separator + mission + File.separator + source + File.separator ;
+	/**
+	 * Return the path for a file to upload
+	 * @param subdir the main directory (data, config...)
+	 * @param mission the mission name
+	 * @param source the origin name
+	 * @param id the id of the commit
+	 * @return the path to the file
+	 */
+	private String getGeoCollectPath(String subdir, String mission, String source, String id) {
+		String rel_path =  GC_BASE_DIR + File.separator +
+				subdir + File.separator +
+				mission + File.separator + source + File.separator ;
 		if(id!=null){
 			rel_path += id + File.separator;
 		}

@@ -29,6 +29,7 @@ import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -653,6 +654,7 @@ public class BaseFileManager extends AbstractFileController {
 				.getScaledInstance(THUMB_W, THUMB_H, Image.SCALE_FAST));
 		BufferedImage bimage = new BufferedImage(THUMB_W, THUMB_H,
 				BufferedImage.TYPE_INT_RGB);
+		
 		// Copy image to buffered image
 		Graphics g = bimage.createGraphics();
 		g.drawImage(img.getImage(), 0, 0, null);
@@ -660,6 +662,9 @@ public class BaseFileManager extends AbstractFileController {
 		ImageIO.write(bimage, "jpg", new File(thumbPath));
 		return new java.io.FileInputStream(thumbPath);
 	}
+	
+	
+
 
 	/**
 	 * Download a file with a stream
