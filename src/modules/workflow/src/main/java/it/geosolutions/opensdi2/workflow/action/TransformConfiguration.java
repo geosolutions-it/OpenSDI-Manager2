@@ -32,15 +32,8 @@ import it.getosolutions.opensdi2.workflow.transform.PreBuilder;
  * @author lorenzo
  *
  */
-public class TransformConfiguration implements BlockConfiguration{
-	/**
-	 * indentifier of the input object from context
-	 */
-	private String inputObjectId;
-	/**
-	 * indentifier of the output object in context
-	 */
-	private String outputObjectId;
+public class TransformConfiguration extends InputOutputConfiguration{
+	
 	private List<PropertyAccessor> inputPropertyAccessor;
 	private List<PropertyAccessor> outputPropertyAccessor;
 	private Map<String,String> rules;
@@ -72,17 +65,6 @@ public class TransformConfiguration implements BlockConfiguration{
 	public void setRules(Map<String,String> rules) {
 		this.rules = rules;
 	}
-	public String getInputObjectId() {
-		return inputObjectId;
-	}
-	public void setInputObjectId(String inputObjectId) {
-		this.inputObjectId = inputObjectId;
-	}
-	public String getOutputObjectId() {
-		return outputObjectId;
-	}
-	public void setOutputObjectId(String outputObjectId) {
-		this.outputObjectId = outputObjectId;
-	}
+	
 	
 }

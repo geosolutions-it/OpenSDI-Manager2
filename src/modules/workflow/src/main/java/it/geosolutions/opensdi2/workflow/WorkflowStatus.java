@@ -26,8 +26,18 @@ package it.geosolutions.opensdi2.workflow;
  *
  */
 public class WorkflowStatus {
+	public enum Status {
+		WAITING,
+		RUNNING,
+		COMPLETED,
+		FAILED
+	}
 	private int scheduledOperations =1;
 	private int progress = 0;
+	private Status currentStatus = Status.WAITING;
+	private String errorMessage = null;
+	private Throwable exception = null;
+	
 	public int getScheduledOperations() {
 		return scheduledOperations;
 	}
@@ -35,4 +45,32 @@ public class WorkflowStatus {
 	public void setScheduledOperations(int scheduledOperations) {
 		this.scheduledOperations = scheduledOperations;
 	}
+
+	public Status getCurrentStatus() {
+		return currentStatus;
+	}
+
+	public void setCurrentStatus(Status currentStatus) {
+		this.currentStatus = currentStatus;
+	}
+	
+	public void setFailed(String errorMessage, Throwable t) {
+		currentStatus = Status.FAILED;
+		this.errorMessage = errorMessage;
+		this.exception = t;
+	}
+
+	public void setCompleted() {
+		currentStatus = Status.COMPLETED;
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public Throwable getException() {
+		return exception;
+	}
+	
+	
 }

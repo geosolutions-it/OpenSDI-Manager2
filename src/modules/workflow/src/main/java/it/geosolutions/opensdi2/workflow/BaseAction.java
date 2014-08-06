@@ -19,6 +19,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package it.geosolutions.opensdi2.workflow;
+
+import it.geosolutions.opensdi2.workflow.WorkflowStatus.Status;
+
 /**
  * Base Action with Context
  * @author lorenzo
@@ -28,6 +31,8 @@ public abstract class BaseAction implements ActionBlock {
 	private BlockConfiguration configuration;
 
 	private String id;
+	
+	private WorkflowStatus status = new WorkflowStatus(); 
 	
 
 	public String getId() {
@@ -48,6 +53,44 @@ public abstract class BaseAction implements ActionBlock {
 		return configuration;
 	}
 
+	/**
+	 * Delegates real execution to the executeAction method, dealing with status
+	 * handling.
+	 * 
+	 */
+	@Override
+	public final void execute(WorkflowContext ctx) throws
+			WorkflowException {
+		if(this.getId() != null) {
+			ctx.getStatusElements().put(this.getId(), status);
+		}
+		status.setCurrentStatus(Status.RUNNING);
+		try {
+			executeAction(ctx);
+			complete();
+		} catch(Throwable t) {
+			fail(t);
+			throw new WorkflowException(t);
+		}
+	}
+
+	/**
+	 * To be defined by each extending class, implements the real action execution.
+	 * 
+	 * @param ctx
+	 */
+	protected abstract void executeAction(WorkflowContext ctx) throws WorkflowException;
+
+	private void complete() {
+		status.setCompleted();
+	}
+
+	protected void fail(Throwable t) {
+		fail(null, t);
+	}
 	
+	protected void fail(String message, Throwable t) {
+		status.setFailed(message, t);
+	}
 	
 }

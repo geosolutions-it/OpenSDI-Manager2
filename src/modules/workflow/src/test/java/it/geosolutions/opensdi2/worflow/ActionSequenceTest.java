@@ -24,11 +24,9 @@ package it.geosolutions.opensdi2.worflow;
  */
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import it.geosolutions.opensdi2.workflow.ActionSequence;
 import it.geosolutions.opensdi2.workflow.WorkflowContext;
+import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
 import it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
 import it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder;
@@ -68,7 +66,7 @@ public class ActionSequenceTest {
 	@Resource
 	Map<String,Object> map1;
 	@Test
-	public void actionSequenceTest(){
+	public void actionSequenceTest() throws IllegalArgumentException, WorkflowException{
 		
 		
 			WorkflowContext ctx = new WorkflowContext();

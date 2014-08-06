@@ -1,3 +1,4 @@
+package it.geosolutions.opensdi2.workflow.action;
 /*
  *  OpenSDI Manager 2
  *  Copyright (C) 2014 GeoSolutions S.A.S.
@@ -18,19 +19,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.workflow;
+public class DataStoreReaderConfiguration extends DataStoreConfiguration {
+	private String filterId;
 
+	public String getFilterId() {
+		return filterId;
+	}
 
-/**
- * Element of the status. This is only a draft
- * @author lorenzo
- *
- */
-public class StatusElement {
-	private WorkflowStatus status;
-
-	public WorkflowStatus getStatus() {
-		return status;
+	/**
+	 * Id to extract a CQL Filter from the context.
+	 * 
+	 * @param filterId
+	 */
+	public void setFilterId(String filterId) {
+		this.filterId = filterId;
 	}
 	
 	

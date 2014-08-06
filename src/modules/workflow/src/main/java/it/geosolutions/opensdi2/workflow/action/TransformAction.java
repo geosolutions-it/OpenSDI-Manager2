@@ -34,7 +34,7 @@ public class TransformAction extends BaseAction{
 	
 	
 	@Override
-	public void execute(WorkflowContext ctx) {
+	public void executeAction(WorkflowContext ctx) {
 		//configure a new transformer for execution
 		SpelObjectTranformer t = new SpelObjectTranformer();
 		if(getConfiguration() == null){

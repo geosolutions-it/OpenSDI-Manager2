@@ -29,7 +29,7 @@ import java.util.List;
 public class ActionSequence extends BaseAction {
 	private List<ActionBlock> actions;
 	@Override
-	public void execute(WorkflowContext ctx) {
+	public void executeAction(WorkflowContext ctx) throws WorkflowException {
 		if(actions!=null){
 			for(ActionBlock a : actions){
 				a.execute(ctx);

@@ -20,18 +20,32 @@
  */
 package it.geosolutions.opensdi2.workflow;
 
+public class WorkflowException extends Exception {
 
-/**
- * Element of the status. This is only a draft
- * @author lorenzo
- *
- */
-public class StatusElement {
-	private WorkflowStatus status;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	public WorkflowStatus getStatus() {
-		return status;
+	public WorkflowException() {
+		super();
 	}
-	
+
+	public WorkflowException(String arg0, Throwable arg1, boolean arg2,
+			boolean arg3) {
+		super(arg0, arg1, arg2, arg3);
+	}
+
+	public WorkflowException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	public WorkflowException(String arg0) {
+		super(arg0);
+	}
+
+	public WorkflowException(Throwable arg0) {
+		super(arg0);
+	}
 	
 }
