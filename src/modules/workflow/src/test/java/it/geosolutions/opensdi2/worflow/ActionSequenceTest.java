@@ -63,6 +63,9 @@ public class ActionSequenceTest {
 	@Autowired
 	ActionSequence sequence2;
 	
+	@Autowired
+	ActionSequence sequence3;
+	
 	@Resource
 	Map<String,Object> map1;
 	@Test
@@ -98,6 +101,13 @@ public class ActionSequenceTest {
 			assertEquals("replace1", out.get("out2"));
 			assertEquals("second3", out.get("out3"));
 			
+			// the third execute first of all the action 1, then sequence 1 and/or 2
+			ctx = new WorkflowContext();
+			ctx.addContextElement("map", map1);
+			sequence3.execute(ctx);
+			assertEquals("mockMap1.test1", out.get("out1"));
+			assertEquals("replace1", out.get("out2"));
+			assertEquals("second3", out.get("out3"));
 	}
 	
 }

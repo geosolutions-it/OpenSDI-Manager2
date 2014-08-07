@@ -51,6 +51,21 @@
 		<property name="configuration" ref="action3Config"></property>
 		<property name="id" value="action2"></property>
 	</bean>
+	<!-- Fork action -->
+	<bean id="action4" class="it.geosolutions.opensdi2.workflow.ForkAction">
+		<property name="inputPropertyAccessors">
+			<util:list>
+				<ref bean="mapPropertyAccessor"></ref>
+				<ref bean="reflectionPropertyAccessor"></ref>
+			</util:list>
+		</property>
+		<property name="branches"><util:map>
+				
+				<entry key="contextElements.out1.attribute4 == 4" value-ref="sequence1"></entry>
+				<entry key="contextElements.out1.attribute5 == 5" value-ref="sequence2"></entry>
+
+			</util:map></property>
+	</bean>
 	<!-- list of actions for the action sequence -->
 	<util:list id="actions1">
 			<ref bean="action1"></ref>
@@ -62,6 +77,12 @@
 			<ref bean="action2"></ref>
 			<ref bean="action3"></ref>
 	</util:list>
+	<!-- list of actions for the action sequence -->
+	<util:list id="actions3">
+			<ref bean="action1"></ref>
+			<ref bean="action4"></ref><!-- its a fork -->
+
+	</util:list>
 	<bean id="sequence1" class="it.geosolutions.opensdi2.workflow.ActionSequence">
 		<property name="actions" ref="actions1" />
 		<property name="id" value="sequence1"></property>
@@ -70,6 +91,9 @@
 		<property name="actions" ref="actions2" />
 		<property name="id" value="sequence2"></property>
 	</bean>
-	
+	<bean id="sequence3" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+		<property name="actions" ref="actions3" />
+		<property name="id" value="sequence3"></property>
+	</bean>
 	
 </beans>

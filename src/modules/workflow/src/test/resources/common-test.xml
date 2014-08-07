@@ -47,7 +47,7 @@
 		<entry key="out2" value="contextElements.out1.attribute1" /> <!-- replace1 -->
 		<entry key="out3" value="contextElements.out2.out3" /> <!-- attribute1 -->
 
-	</util:map>
+	</util:map> 
 	<!-- beans -->
 	<bean id="reflectionPropertyAccessor" class="org.springframework.expression.spel.support.ReflectivePropertyAccessor"></bean>
 	<bean id="mapPropertyAccessor" class="it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
