@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
     ">
-	
+	<import resource="geocollect_mailconfig_test.xml"/>
 	
 	<bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">
 		<property name="inputObjectId" value="input"></property>
@@ -30,8 +30,13 @@
         <entry key="geometry" value="geometry" />
     </util:map>
     
+    <!-- Property Accessors -->
     <bean id="featurePropertyAccessor" class="it.geosolutions.opensdi2.workflow.transform.spel.accessors.SimpleFeaturePropertyAccessor"></bean>
+    <bean id="mapPropertyAccessor" class="it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
+    <bean id="reflectionPropertyAccessor" class="org.springframework.expression.spel.support.ReflectivePropertyAccessor"></bean>
     
+    <!-- Prebuilders -->
+    <bean id="mapPreBuilder" class="it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
     <bean id="featurePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
         <constructor-arg ref="action3Config"/>
         <constructor-arg value="feature"/>
@@ -42,17 +47,35 @@
 		<property name="connectionProperties" ref="connectionProperties"/>
 	</bean>
 	
-	
-	
+	<bean id="action4Config" class="it.geosolutions.opensdi2.workflow.action.EmailActionConfiguration">
+		<property name="notificationService" ref="notificationService"></property>
+		<property name="inputPropertyAccessors">
+				<util:list>
+	                <ref bean="featurePropertyAccessor"></ref>
+	                <ref bean="mapPropertyAccessor"></ref>
+	                 <ref bean="reflectionPropertyAccessor"></ref>
+	            </util:list>
+		</property>
+		<property name="rules">
+			<util:map>
+				<entry key="from" value="'from@address.sample'"></entry>
+				<entry key="to" value="'to@address.sample'"></entry>
+				<entry key="subject" value="'Sample email:' + contextElements.transformed.prop1"></entry>
+				<entry key="template" value="'email-test.ftl'"></entry>
+				<entry key="model.prop0" value="contextElements.transformed.prop0"></entry>
+				<entry key="model.prop1" value="contextElements.transformed.prop1"></entry>
+				<entry key="model.propcustom" value="'propcustom'"></entry>
+			</util:map>
+		</property>	
+		
+	</bean>
 	<util:map id="connectionProperties">
 	   <entry key="dbtype" value="h2"/>
 	   <entry key="database" value="mem:test"/>
 	</util:map>
 	
 	<bean id="action1" class="it.geosolutions.opensdi2.workflow.action.GeoJSONReader">
-		<property name="configuration" ref="action1Config">
-			
-		</property>
+		<property name="configuration" ref="action1Config"></property>
 	</bean>
 	
 	<bean id="action2" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
@@ -64,12 +87,16 @@
 		<property name="configuration" ref="action3Config"></property>
 		<property name="id" value="writer"></property>
 	</bean>
-	
+	<bean id="action4" class="it.geosolutions.opensdi2.workflow.action.EmailAction">
+		<property name="configuration" ref="action4Config"></property>
+		<property name="id" value="mailer"></property>
+	</bean>
 	<!-- list of actions for the action sequence -->
 	<util:list id="actions">
 			<ref bean="action1"></ref>
 			<ref bean="action2"></ref>
 			<ref bean="action3"></ref>
+			<ref bean="action4"></ref>
 	</util:list>
 	
 	<bean id="sequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
