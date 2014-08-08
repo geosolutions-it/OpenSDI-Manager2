@@ -20,14 +20,14 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import it.geosolutions.geobatch.mariss.dao.ServiceDAO;
+import it.geosolutions.geobatch.mariss.model.Service;
 import it.geosolutions.httpproxy.callback.ProxyCallback;
 import it.geosolutions.httpproxy.service.ProxyConfig;
 import it.geosolutions.httpproxy.service.ProxyService;
 import it.geosolutions.httpproxy.utils.ProxyInfo;
 import it.geosolutions.opensdi2.config.FileManagerConfig;
 import it.geosolutions.opensdi2.config.FolderPermission;
-import it.geosolutions.opensdi2.dao.ServiceDAO;
-import it.geosolutions.opensdi2.model.Service;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 

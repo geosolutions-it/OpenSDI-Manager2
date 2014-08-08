@@ -68,7 +68,7 @@
     <!-- ======= Spring JDBC DAOs ======-->
     <!-- ====================================================================-->
     
-	<bean id="osdi2ServiceDAO" class="it.geosolutions.opensdi2.dao.impl.JdbcServiceDAO">
+	<bean id="osdi2ServiceDAO" class="it.geosolutions.geobatch.mariss.dao.impl.JdbcServiceDAO">
 		<property name="dataSource" ref="openSDI2DataSource" />
 	</bean>
     
