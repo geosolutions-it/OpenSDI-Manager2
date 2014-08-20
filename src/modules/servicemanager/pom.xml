@@ -29,7 +29,31 @@
 			<exclusions>
 			    <exclusion>
 			        <groupId>it.geosolutions.mariss</groupId>
-    				<artifactId>gb-mariss-actions</artifactId>
+    				<artifactId>gb-mariss-schemas</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-core-model</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-fsm-core</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-action-taskexecutor</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-action-ftp</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-action-ds2ds</artifactId>
+			    </exclusion>
+			    <exclusion>
+			        <groupId>it.geosolutions.geobatch</groupId>
+    				<artifactId>gb-action-imagemosaic</artifactId>
 			    </exclusion>
 			</exclusions>
         </dependency>
