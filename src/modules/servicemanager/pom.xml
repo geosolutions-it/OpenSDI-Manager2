@@ -26,6 +26,12 @@
         <dependency>
             <groupId>it.geosolutions.mariss</groupId>
 			<artifactId>gb-mariss-ingestion</artifactId>
+			<exclusions>
+			    <exclusion>
+			        <groupId>it.geosolutions.mariss</groupId>
+    				<artifactId>gb-mariss-actions</artifactId>
+			    </exclusion>
+			</exclusions>
         </dependency>
         
         <dependency>
