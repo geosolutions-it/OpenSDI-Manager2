@@ -100,6 +100,10 @@ public class ServiceManager extends BaseFileManager {
 
     private static String METHOD_CONFIRMED_AOI = "METHOD_CONFIRMED_AOI";
 
+    private final String ACQ_LIST_FOLDER = "ACQ_LIST";
+
+    private final String PRODUCTS_FOLDER = "PRODUCTS";
+
     private ProxyService proxyService;
 
     /**
@@ -415,6 +419,9 @@ public class ServiceManager extends BaseFileManager {
             if (user != null && username != null && user.equals(username) && service != null) {
                 checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
                         + File.separator + service)).exists();
+                
+                checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                        + File.separator + service + File.separator + ACQ_LIST_FOLDER)).mkdirs();
             }
         } catch (Exception e) {
             LOGGER.error("Ungranted access", e);
