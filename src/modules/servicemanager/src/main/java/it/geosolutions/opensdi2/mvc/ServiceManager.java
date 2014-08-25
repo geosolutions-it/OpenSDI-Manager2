@@ -352,6 +352,9 @@ public class ServiceManager extends BaseFileManager {
                 downloadMethod = METHOD_CONFIRMED_AOI;
                 proxyService.execute(request, new MockHttpServletResponse());
                 response.put(ResponseConstants.SUCCESS, true);
+                
+                Service dbService = this.serviceDAO.findByServiceId(service);
+                if (dbService != null) this.serviceDAO.updateServiceStatus(dbService, "AOI");
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
                 response.put(ResponseConstants.ROOT, "Wrong user or service");
