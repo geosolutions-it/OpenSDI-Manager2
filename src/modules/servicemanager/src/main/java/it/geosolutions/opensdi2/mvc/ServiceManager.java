@@ -39,6 +39,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -103,6 +104,11 @@ public class ServiceManager extends BaseFileManager {
     private final String ACQ_LIST_FOLDER = "ACQ_LIST";
 
     private final String PRODUCTS_FOLDER = "PRODUCTS";
+    
+    /**
+     * Known operation: Extjs integration services list
+     */
+    public static final String EXTJS_SERVICES_LIST = "get_serviceslist";
 
     private ProxyService proxyService;
 
@@ -330,6 +336,9 @@ public class ServiceManager extends BaseFileManager {
             download(response, finalFile, getFilePath(finalFile, finalFolder));
             return null;
         }
+        else if (EXTJS_SERVICES_LIST.equals(action)) {
+            return getServicesList(folder);
+        }
         
         //----
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
@@ -502,19 +511,53 @@ public class ServiceManager extends BaseFileManager {
      */
     @Override
     protected List<Map<String, Object>> getFolderList(String folder) {
-        List<Map<String, Object>> currenteFolderList = super.getFolderList(folder);
-
+        List<Map<String, Object>> currentFolderList = super.getFolderList(folder);        
+        
         FolderPermission permission = fileManagerConfig.getPermission(folder);
 
         // write operations available
-        for (Map<String, Object> rootElement : currenteFolderList) {
+        for (Map<String, Object> rootElement : currentFolderList) {
             rootElement.put("canRename", permission.canRename());
             rootElement.put("canDelete", permission.canDelete());
             rootElement.put("canCreateFolder", permission.canCreateFolder());
             rootElement.put("canUpload", permission.canUpload());
         }
 
-        return currenteFolderList;
+        return currentFolderList;
+    }
+    
+    /**
+     * 
+     * @param userid
+     * @return
+     */
+    protected List<Map<String, Object>> getServicesList(String userid) {
+        List<Service> services = this.serviceDAO.findByUser(userid);
+        List<Map<String, Object>> currentFolderList = super.getFolderList(userid);        
+        List<Map<String, Object>> servicesList = new LinkedList<Map<String, Object>>();        
+        
+        FolderPermission permission = fileManagerConfig.getPermission(userid);
+
+        // write operations available
+        for (Map<String, Object> rootElement : currentFolderList) {
+            rootElement.put("canRename", permission.canRename());
+            rootElement.put("canDelete", permission.canDelete());
+            rootElement.put("canCreateFolder", permission.canCreateFolder());
+            rootElement.put("canUpload", permission.canUpload());
+            
+            for (Service service : services) {
+                if (rootElement.get("text").equals(service.getServiceId())) {
+                    rootElement.put("isService", true);
+                    rootElement.put("userId", service.getUser());
+                    rootElement.put("status", service.getStatus());
+                    rootElement.put("parent", service.getParent());
+                    
+                    servicesList.add(rootElement);
+                }
+            }
+        }
+
+        return servicesList;
     }
 
     /**
