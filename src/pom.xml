@@ -260,12 +260,6 @@
                 <artifactId>spring-remoting</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-            
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
             <!-- =========================================================== -->
             <!--     SPRING SECURITY                                         -->
             <!-- =========================================================== -->
@@ -388,17 +382,6 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <!-- jsp etc... -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>${servlet-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jstl</groupId>
-                <artifactId>jstl</artifactId>
-                <version>${jstl.version}</version>
-            </dependency>
         </dependencies>
      </dependencyManagement>
     <modules>

@@ -32,6 +32,11 @@
     				<artifactId>gb-mariss-schemas</artifactId>
 			    </exclusion>
 			    <exclusion>
+			        <groupId>it.geosolutions.mariss</groupId>
+    				<artifactId>gb-mariss-action-e-geos-metocs</artifactId>
+			    </exclusion>
+
+			    <exclusion>
 			        <groupId>it.geosolutions.geobatch</groupId>
     				<artifactId>gb-core-model</artifactId>
 			    </exclusion>
@@ -55,6 +60,7 @@
 			        <groupId>it.geosolutions.geobatch</groupId>
     				<artifactId>gb-action-imagemosaic</artifactId>
 			    </exclusion>
+
 			</exclusions>
         </dependency>
         
