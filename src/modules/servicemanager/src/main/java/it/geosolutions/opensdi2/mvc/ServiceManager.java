@@ -352,7 +352,7 @@ public class ServiceManager extends BaseFileManager {
 
         Map<String, Object> response = new HashMap<String, Object>();
         try {
-            if (checkUserAndService(user, service)) {
+            if (checkUserAndService(user, service, METHOD_CONFIRMED_AOI)) {
                 downloadMethod = METHOD_CONFIRMED_AOI;
                 proxyService.execute(request, new MockHttpServletResponse());
                 response.put(ResponseConstants.SUCCESS, true);
@@ -388,10 +388,13 @@ public class ServiceManager extends BaseFileManager {
 
         Map<String, Object> response = new HashMap<String, Object>();
         try {
-            if (checkUserAndService(user, service)) {
+            if (checkUserAndService(user, service, METHOD_CONFIRMED_ACQ_PLAN)) {
                 downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
                 proxyService.execute(request, new MockHttpServletResponse());
                 response.put(ResponseConstants.SUCCESS, true);
+
+                Service dbService = this.serviceDAO.findByServiceId(service);
+                if (dbService != null) this.serviceDAO.updateServiceStatus(dbService, "ACQUISITIONPLAN");
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
                 response.put(ResponseConstants.ROOT, "Wrong user or service");
@@ -408,10 +411,11 @@ public class ServiceManager extends BaseFileManager {
      * 
      * @param user
      * @param service
+     * @param method 
      * 
      * @return true if the logged user is the user and exists the service for the user
      */
-    private boolean checkUserAndService(String user, String service) {
+    private boolean checkUserAndService(String user, String service, String method) {
         boolean checked = false;
         try {
             SecurityContext sc = SecurityContextHolder.getContext();
@@ -420,8 +424,14 @@ public class ServiceManager extends BaseFileManager {
                 checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
                         + File.separator + service)).exists();
                 
-                checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                        + File.separator + service + File.separator + ACQ_LIST_FOLDER)).mkdirs();
+                if (METHOD_CONFIRMED_AOI.equals(method)) {
+                    checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + ACQ_LIST_FOLDER)).mkdirs();
+                }
+                else if (METHOD_CONFIRMED_ACQ_PLAN.equals(method)) {
+                    checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + PRODUCTS_FOLDER)).mkdirs();
+                }
             }
         } catch (Exception e) {
             LOGGER.error("Ungranted access", e);
