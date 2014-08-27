@@ -21,6 +21,7 @@
 package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.geobatch.mariss.dao.ServiceDAO;
+import it.geosolutions.geobatch.mariss.model.AreaOfInterest;
 import it.geosolutions.geobatch.mariss.model.Service;
 import it.geosolutions.httpproxy.callback.ProxyCallback;
 import it.geosolutions.httpproxy.service.ProxyConfig;
@@ -551,6 +552,14 @@ public class ServiceManager extends BaseFileManager {
                     rootElement.put("userId", service.getUser());
                     rootElement.put("status", service.getStatus());
                     rootElement.put("parent", service.getParent());
+                    
+                    if(service.getAoi() != null) {
+                        AreaOfInterest aoi = service.getAoi();
+                        rootElement.put("aoiStartTime", aoi.getStartTime());
+                        rootElement.put("aoiEndTime", aoi.getEndTime());
+                        rootElement.put("aoiGeometry", aoi.getTheGeom());
+                        rootElement.put("aoiStatus", aoi.getStatus());
+                    }
                     
                     servicesList.add(rootElement);
                 }
