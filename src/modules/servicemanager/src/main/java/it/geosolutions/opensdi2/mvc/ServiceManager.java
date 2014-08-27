@@ -559,6 +559,7 @@ public class ServiceManager extends BaseFileManager {
                         rootElement.put("aoiEndTime", aoi.getEndTime());
                         rootElement.put("aoiGeometry", aoi.getTheGeom());
                         rootElement.put("aoiStatus", aoi.getStatus());
+                        rootElement.put("aoiDescription", aoi.getDescription());
                     }
                     
                     servicesList.add(rootElement);
