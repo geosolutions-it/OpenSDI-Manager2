@@ -123,7 +123,11 @@ public class ServiceManager extends BaseFileManager {
      * Known operation: Extjs integration sensorModes list
      */
     public static final String EXTJS_SENSOR_MODES_LIST = "get_sensorModeslist";
-
+    
+    /**
+     * Known operation: Extjs integration serviceSensors list
+     */
+    public static final String EXTJS_SERVICE_SENSORS_LIST = "get_servicesensorslist";
     
     private ProxyService proxyService;
 
@@ -360,7 +364,9 @@ public class ServiceManager extends BaseFileManager {
         else if (EXTJS_SENSOR_MODES_LIST.equals(action)) {
             return getSensorModesList();
         }
-
+        else if (EXTJS_SERVICE_SENSORS_LIST.equals(action)) {
+            return getServiceSensorsList(folder, name);
+        }
         
         //----
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
@@ -625,6 +631,48 @@ public class ServiceManager extends BaseFileManager {
         return sensorTypes;
     }
 
+    /**
+     * 
+     * @param userId
+     * @param serviceId
+     * @return
+     */
+    private List<Map<String, Object>> getServiceSensorsList(String userId, String serviceId) {
+        List<Map<String, Object>> store = new ArrayList<Map<String,Object>>();
+        Map<String, Object> rootElement = new HashMap<String, Object>();
+        
+        rootElement.put("success", true);
+        rootElement.put("message", "Loaded data");
+        
+        List<Service> services = this.serviceDAO.findByUser(userId);
+        
+        if (services != null) {
+            Service service = null;
+            
+            for (Service ss : services) {
+                if (serviceId.equals(ss.getServiceId())) {
+                    service = ss;
+                }
+            }
+            
+            if (service != null) {
+                List<Sensor> sensors = service.getSensors();
+
+                List<Map<String, Object>> data = new ArrayList<Map<String,Object>>();
+                // add sensors
+                Map<String, Object> sensorElement = new HashMap<String, Object>();
+                sensorElement.put("sensor_type", "ESR1");
+                sensorElement.put("sensor_mode", "FI1");
+                data.add(sensorElement);
+
+                rootElement.put("data", data.toArray());
+            }
+        }
+        
+        store.add(rootElement);
+        
+        return store;
+    }
 
     /**
      * @return the proxyService
