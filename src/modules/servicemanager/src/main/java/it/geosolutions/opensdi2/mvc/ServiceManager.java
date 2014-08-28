@@ -595,12 +595,14 @@ public class ServiceManager extends BaseFileManager {
      * 
      * @return
      */
-    private List<String> getSensorModesList() {
+    private List<Map<String, Object>> getSensorModesList() {
         List<SensorMode> sensorModes = this.serviceDAO.getSensorModes();
-        List<String> modes = new ArrayList<String>();
+        List<Map<String, Object>> modes = new ArrayList<Map<String,Object>>();
         
         for (SensorMode sensorMode : sensorModes) {
-            modes.add(sensorMode.getSensorMode());
+            Map<String, Object> rootElement = new HashMap<String, Object>();
+            rootElement.put(sensorMode.getSensorMode(), sensorMode);
+            modes.add(rootElement);
         }
         
         return modes;
@@ -610,12 +612,14 @@ public class ServiceManager extends BaseFileManager {
      * 
      * @return
      */
-    private List<String> getSensorsList() {
+    private List<Map<String, Object>> getSensorsList() {
         List<Sensor> sensors = this.serviceDAO.getSensors();
-        List<String> sensorTypes = new ArrayList<String>();
+        List<Map<String, Object>> sensorTypes = new ArrayList<Map<String,Object>>();
         
         for (Sensor sensor : sensors) {
-            sensorTypes.add(sensor.getSensor());
+            Map<String, Object> rootElement = new HashMap<String, Object>();
+            rootElement.put(sensor.getSensor(), sensor);
+            sensorTypes.add(rootElement);
         }
         
         return sensorTypes;
