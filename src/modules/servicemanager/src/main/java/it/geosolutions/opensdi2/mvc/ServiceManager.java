@@ -22,6 +22,8 @@ package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.geobatch.mariss.dao.ServiceDAO;
 import it.geosolutions.geobatch.mariss.model.AreaOfInterest;
+import it.geosolutions.geobatch.mariss.model.Sensor;
+import it.geosolutions.geobatch.mariss.model.SensorMode;
 import it.geosolutions.geobatch.mariss.model.Service;
 import it.geosolutions.httpproxy.callback.ProxyCallback;
 import it.geosolutions.httpproxy.service.ProxyConfig;
@@ -39,6 +41,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,6 +114,17 @@ public class ServiceManager extends BaseFileManager {
      */
     public static final String EXTJS_SERVICES_LIST = "get_serviceslist";
 
+    /**
+     * Known operation: Extjs integration sensors list
+     */
+    public static final String EXTJS_SENSORS_LIST = "get_sensorslist";
+
+    /**
+     * Known operation: Extjs integration sensorModes list
+     */
+    public static final String EXTJS_SENSOR_MODES_LIST = "get_sensorModeslist";
+
+    
     private ProxyService proxyService;
 
     /**
@@ -340,6 +354,13 @@ public class ServiceManager extends BaseFileManager {
         else if (EXTJS_SERVICES_LIST.equals(action)) {
             return getServicesList(folder);
         }
+        else if (EXTJS_SENSORS_LIST.equals(action)) {
+            return getSensorsList();
+        }
+        else if (EXTJS_SENSOR_MODES_LIST.equals(action)) {
+            return getSensorModesList();
+        }
+
         
         //----
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
@@ -569,6 +590,37 @@ public class ServiceManager extends BaseFileManager {
 
         return servicesList;
     }
+
+    /**
+     * 
+     * @return
+     */
+    private List<String> getSensorModesList() {
+        List<SensorMode> sensorModes = this.serviceDAO.getSensorModes();
+        List<String> modes = new ArrayList<String>();
+        
+        for (SensorMode sensorMode : sensorModes) {
+            modes.add(sensorMode.getSensorMode());
+        }
+        
+        return modes;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private List<String> getSensorsList() {
+        List<Sensor> sensors = this.serviceDAO.getSensors();
+        List<String> sensorTypes = new ArrayList<String>();
+        
+        for (Sensor sensor : sensors) {
+            sensorTypes.add(sensor.getSensor());
+        }
+        
+        return sensorTypes;
+    }
+
 
     /**
      * @return the proxyService
