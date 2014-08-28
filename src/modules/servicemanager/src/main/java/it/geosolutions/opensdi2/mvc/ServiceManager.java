@@ -601,7 +601,7 @@ public class ServiceManager extends BaseFileManager {
         
         for (SensorMode sensorMode : sensorModes) {
             Map<String, Object> rootElement = new HashMap<String, Object>();
-            rootElement.put(sensorMode.getSensorMode(), sensorMode);
+            rootElement.put("text", sensorMode.getSensorMode());
             modes.add(rootElement);
         }
         
@@ -618,7 +618,7 @@ public class ServiceManager extends BaseFileManager {
         
         for (Sensor sensor : sensors) {
             Map<String, Object> rootElement = new HashMap<String, Object>();
-            rootElement.put(sensor.getSensor(), sensor);
+            rootElement.put("text", sensor.getSensor());
             sensorTypes.add(rootElement);
         }
         
