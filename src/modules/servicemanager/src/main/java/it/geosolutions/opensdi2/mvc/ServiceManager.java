@@ -498,8 +498,7 @@ public class ServiceManager extends BaseFileManager {
             response.put(ResponseConstants.SUCCESS, false);
         }
         
-        return jb.toString();
-        
+        return response;
     }
     
     /**
@@ -698,8 +697,6 @@ public class ServiceManager extends BaseFileManager {
      */
     private List<Map<String, Object>> getServiceSensorsList(String userId, String serviceId) {
         List<Map<String, Object>> store = new ArrayList<Map<String,Object>>();
-        Map<String, Object> rootElement = new HashMap<String, Object>();
-                
         List<Service> services = this.serviceDAO.findByUser(userId);
         
         if (services != null) {
@@ -715,9 +712,12 @@ public class ServiceManager extends BaseFileManager {
                 List<Sensor> sensors = service.getSensors();
 
                 // add sensors
-                rootElement.put("sensor_type", "ESR1");
-                rootElement.put("sensor_mode", "FI1");
-                store.add(rootElement);
+                for (Sensor sensor : sensors) {
+                    Map<String, Object> rootElement = new HashMap<String, Object>();
+                    rootElement.put("sensor_type", sensor.getSensor());
+                    rootElement.put("sensor_mode", sensor.getSensorMode().getSensorMode());
+                    store.add(rootElement);                    
+                }
             }
         }
         
