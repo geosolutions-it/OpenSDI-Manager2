@@ -34,6 +34,7 @@ import it.geosolutions.opensdi2.config.FolderPermission;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,6 +57,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -428,10 +432,10 @@ public class ServiceManager extends BaseFileManager {
             if (checkUserAndService(user, service, METHOD_CONFIRMED_ACQ_PLAN)) {
                 downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
                 proxyService.execute(request, new MockHttpServletResponse());
-                response.put(ResponseConstants.SUCCESS, true);
 
                 Service dbService = this.serviceDAO.findByServiceId(service);
                 if (dbService != null) this.serviceDAO.updateServiceStatus(dbService, "ACQUISITIONPLAN");
+                response.put(ResponseConstants.SUCCESS, true);
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
                 response.put(ResponseConstants.ROOT, "Wrong user or service");
@@ -443,6 +447,61 @@ public class ServiceManager extends BaseFileManager {
         return response;
     }
 
+    /**
+     * Stores the sensors into the DB
+     * 
+     * @param user
+     * @param service
+     * @param request
+     * @param httpServletResponse
+     * @return
+     */
+    @RequestMapping(value = "putServiceSensorsList", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public @ResponseBody
+    Object putServiceSensorsList(@RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "service", required = true) String service,
+            HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        
+        Map<String, Object> response = new HashMap<String, Object>();
+        
+        StringBuffer jb = new StringBuffer();
+        String line = null;
+        try {
+          BufferedReader reader = request.getReader();
+          while ((line = reader.readLine()) != null)
+            jb.append(line);
+        } catch (Exception e) {
+            /*report an error*/ 
+            LOGGER.error("Error reading JSON data from the request", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+
+        try {
+            List<Sensor> sensors = new ArrayList<Sensor>();
+            
+            JSONArray jsonArray = new JSONArray(jb.toString());
+            
+                
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject item = jsonArray.getJSONObject(i);
+                sensors.add(new Sensor(item.getString("sensor_type"), new SensorMode(item.getString("sensor_mode"))));
+            }
+            
+            this.serviceDAO.insertOrUpdate(service, sensors);
+            
+            response.put(ResponseConstants.SUCCESS, true);
+        } catch (JSONException e) {
+            // crash and burn
+            LOGGER.error("Error parsing JSON request string", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+        
+        return jb.toString();
+        
+    }
+    
     /**
      * Check if the user is the logged one and exists the service
      * 
