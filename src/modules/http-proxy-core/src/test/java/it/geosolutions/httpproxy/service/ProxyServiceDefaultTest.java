@@ -19,8 +19,14 @@
  */
 package it.geosolutions.httpproxy.service;
 
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -32,14 +38,49 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:http-proxy-default.xml")
-public class ProxyServiceDefaultTest extends BaseProxyServiceTest {
+public class ProxyServiceDefaultTest extends Assert {
 
-	/**
-	 * Test IProxyService execute as HTTP GET
-	 */
-	@Test
-	public void testExecuteGet() {
-		super.executeGet();
-	}
+    private static final String TEST_URL = "http://tms.comune.fi.it/tiles/service/wms?SERVICE=WMS&REQUEST=GetCapabilities&Version=1.3.0";
+
+    private final static Logger LOGGER= Logger.getLogger(ProxyServiceDefaultTest.class);
+
+    @Autowired
+    protected ProxyService proxy;
+
+    public ProxyServiceDefaultTest() {
+    }
+    
+    /**
+     * Test IProxyService execute as HTTP GET
+     */
+    @Test
+    public void testExecuteGet() {
+        try {
+            // Generate mocked request and response
+            MockHttpServletRequest mockRequest = new MockHttpServletRequest("GET",
+                    "/proxy/");
+            mockRequest.addParameter("url", TEST_URL);
+            MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+    
+            // Call proxy execute
+            proxy.execute(mockRequest, mockResponse);
+    
+            // Assert the response
+            assertNotNull(mockResponse);
+            assertEquals(mockResponse.getStatus(), HttpStatus.SC_OK);
+            assertNotNull(mockResponse.getOutputStream());
+            assertNotNull(mockResponse.getContentType());
+            assertTrue(mockResponse.getContentType().contains(
+                    "application/vnd.ogc.wms_xml"));
+    
+            LOGGER.info("Success proxy GET in '" + TEST_URL + "'");
+            LOGGER.info("************************ Response ************************");
+            LOGGER.info(mockResponse.getContentAsString());
+            LOGGER.info("********************** EoF Response **********************");
+    
+        } catch (Exception e) {
+            fail("Exception executing proxy-->\t" + e.getLocalizedMessage());
+        }
+    }
 
 }
