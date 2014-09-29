@@ -1,125 +1,139 @@
-﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>it.geosolutions.opensdi2</groupId>
-        <artifactId>opensdi-manager2</artifactId>
-        <version>1.1-SNAPSHOT</version>
-    </parent>
-  
-    <groupId>it.geosolutions.opensdi2</groupId>
-    <artifactId>opensdi2-web</artifactId>
-    <packaging>war</packaging>
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>it.geosolutions.opensdi2</groupId>
+		<artifactId>opensdi-manager2</artifactId>
+		<version>1.1-SNAPSHOT</version>
+	</parent>
+	
+	<groupId>it.geosolutions.opensdi2</groupId>
+	<artifactId>opensdi2-web</artifactId>
+	<packaging>war</packaging>
+	
+	<name>OpenSDI Manager 2 - Admin Webapp</name>
+	
+	<properties>
+	</properties>
+	
+	<dependencies>
 
-    <name>OpenSDI Manager 2 - Admin Webapp</name>
-
-    <properties>
-    </properties>
-
-    <dependencies>
-        <!-- Internal  -->
-        <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>opensdi2-filemanager</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>opensdi2-rest-facade</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>opensdi2-user-management</artifactId>
-        </dependency>
-        <dependency>
-           <groupId>it.geosolutions.opensdi2</groupId>
-           <artifactId>opensdi2-workflow</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>web-security</artifactId>
-        </dependency>
-        <!-- Test -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- Jetty server -->
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <profiles>
-    <profile>
-    	<id>geocollect</id>
-    	<dependencies>
-    		<dependency>
-    			<groupId>it.geosolutions.opensdi2</groupId>
-   				 <artifactId>opensdi2-geocollect</artifactId>
-			</dependency>
-    	</dependencies>
-    	
-    </profile>
-    
+		
+		<!-- Internal  -->
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-filemanager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-rest-facade</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-workflow</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-web-security</artifactId>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Jetty server -->
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-workflow</artifactId>
+		</dependency>
+	</dependencies>
+	<profiles>
+		<profile>
+			<id>geocollect</id>
+			<dependencies>
+				<dependency>
+					<groupId>it.geosolutions.opensdi2</groupId>
+					<artifactId>opensdi2-geocollect</artifactId>
+				</dependency>
+			</dependencies>
+			
+		</profile>
+		<profile>
+			<id>user-management</id>
+			<dependencies>
+				<dependency>
+					<groupId>it.geosolutions.opensdi2</groupId>
+					<artifactId>opensdi2-user-management</artifactId>
+				</dependency>
+			</dependencies>
+			
+		</profile>
+		
 	</profiles>
-
-    <build>
-        <finalName>opensdi2-manager</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <source>${project.build.target}</source>
-                    <target>${project.build.target}</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                </configuration>
-            </plugin>
-
-            <!-- Run the application using "mvn jetty:run" -->
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.26</version>
-                <configuration>
-                    <!-- <webAppSourceDirectory>${basedir}/war</webAppSourceDirectory> -->
-                    <webAppConfig>
-                        <contextPath>/opensdi2-manager</contextPath>
-                    </webAppConfig>
-                    <connectors>
-                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>${jetty.port}</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
-                    <reload>manual</reload>
-                </configuration>
-            </plugin>
-
-        </plugins>
-
-    </build>
-
-
+	
+	<build>
+		<finalName>opensdi2-manager</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>${project.build.target}</source>
+					<target>${project.build.target}</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+				</configuration>
+			</plugin>
+			
+			<!-- Run the application using "mvn jetty:run" -->
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<version>6.1.26</version>
+				<configuration>
+					<!-- <webAppSourceDirectory>${basedir}/war</webAppSourceDirectory> -->
+					<webAppConfig>
+						<contextPath>/opensdi2-manager</contextPath>
+					</webAppConfig>
+					<connectors>
+						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+							<port>${jetty.port}</port>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+					</connectors>
+					<reload>manual</reload>
+				</configuration>
+			</plugin>
+			
+		</plugins>
+		
+	</build>
+	
+	
 </project>

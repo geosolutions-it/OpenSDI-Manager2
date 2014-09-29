@@ -19,7 +19,6 @@
         <module>http-proxy-core</module>
         <module>http-proxy-mvc</module>
         <module>rest-facade</module>
-        <module>user-management</module>
         <module>web-security</module>
 		<module>workflow</module>
     </modules>
@@ -31,6 +30,14 @@
                 <module>geocollect</module>
             </modules>
         </profile>
+        <profile>
+             <id>user-management</id>
+            <modules>
+                <module>user-management</module>
+            </modules>
+        </profile>
   </profiles>
+
+		
     
 </project>
