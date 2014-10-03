@@ -16,7 +16,7 @@
 
 	<!-- properties -->
     <properties>
-        <geotools.version>12-SNAPSHOT</geotools.version>
+        <geotools.version>12.0</geotools.version>
     </properties>
 	
 	<dependencies>
