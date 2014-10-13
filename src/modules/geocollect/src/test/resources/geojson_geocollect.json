@@ -1,0 +1,33 @@
+{
+    "id": "46",
+    "editing": false,
+    "properties": {
+        "RESPONSABILE_ABBANDONO": "noto ",
+        "INDIRIZZO": "",
+        "TIPOLOGIA_RIFIUTO": "Pericoloso",
+        "LOCALITA": "",
+        "RIMOZIONE": "Si ",
+        "PROVENIENZA_SEGNALAZIONE": "Pubblico",
+        "PRESA_IN_CARICO": "Rilevatore ",
+        "COGNOME_RILEVATORE": "Rossi",
+        "CIVICO": "",
+        "DATA_SCHEDA": "08/ott/2014",
+        "SEQUESTRO": "Si ",
+        "TIPOLOGIA_SEGNALAZIONE": "Soggetto Pubblico",
+        "DATA_AGG": "08/ott/2014",
+        "EMAIL": "0",
+        "NOME_RILEVATORE": "Mario",
+        "COMUNE": "Genova",
+        "QUANTITA_PRESUNTA": "",
+        "ENTE_RILEVATORE": "Comune di Genova"
+    },
+    "type": "Feature",
+    "geometry_name": "the_geom",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            8.741966401664039,
+            44.42798916266742
+        ]
+    }
+}
