@@ -22,7 +22,9 @@ package it.geosolutions.opensdi2.mvc;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.config.FileManagerConfig;
+import it.geosolutions.opensdi2.config.FileManagerConfigImpl;
+import it.geosolutions.opensdi2.config.OpenSDIManagerConfigProxy;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
@@ -47,6 +49,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Test class for FileManager
@@ -55,11 +58,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:/applicationContext.xml")
+@ContextConfiguration(locations={"classpath*:applicationContext.xml"})
 @WebAppConfiguration
 public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
+	
+	@Autowired
+    private WebApplicationContext wac;
 	
 	/**
 	 * Controller to be tested
@@ -108,7 +114,9 @@ public class FileManagerTest {
 			currentFolders = new LinkedList<File>();
 			// folder is generated for the test
 			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt(); 
-			OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
+			//OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
+			OpenSDIManagerConfigProxy configProxy = (OpenSDIManagerConfigProxy) wac.getBean("baseConfigProxy");
+			FileManagerConfig config = (FileManagerConfig) configProxy.getConfiguration("FileManager", FileManagerConfigImpl.class);
 			config.setBaseFolder(basePath + ControllerUtils.SEPARATOR);
 			fileManager.setRuntimeDir(config.getBaseFolder());
 			// create test folder

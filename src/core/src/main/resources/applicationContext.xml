@@ -6,9 +6,9 @@
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-autowire="byName">
-    
-    
-  
+      
+   	<context:annotation-config/>
+      
     <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="order" value="10"/>
@@ -21,5 +21,26 @@
             </list>
         </property>
     </bean>
-		
+
+    <bean id="openSdiManagerConfigExtensions" class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigExtensions" />
+    
+	<bean id="openSdiManagerConfig" class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl" />
+	
+    <bean id="openSdiManagerConfigHijackBeforeMethodBean" class="it.geosolutions.opensdi2.config.aop.OpenSDIManagerConfigBeforeMethod" />
+    <bean id="openSdiManagerConfigHijackAroundMethodBean" class="it.geosolutions.opensdi2.config.aop.OpenSDIManagerConfigAroundMethod" />
+    
+    <bean id="baseConfigProxy" 
+                 class="org.springframework.aop.framework.ProxyFactoryBean">
+ 
+		<property name="target" ref="openSdiManagerConfig" />
+ 
+		<property name="interceptorNames">
+			<list>
+			    <!-- You can put here any interceptor you need -->
+				<value>openSdiManagerConfigHijackBeforeMethodBean</value>
+				<value>openSdiManagerConfigHijackAroundMethodBean</value>
+			</list>
+		</property>
+	</bean>
+
 </beans>

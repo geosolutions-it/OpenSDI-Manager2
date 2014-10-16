@@ -20,14 +20,11 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
-
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,14 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-	/**
-	 * Set the configuration to set up the base directory
-	 * @param config
-	 */
-	@Autowired
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
 	 * 
