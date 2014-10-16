@@ -6,11 +6,13 @@
     ">
     <import resource="geocollect_mailconfig_test.xml"/>
 
+    <!-- Set the input from the "input" object in the context and sets the output to the "output" object in the context -->
     <bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">
         <property name="inputObjectId" value="input"></property>
         <property name="outputObjectId" value="feature"></property>
     </bean>
 
+    <!-- we want to edit the Feature -->
     <bean id="action2Config" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
         <property name="inputObjectId" value="feature"></property>
         <property name="outputObjectId" value="transformed"></property>
@@ -24,6 +26,7 @@
         <property name="preBuilder" ref="featurePreBuilder"></property>
     </bean>
 
+    <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
     <util:map id="rules">
         <entry key="prop0" value="text" />
         <entry key="prop1" value="number" />
@@ -74,6 +77,7 @@
        <entry key="database" value="mem:test"/>
     </util:map>
 
+    <!-- Reads a GeoJSON string and save it in the context as SimpleFeature -->
     <bean id="action1" class="it.geosolutions.opensdi2.workflow.action.GeoJSONReader">
         <property name="configuration" ref="action1Config"></property>
     </bean>

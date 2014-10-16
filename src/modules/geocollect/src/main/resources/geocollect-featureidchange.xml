@@ -23,6 +23,7 @@
             </util:list>
         </property>
         <property name="outputPropertyAccessor" ref="featurePropertyAccessor" />
+        <!--   -->
         <property name="rules" ref="rules"></property>
         <!-- removing the preBuilder, we do not need to create another object since we are editing the original one -->
         <!-- <property name="preBuilder" ref="featurePreBuilder"></property> -->

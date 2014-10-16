@@ -6,8 +6,8 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 <bean id="mailSender" class="it.geosolutions.opensdi2.workflow.utils.MockMailSender">
 	<property name="host" value="smtp.gmail.com" />
 	<property name="port" value="587" />
-	<property name="username" value="gnafutestmail" />
-	<property name="password" value="AcqueMobile" />
+	<property name="username" value="username" />
+	<property name="password" value="password" />
  
 	<property name="javaMailProperties">
 	   <props>
@@ -33,7 +33,7 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 	</bean>
 	
  	<bean id="notificationService" class="it.geosolutions.opensdi2.email.OpenSDIMailer">
-	<property name="configuration" ref="freemarkerMailConfiguration" />
-	<property name="mailSender" ref="mailSender" />
-</bean>
+		<property name="configuration" ref="freemarkerMailConfiguration" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
 </beans>
