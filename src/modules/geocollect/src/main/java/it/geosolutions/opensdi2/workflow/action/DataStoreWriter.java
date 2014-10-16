@@ -27,6 +27,8 @@ import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.geosolutions.opensdi2.workflow.utils.GeoCollectUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -36,10 +38,18 @@ import org.geotools.data.Transaction;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+/**
+ * Insert an input {@link SimpleFeature} into the configured {@link DataStore}
+ * If no DataStore is configured, throw a WorkflowException.
+ * If the input feature isn't a {@link SimpleFeature} throw a IllegalArgumentException.
+ * Throws {@link WorkflowException} if {@link IOException} occurs.
+ * 
+ * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
+ */
 public class DataStoreWriter extends BaseAction {
 	private String inputId = "input";
 	private DataStoreConfiguration dataStoreConfiguration;
-		
+	private Map<String, String> attributeMappings = new HashMap<String, String>();	
 	
 	@Override
 	public void executeAction(WorkflowContext ctx) throws WorkflowException {
@@ -60,12 +70,19 @@ public class DataStoreWriter extends BaseAction {
 				// directly writing the input feature can fail because of attributes
 				// mismatch
 				String typeName = getTypeName(ctx, feature);
-				feature = GeoCollectUtils.cloneFeature(store, typeName, feature);
+				feature = GeoCollectUtils.cloneFeature(store, typeName, feature, attributeMappings);
 				
 				FeatureStore<SimpleFeatureType, SimpleFeature> featureStore =  (FeatureStore<SimpleFeatureType, SimpleFeature>) 
 						store.getFeatureSource(feature.getFeatureType().getName());
+				
+				// Open a transaction
 				featureStore.setTransaction(transaction);
+				
+				// Only collections can be added to the store
+				// Create a collection with a single feature before adding to the store
 				featureStore.addFeatures(DataUtilities.collection(feature));
+				
+				// Commit the transaction
 				transaction.commit();
 				
 				
@@ -116,5 +133,15 @@ public class DataStoreWriter extends BaseAction {
 			}
 		}
 	}
+
+	public Map<String, String> getAttributeMappings() {
+		return attributeMappings;
+	}
+
+	public void setAttributeMappings(Map<String, String> attributeMappings) {
+		this.attributeMappings = attributeMappings;
+	}
+	
+	
 
 }

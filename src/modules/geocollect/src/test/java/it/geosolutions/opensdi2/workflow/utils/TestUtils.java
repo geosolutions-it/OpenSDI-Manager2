@@ -67,11 +67,34 @@ public class TestUtils {
 		store.createSchema(typeBuilder.buildFeatureType());
 	}
 
+	/**
+	 * 
+	 * @param store
+	 * @param typeName
+	 * @param feature
+	 * @throws IOException
+	 */
 	public static void addFeatureToStore(DataStore store,
 			String typeName, SimpleFeature feature) throws IOException {
 		
 		((FeatureStore)store.getFeatureSource(typeName)).addFeatures(
-				DataUtilities.collection(GeoCollectUtils.cloneFeature(store, typeName, feature)));
+				DataUtilities.collection(GeoCollectUtils.cloneFeature(store, typeName, feature, new HashMap<String, String>())));
+		
+	}
+
+	/**
+	 * 
+	 * @param store
+	 * @param typeName
+	 * @param feature
+	 * @param testMapping
+	 * @throws IOException
+	 */
+	public static void addFeatureToStoreWithMapping(DataStore store,
+			String typeName, SimpleFeature feature, Map<String, String> testMapping) throws IOException {
+		
+		((FeatureStore)store.getFeatureSource(typeName)).addFeatures(
+				DataUtilities.collection(GeoCollectUtils.cloneFeature(store, typeName, feature, testMapping)));
 	}
 
 	
