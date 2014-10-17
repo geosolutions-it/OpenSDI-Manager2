@@ -88,7 +88,7 @@ public class GeoCollectActionController {
 	/**
 	 * Available actions
 	 */
-	public static final String STORE_FEATURE_ACTION = "beda";
+	public static final String STORE_FEATURE_ACTION = "store";
 
 	
 	/**
@@ -124,7 +124,6 @@ public class GeoCollectActionController {
 				ctx = new WorkflowContext();
 				
 				LOGGER.info(body.toJSONString());
-				LOGGER.info(body.toString());
 				
 				// add the input
 				ctx.addContextElement(INPUT_ID, body.toJSONString());
