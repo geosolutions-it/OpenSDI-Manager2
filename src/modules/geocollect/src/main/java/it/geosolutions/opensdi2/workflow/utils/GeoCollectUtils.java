@@ -21,6 +21,7 @@
 package it.geosolutions.opensdi2.workflow.utils;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -39,12 +40,22 @@ public class GeoCollectUtils {
 	 * @throws IOException
 	 */
 	public static SimpleFeature cloneFeature(DataStore store, String typeName,
-			SimpleFeature feature) throws IOException {
+			SimpleFeature feature, Map<String, String> attributeMappings) throws IOException {
 		SimpleFeatureType schema = store.getSchema(typeName);
 		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(schema);
-		for(AttributeDescriptor attribute : schema.getAttributeDescriptors()) {
-			builder.add(feature.getAttribute(attribute.getLocalName()));
+		for(AttributeDescriptor attribute : schema.getAttributeDescriptors()) {			
+			String sourceAttributeName = mapAttributeName(attributeMappings,
+					attribute.getLocalName());
+			builder.add(feature.getAttribute(sourceAttributeName));
 		}
 		return builder.buildFeature(null);
+	}
+
+	private static String mapAttributeName(
+			Map<String, String> attributeMappings, String sourceAttributeName) {
+		if(attributeMappings.containsKey(sourceAttributeName)) {
+			sourceAttributeName = attributeMappings.get(sourceAttributeName);
+		}
+		return sourceAttributeName;
 	}
 }

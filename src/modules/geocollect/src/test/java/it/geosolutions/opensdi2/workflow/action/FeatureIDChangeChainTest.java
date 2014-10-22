@@ -113,6 +113,10 @@ public class FeatureIDChangeChainTest {
 		
 		assertEquals("noto ", readFeature.getAttribute("RESPONSABILE_ABBANDONO"));
 		assertEquals("08/ott/2014", readFeature.getAttribute("DATA_AGG"));
+		assertEquals("42", readFeature.getAttribute("CIVICO"));
+		// the feature ID cannot be specified before the insert into the featureStore
+		// the feature ID is ignored and another one is created
+		//assertEquals("46", readFeature.getID());
 		assertTrue(readFeature.getAttribute("geometry") instanceof Point);
 	}
 }
