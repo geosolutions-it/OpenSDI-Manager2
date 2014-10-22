@@ -33,7 +33,7 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 	</bean>
 	
  	<bean id="notificationService" class="it.geosolutions.opensdi2.email.OpenSDIMailer">
-	<property name="configuration" ref="freemarkerMailConfiguration" />
-	<property name="mailSender" ref="mailSender" />
-</bean>
+		<property name="configuration" ref="freemarkerMailConfiguration" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
 </beans>

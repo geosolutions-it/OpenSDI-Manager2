@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
     ">
-    <import resource="geocollect_mailconfig_test.xml"/>
+    <import resource="geocollect_mailconfig.xml"/>
 
     <!-- Set the input from the "input" object in the context and sets the output to the "output" object in the context -->
     <bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">
@@ -28,8 +28,6 @@
 
     <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
     <util:map id="rules">
-        <entry key="prop0" value="text" />
-        <entry key="prop1" value="number" />
         <entry key="geometry" value="geometry" />
     </util:map>
 
@@ -46,8 +44,9 @@
     </bean>
 
     <bean id="action3Config" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
-        <property name="inputObjectId" value="transformed"></property>
+        <property name="inputObjectId" value="feature"></property>
         <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="rilevamenti_effettuati" />
     </bean>
 
     <bean id="action4Config" class="it.geosolutions.opensdi2.workflow.action.EmailActionConfiguration">
@@ -63,18 +62,29 @@
             <util:map>
                 <entry key="from" value="'gnafutestmail@gmail.com'"></entry>
                 <entry key="to" value="'gnafutestmail@gmail.com'"></entry>
-                <entry key="subject" value="'Sample email:' + contextElements.transformed.prop1"></entry>
+                <entry key="subject" value="'Sample email:' + contextElements.feature.tipologia_rifiuto"></entry>
                 <entry key="template" value="'email-test.ftl'"></entry>
-                <entry key="model.prop0" value="contextElements.transformed.prop0"></entry>
-                <entry key="model.prop1" value="contextElements.transformed.prop1"></entry>
+                <!--
+                <entry key="model.prop0" value="contextElements.feature.nome_rilevatore"></entry>
+                <entry key="model.prop1" value="contextElements.feature.comune"></entry>
+                -->
+                <entry key="model.prop0" value="'testvalue'"></entry>
+                <entry key="model.prop1" value="'anotherFixedValue'"></entry>
                 <entry key="model.propcustom" value="'propcustom'"></entry>
             </util:map>
         </property>
 
     </bean>
+
+    <!-- GeoTools DataStore conntection properties -->
     <util:map id="connectionProperties">
-       <entry key="dbtype" value="h2"/>
-       <entry key="database" value="mem:test"/>
+        <entry key="dbtype" value="postgis"/>
+        <entry key="database" value="genova"/>
+        <entry key="host" value="localhost"/>
+        <entry key="port" value="5432"/>
+        <entry key="schema" value="public"/>
+        <entry key="user" value="postgres"/>
+        <entry key="passwd" value="postgres"/>
     </util:map>
 
     <!-- Reads a GeoJSON string and save it in the context as SimpleFeature -->
@@ -82,13 +92,20 @@
         <property name="configuration" ref="action1Config"></property>
     </bean>
 
+    <!-- Writes the inputObjectId into the DataStore defined by the DataStoreConfiguration -->
     <bean id="action2" class="it.geosolutions.opensdi2.workflow.action.TransformAction">
         <property name="configuration" ref="action2Config"></property>
         <property name="id" value="action2"></property>
     </bean>
 
+    <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
+    <util:map id="writerMappings">
+        <entry key="GEOMETRY" value="geometry" />
+    </util:map>
+
     <bean id="action3" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="action3Config"></property>
+        <property name="attributeMappings" ref="writerMappings"/>
         <property name="id" value="writer"></property>
     </bean>
     <bean id="action4" class="it.geosolutions.opensdi2.workflow.action.EmailAction">
@@ -98,7 +115,7 @@
     <!-- list of actions for the action sequence -->
     <util:list id="actions">
             <ref bean="action1"></ref>
-            <ref bean="action2"></ref>
+            <!-- <ref bean="action2"></ref> -->
             <ref bean="action3"></ref>
             <ref bean="action4"></ref>
     </util:list>

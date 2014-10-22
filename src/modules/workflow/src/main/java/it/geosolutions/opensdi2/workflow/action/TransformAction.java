@@ -41,7 +41,7 @@ public class TransformAction extends BaseAction{
 			throw new IllegalComponentStateException();
 		}
 		configureTransformer(t);
-		;
+		
 		TransformConfiguration config = (TransformConfiguration) getConfiguration();
 		if(config !=null){
 			Object input =null;

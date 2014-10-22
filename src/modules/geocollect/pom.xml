@@ -16,7 +16,7 @@
 
 	<!-- properties -->
     <properties>
-        <geotools.version>12-SNAPSHOT</geotools.version>
+        <geotools.version>12.0</geotools.version>
     </properties>
 	
 	<dependencies>
@@ -88,6 +88,13 @@
 			<artifactId>gt-cql</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-postgis</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		
 		<!-- TEST -->
 		<dependency>
 			<groupId>org.geotools.jdbc</groupId>
