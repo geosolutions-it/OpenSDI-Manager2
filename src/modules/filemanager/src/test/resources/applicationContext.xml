@@ -9,17 +9,13 @@
 
     <context:annotation-config/>
     
-    <!-- bean id="baseConfig" class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl">
-        <property name="baseFolder" value="/tmp"/>
-    </bean -->
-
 	<!-- Configuration -->
     <bean id="fileManagerConfig" class="it.geosolutions.opensdi2.config.FileManagerConfigImpl">
         <property name="scope" value="FileManager"/>
         <property name="baseFolder" value="/tmp"/>
     </bean>
 
-	<bean id="FileManager" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean id="FileManager" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="openSdiManagerConfigExtensions">
  
 		<property name="target" ref="fileManagerConfig" />
  

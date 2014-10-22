@@ -43,12 +43,6 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
-        <!-- Servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-        
         <!-- Apache Commons Upload --> 
         <dependency>
             <groupId>commons-fileupload</groupId>
