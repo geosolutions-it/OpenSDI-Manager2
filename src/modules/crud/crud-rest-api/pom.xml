@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi2-crud</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+  
+    <groupId>it.geosolutions.opensdi2</groupId>
+    <artifactId>opensdi2-crud-rest-api</artifactId>
+    <packaging>jar</packaging>
+
+    <name>OpenSDI Manager 2 - Modules - CRUD REST API</name>
+	
+	<dependencies>
+	    <!-- Core  -->
+	    <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-core</artifactId>
+                <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-model</artifactId>
+                <version>1.1-SNAPSHOT</version>
+        </dependency>
+   
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+
+</project>
+

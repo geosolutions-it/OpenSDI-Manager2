@@ -48,5 +48,9 @@ public class ResponseConstants {
 	 * COUNT key. Common response for this key is the number of records on {@link ResponseConstants#DATA}
 	 */
 	public static final String COUNT = "count";
+	/**
+	 * FAILURE . Common response text when fail {@link ResponseConstants#DATA}
+	 */
+	public static final String FAILURE = "failure";
 	
 }
