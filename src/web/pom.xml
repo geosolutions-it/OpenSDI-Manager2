@@ -15,6 +15,7 @@
 	<name>OpenSDI Manager 2 - Admin Webapp</name>
 	
 	<properties>
+		<jackson.databind-version>2.2.3</jackson.databind-version>
 	</properties>
 	
 	<dependencies>
@@ -39,6 +40,19 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-web-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-crud-rest-api</artifactId>
+		</dependency>
+		
+		
+		<!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.databind-version}</version>
+        </dependency>
+        
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -55,6 +69,7 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<!-- Jetty server -->
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
@@ -65,6 +80,7 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-workflow</artifactId>
 		</dependency>
+		
 	</dependencies>
 	<profiles>
 		<profile>

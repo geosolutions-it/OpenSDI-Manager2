@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi-manager2</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    <properties>
+        <osdim2.version>1.1-SNAPSHOT</osdim2.version>
+    </properties>
+    <groupId>it.geosolutions.opensdi2</groupId>
+    <artifactId>opensdi2-crud</artifactId>
+    <packaging>pom</packaging>
+  
+    <name>OpenSDI Manager 2 - Modules - CRUD</name>
+    <dependencyManagement>
+    <dependencies>
+            <!-- 
+                JACKSON
+            -->
+             <dependency>
+                <groupId>org.codehaus.jackson</groupId> 
+                <artifactId>jackson-core-asl</artifactId>
+                 <version>${jackson.version}</version>
+            </dependency>
+    </dependencies>
+    </dependencyManagement>
+    <!-- MODULES  -->
+    <modules>
+        <module>crud-rest-api</module>
+        <module>crud-model</module>
+    </modules>
+
+</project>

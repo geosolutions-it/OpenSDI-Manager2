@@ -166,7 +166,16 @@
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
-          
+            <dependency>
+			    <groupId>it.geosolutions.opensdi2</groupId>
+			    <artifactId>opensdi2-crud-rest-api</artifactId>
+			    <version>${project.version}</version>
+		    </dependency>
+		    <dependency>
+			    <groupId>it.geosolutions.opensdi2</groupId>
+			    <artifactId>opensdi2-crud-model</artifactId>
+			    <version>${project.version}</version>
+		    </dependency>
     
             <!-- =========================================================== -->
             <!--     APACHE COMMONS                                          -->
@@ -301,6 +310,7 @@
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+           
             <!-- =========================================================== -->
             <!--     GEOSTORE                                                -->
             <!-- =========================================================== -->
