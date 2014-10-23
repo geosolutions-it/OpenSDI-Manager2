@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>nrl-modules</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+  
+    <groupId>it.geosolutions.opensdi2</groupId>
+    <artifactId>nrl-mvc</artifactId>
+    <packaging>jar</packaging>
+
+    <name>OpenSDI Manager 2 - Modules - NRL- MVC </name>
+	
+	<dependencies>
+	    <!-- Internal  -->
+	    <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-core</artifactId>
+                <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-rest-api</artifactId>
+        </dependency>
+        <!-- NRL Core -->
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>nrl-core</artifactId>
+            <version>${osdim2.version}</version>
+        </dependency>
+    
+         <!-- View -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		  </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+
+</project>
+

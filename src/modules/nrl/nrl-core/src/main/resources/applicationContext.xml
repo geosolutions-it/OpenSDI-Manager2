@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/aop       http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       default-autowire="byName">
+    <context:annotation-config />
+
+    <import resource="applicationContext-datasource.xml"/>
+
+    <!--**** Hibernate Generic DAO Setup ****-->
+    <!--
+            Need one search processor and one metadata util per persistence unit
+            (i.e. EntityManagerFactory). We're wiring these to the Generic DAOs
+            using an autowire annotation in BaseDAO.
+    -->
+    <bean id="searchProcessor" class="com.googlecode.genericdao.search.jpa.JPASearchProcessor">
+        <constructor-arg ref="metadataUtil" />
+    </bean>
+
+    <bean id="metadataUtil" class="com.googlecode.genericdao.search.jpa.hibernate.HibernateMetadataUtil"
+           factory-method="getInstanceForEntityManagerFactory">
+        <constructor-arg ref="opensdiEntityManagerFactory" />
+    </bean>
+
+    <!--  DAO  -->
+    <bean id="cropDescriptorDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropDescriptorDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="cropDataDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropDataDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="agrometDescriptorDao" class="it.geosolutions.opensdi.persistence.dao.impl.AgrometDescriptorDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="agrometDao" class="it.geosolutions.opensdi.persistence.dao.impl.AgrometDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="cropStatusDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropStatusDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="unitOfMeasureDao" class="it.geosolutions.opensdi.persistence.dao.impl.UnitOfMeasureDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+	
+      <!--  SERVICES  -->
+      <bean id="cropDescriptorService" class="it.geosolutions.opensdi.service.CropDescriptorService"></bean>
+	  <bean id="agrometDescriptorService" class="it.geosolutions.opensdi.service.AgrometDescriptorService"></bean>
+	  <bean id="unitOfMeasureService" class="it.geosolutions.opensdi.service.UnitOfMeasureService"></bean>
+    
+</beans>
