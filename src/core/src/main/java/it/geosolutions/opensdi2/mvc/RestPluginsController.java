@@ -5,14 +5,21 @@ package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.opensdi2.config.OpenSDIManagerConfigExtensions;
 import it.geosolutions.opensdi2.rest.RestAPIBaseController;
+import it.geosolutions.opensdi2.rest.RestAPIListDataWrapper;
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestPlugin;
 import it.geosolutions.opensdi2.rest.RestService;
+import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,25 +38,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class RestPluginsController extends RestAPIBaseController {
 
+	/**
+	 * logger
+	 */
+	protected static final Logger LOGGER = Logger.getLogger("it.geosolutions.opensdi2.config");
+	
 	@RequestMapping(value = "/plugins", method = RequestMethod.GET)
-	public @ResponseBody String plugins() {
+	public @ResponseBody Object plugins() {
 		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append("{\"plugins\":[");
-		for (RestPlugin plugin : plugins) {
-			sb.append(JSONize(plugin));
-			sb.append(",");
-		}
-		if (plugins.size() > 0) sb.deleteCharAt(sb.length()-1);
-		sb.append("]}");
-		
-		return sb.toString();
+		RestAPIListDataWrapper<RestPlugin> result = new RestAPIListDataWrapper<RestPlugin>();
+		result.setData(plugins);
+		result.set("type", "plugins");
+		result.setCount(plugins.size());
+		result.setTotalCount(plugins.size());
+
+		return result;
 	}
 
 	@RequestMapping(value = "/{pluginName}/services", method = RequestMethod.GET)
-	public @ResponseBody String pluginServices(
+	public @ResponseBody Object pluginServices(
 			@PathVariable String pluginName,
 			@RequestParam(required = false, defaultValue = "ALL") String activeStatus,
 			@RequestParam(required = false, defaultValue = "") String serviceId,
@@ -61,13 +70,22 @@ public class RestPluginsController extends RestAPIBaseController {
 	{
 		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
+		
+		List<RestService> data = new ArrayList<RestService>();
+		RestAPIListDataWrapper<RestService> result = new RestAPIListDataWrapper<RestService>();
+		result.set("type", "services");
+		result.setCount(0);
+		result.setTotalCount(0);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("{\"services\":[");
-		int counter = 0, servicesFound = 0;
+		int counter = 0, servicesFound = 0, totalCount = 0;
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
+				if (plugin.getServices() != null)
 				_S: for (RestService service : plugin.getServices()) {
+					totalCount = plugin.getServices().size();
+					result.setTotalCount(totalCount);
+					
+					// TODO: delegate the filtering and pagination to the plugin implementation
 					
 					// Filtering on activeStatus
 					if (activeStatus != null && !activeStatus.equals("ALL")) {
@@ -77,8 +95,9 @@ public class RestPluginsController extends RestAPIBaseController {
 					// Filtering on plugin serviceId
 					if (serviceId != null && serviceId.length() > 0) {
 						if (!service.getServiceId().equals(serviceId)) continue _S;
+						result.set("serviceId", serviceId);
 					}
-
+					
 					// Filtering on plugin name
 					if (name != null && name.length() > 0) {
 						if (!service.getName().equalsIgnoreCase(name)) continue _S;
@@ -127,27 +146,30 @@ public class RestPluginsController extends RestAPIBaseController {
 
 					// Pagination
 					if (page >= 0) {
+						result.set("page", page);
+						result.set("pageSize", pageSize);
 						if (counter < (page*pageSize) || counter > (page*pageSize)+pageSize-1) {
 							counter++;
 							continue _S;
 						}
 					}
 					
-					sb.append(JSONize(service));
-					sb.append(",");
+					data.add(service);
 					servicesFound++;
 					counter++;
 				}
-				if (servicesFound > 0) sb.deleteCharAt(sb.length()-1);
+				if (servicesFound > 0) {
+					result.setData(data);
+					result.setCount(servicesFound);
+				}
 			}
 		}
-		sb.append("]}");
 		
-		return sb.toString();
+		return result;
 	}
 	
 	@RequestMapping(value = "/{pluginName}/services/{serviceId}", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody String serviceDetails(
+	public @ResponseBody Object serviceDetails(
 			@PathVariable String pluginName,
 			@PathVariable String serviceId,
 			@RequestParam(required = false) Map<String, String> params,
@@ -156,7 +178,6 @@ public class RestPluginsController extends RestAPIBaseController {
 		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
-		StringBuilder sb = new StringBuilder();
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
 				_S: for (RestService service : plugin.getServices()) {
@@ -167,80 +188,216 @@ public class RestPluginsController extends RestAPIBaseController {
 					}
 					
 					if (request.getMethod().equals("GET")) {
-						sb.append(JSONize(service));
-						break;
+						return service;
 					}
 					else if (request.getMethod().equals("POST")) {
-						sb.append(service.execute(params));
-						break;
+						try {						
+							CharBuffer target = CharBuffer.allocate(1024);
+							request.getReader().read(target);
+							
+							if (target != null) {
+								String requestBody = new String(target.array());
+								
+								// try to parse KvPs from the request body
+								String[] kvps = requestBody.split("&");
+								if (kvps != null && kvps.length > 0) {
+									for (String kvp : kvps) {
+										String[] paramKvP = kvp.split("=");
+										params.put(paramKvP[0], paramKvP[1]);
+									}
+								}
+							}
+						} catch (Exception cause) {
+							LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
+						}
+						return service.execute(params);
 					}
 				}
 			}
 		}
 		
-		return sb.toString();
+		return null;
 	}
 	
-	/** ******************************************
-	 * Utility methods
-	 * **************************************** **/
-	
-	/**
-	 * 
-	 * @param plugin
-	 * @return
-	 */
-	private static String JSONize(RestPlugin plugin) {
-		StringBuilder jsonized = new StringBuilder();
+	@RequestMapping(value = "/{pluginName}/services/{serviceId}/runtimes", method = RequestMethod.GET)
+	public @ResponseBody Object serviceRuntimes (
+			@PathVariable String pluginName,
+			@PathVariable String serviceId,
+			@RequestParam(required = false, defaultValue = "ALL") String status,
+			@RequestParam(required = false, defaultValue = "") String id,
+			@RequestParam(required = false, defaultValue = "-1") int page,
+			@RequestParam(required = false, defaultValue = "10") int pageSize,
+			@RequestParam(required = false) Date startDate,
+			@RequestParam(required = false) Date endDate,
+			@RequestParam(required = false) Map<String, String> params,
+			HttpServletRequest request, HttpServletResponse response) 
+	{
 		
-		jsonized.append("{")
-			.append("\"").append("pluginName").append("\"").append(":").append("\"").append(plugin.getPluginName()).append("\"").append(",")
-			.append("\"").append("description").append("\"").append(":").append("\"").append(plugin.getDescription()).append("\"").append(",")
-			.append("\"").append("version").append("\"").append(":").append("\"").append(plugin.getVersion()).append("\"")
-		.append("}");
+		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
-		return jsonized.toString();
-	}
-	
-	/**
-	 * 
-	 * @param plugin
-	 * @return
-	 */
-	private static String JSONize(RestService service) {
-		StringBuilder jsonized = new StringBuilder();
+		List<RestServiceRuntime> data = new ArrayList<RestServiceRuntime>();
+		RestAPIListDataWrapper<RestServiceRuntime> result = new RestAPIListDataWrapper<RestServiceRuntime>();
+		result.set("type", "runtimes");
+		result.setCount(0);
+		result.setTotalCount(0);
 
-		jsonized.append("{")
-			.append("\"").append("serviceId").append("\"").append(":").append("\"").append(service.getServiceId()).append("\"").append(",")
-			.append("\"").append("name").append("\"").append(":").append("\"").append(service.getName()).append("\"").append(",")
-			.append("\"").append("description").append("\"").append(":").append("\"").append(service.getDescriprion()).append("\"").append(",")
-			.append("\"").append("version").append("\"").append(":").append("\"").append(service.getVersion()).append("\"").append(",")
-			.append("\"").append("activeStatus").append("\"").append(":").append("\"").append(service.getActiveStatus()).append("\"").append(",")
-			.append("\"").append("parameters").append("\"").append(":").append("[").append(JSONize(service.getParameters())).append("]")
-		.append("}");
-		
-		return jsonized.toString();
-	}
+		int counter = 0, serviceRuntimesFound = 0, totalCount = 0;
+		for (RestPlugin plugin : plugins) {
+			if (plugin.getPluginName().equals(pluginName)) {
+				_S: for (RestService service : plugin.getServices()) {
+					
+					// Filtering on plugin name
+					if (serviceId != null && serviceId.length() > 0) {
+						if (!service.getServiceId().equals(serviceId)) continue _S;
+						result.set("serviceId", serviceId);
+					}
+					
+					if (service.getRuntimes() != null) {
+						totalCount = service.getRuntimes().size();
+						result.setTotalCount(totalCount);
 
-	/**
-	 * 
-	 * @param parameters
-	 * @return
-	 */
-	private static String JSONize(List<RestItemParameter> parameters) {
-		StringBuilder jsonized = new StringBuilder();
-		
-		if (parameters != null) {
-			for (RestItemParameter param : parameters) {
-				jsonized.append("{")
-					.append("\"").append(param.getParamName()).append("\"").append(":").append("\"").append(param.getParamValue()).append("\"")
-				.append("}").append(",");
+						_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
+							// TODO: delegate the filtering and pagination to the plugin implementation
+							
+							// Filtering on activeStatus
+							if (status != null && !status.equals("ALL")) {
+								if (!runtime.getStatus().equals(status)) continue _R;
+							}
+
+							// Filtering on runtime Id
+							if (id != null && id.length() > 0) {
+								if (!runtime.getId().equals(id)) continue _R;
+							}
+
+							// Filtering on parameter value
+							if (params != null && !params.isEmpty()) {
+								Map<String, String> filteringParameters = new HashMap<String, String>();
+								
+								for (Entry<String, String> entry : params.entrySet()) {
+									final String key = entry.getKey();
+									final String value = entry.getValue();
+									
+									if (key.toLowerCase().startsWith("param_")) {
+										final String paramName = key.toLowerCase().substring("param_".length());
+										filteringParameters.put(paramName, value);
+									}
+								}
+								
+								if (!filteringParameters.isEmpty()) {
+									
+									if (runtime.getParameters() == null || runtime.getParameters().isEmpty()) {
+										continue _R;
+									}
+									else {
+										boolean paramMatches = false;
+										
+										for (Entry<String, String> entry : filteringParameters.entrySet()) {
+											final String key = entry.getKey();
+											final String value = entry.getValue();
+											
+											for (RestItemParameter pp : runtime.getParameters()) {
+												if (pp.getParamName().equalsIgnoreCase(key) && pp.getParamValue().equals(value)) {
+													paramMatches = true;
+													break;
+												}
+											}
+										}
+										
+										if (!paramMatches) {
+											continue _R;	
+										}
+									}
+								}
+							}
+
+							// Pagination
+							if (page >= 0) {
+								result.set("page", page);
+								result.set("pageSize", pageSize);
+								if (counter < (page*pageSize)) {
+									counter++;
+									continue _R;
+								}
+								if (counter > (page*pageSize)+pageSize-1) {
+									break _S;
+								}
+							}
+							
+							data.add(runtime);
+							serviceRuntimesFound++;
+							counter++;
+						}
+					}
+				}
+				if (serviceRuntimesFound > 0) {
+					result.setData(data);
+					result.setCount(serviceRuntimesFound);
+				}
 			}
-			
-			if (jsonized.length() > 0) jsonized.deleteCharAt(jsonized.length()-1);
 		}
 		
-		return jsonized.toString();
+		return result;
 	}
+	
+	@RequestMapping(value = "/{pluginName}/services/{serviceId}/runtimes/{id}", method = {RequestMethod.GET, RequestMethod.DELETE})
+	public @ResponseBody Object runtimeDetails(
+			@PathVariable String pluginName,
+			@PathVariable String serviceId,
+			@PathVariable String id,
+			@RequestParam(required = false) Map<String, String> params,
+			HttpServletRequest request, HttpServletResponse response) 
+	{
+		
+		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
+		for (RestPlugin plugin : plugins) {
+			if (plugin.getPluginName().equals(pluginName)) {
+				_S: for (RestService service : plugin.getServices()) {
+					
+					// Filtering on plugin name
+					if (serviceId != null && serviceId.length() > 0) {
+						if (!service.getServiceId().equals(serviceId)) continue _S;
+					}
+
+					_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
+						// TODO: delegate the filtering and pagination to the plugin implementation
+						
+						// Filtering on runtime Id
+						if (id != null && id.length() > 0) {
+							if (!runtime.getId().equals(id)) continue _R;
+						}
+
+						if (request.getMethod().equals("GET")) {
+							return runtime;
+						}
+						else if (request.getMethod().equals("DELETE")) {
+							try {						
+								CharBuffer target = CharBuffer.allocate(1024);
+								request.getReader().read(target);
+								
+								if (target != null) {
+									String requestBody = new String(target.array());
+									
+									// try to parse KvPs from the request body
+									String[] kvps = requestBody.split("&");
+									if (kvps != null && kvps.length > 0) {
+										for (String kvp : kvps) {
+											String[] paramKvP = kvp.split("=");
+											params.put(paramKvP[0], paramKvP[1]);
+										}
+									}
+								}
+							} catch (Exception cause) {
+								LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
+							}
+							return service.stop(runtime, params);
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 }

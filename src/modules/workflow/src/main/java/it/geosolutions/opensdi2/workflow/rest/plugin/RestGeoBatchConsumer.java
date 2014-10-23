@@ -1,13 +1,13 @@
 /**
  * 
  */
-package it.geosolutions.opensdi2.rest.plugin;
-
-import java.util.Date;
-import java.util.List;
+package it.geosolutions.opensdi2.workflow.rest.plugin;
 
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author alessio.fabiani

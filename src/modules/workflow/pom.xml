@@ -15,7 +15,13 @@
     <name>OpenSDI Manager 2 - Workflow</name>
 
 	<dependencies>
-        <!-- JUnit dependencies -->
+		<!-- Internal  -->
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-core</artifactId>
+		</dependency>
+	    
+	    <!-- JUnit dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

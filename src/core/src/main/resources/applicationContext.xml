@@ -42,7 +42,5 @@
 			</list>
 		</property>
 	</bean>
-
-    <!-- REST Plugins -->
-    <bean id="gbRestAPIPlugin" class="it.geosolutions.opensdi2.rest.plugin.RestGeoBatchPlugin" />
+	
 </beans>
