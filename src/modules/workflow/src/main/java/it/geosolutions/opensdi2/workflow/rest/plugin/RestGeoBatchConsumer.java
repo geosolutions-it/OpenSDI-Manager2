@@ -61,10 +61,10 @@ public class RestGeoBatchConsumer implements RestServiceRuntime {
 	}
 
 	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.rest.RestServiceRuntime#getDescriprion()
+	 * @see it.geosolutions.opensdi2.rest.RestServiceRuntime#getDescription()
 	 */
 	@Override
-	public String getDescriprion() {
+	public String getDescription() {
 		return description;
 	}
 

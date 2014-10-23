@@ -61,7 +61,7 @@ public abstract class RestService {
 	 * 
 	 * @return
 	 */
-	public String getDescriprion() {
+	public String getDescription() {
 		return description;
 	}
 

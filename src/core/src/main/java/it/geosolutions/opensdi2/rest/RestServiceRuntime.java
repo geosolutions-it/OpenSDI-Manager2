@@ -20,7 +20,7 @@ public interface RestServiceRuntime {
 	
 	String getName();
 	
-	String getDescriprion();
+	String getDescription();
 	
 	String getStatus();
 	
