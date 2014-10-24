@@ -36,7 +36,7 @@ public class RestGeoBatchFlow extends RestService {
 	 * @see it.geosolutions.opensdi2.rest.RestService#getRuntimes()
 	 */
 	@Override
-	public List<RestServiceRuntime> getRuntimes() {
+	public List<RestServiceRuntime> getRuntimes() throws Exception {
 		return runtimes;
 	}
 
@@ -46,20 +46,20 @@ public class RestGeoBatchFlow extends RestService {
 	 * @see it.geosolutions.opensdi2.rest.RestService#execute()
 	 */
 	@Override
-	public String execute(Map<String, String> params) {
+	public String execute(Map<String, String> params) throws Exception {
 		runtimes = new ArrayList<RestServiceRuntime>();
 		
-		runtimes.add(new RestGeoBatchConsumer("65368e58-1133-4bf9-bb43-4b67b5769778", "", "", "SUCCESS", 100.0f, new Date(), new Date()));
-		runtimes.add(new RestGeoBatchConsumer("5c9ca5b3-af6d-4a5f-ba73-b495651e2f05", "", "", "SUCCESS", 100.0f, new Date(), new Date()));
-		runtimes.add(new RestGeoBatchConsumer("0882324e-0da9-47c4-99df-750193b93764", "", "", "SUCCESS", 100.0f, new Date(), new Date()));
-		runtimes.add(new RestGeoBatchConsumer("0c0070f5-7918-4094-904d-f0985a07fc68", "", "", "RUNNING", 37.5f, new Date(), null));
-		runtimes.add(new RestGeoBatchConsumer("0882324e-0da9-47c4-99df-750193b93764", "", "", "SUCCESS", 100.0f, new Date(), new Date()));
+		runtimes.add(new RestGeoBatchConsumer("65368e58-1133-4bf9-bb43-4b67b5769778", "name_1", "description_1", "SUCCESS", 100.0f, new Date(), new Date()));
+		runtimes.add(new RestGeoBatchConsumer("5c9ca5b3-af6d-4a5f-ba73-b495651e2f05", "name_2", "description_2", "SUCCESS", 100.0f, new Date(), new Date()));
+		runtimes.add(new RestGeoBatchConsumer("0882324e-0da9-47c4-99df-750193b93764", "name_3", "description_3", "SUCCESS", 100.0f, new Date(), new Date()));
+		runtimes.add(new RestGeoBatchConsumer("0c0070f5-7918-4094-904d-f0985a07fc68", "name_4", "description_4", "RUNNING", 37.5f, new Date(), null));
+		runtimes.add(new RestGeoBatchConsumer("0882324e-0da9-47c4-99df-750193b93764", "name_5", "description_5", "SUCCESS", 100.0f, new Date(), new Date()));
 		
 		return "200";
 	}
 
 	@Override
-	public String stop(RestServiceRuntime runtime, Map<String, String> params) {
+	public String stop(RestServiceRuntime runtime, Map<String, String> params) throws Exception {
 		if (runtimes != null) {
 			if (runtimes.contains(runtime)) {
 				runtimes.remove(runtime);
@@ -67,7 +67,29 @@ public class RestGeoBatchFlow extends RestService {
 			}
 		}
 		
-		return "400";
+		throw new Exception("Error occurred while stopping service!");
+	}
+
+	@Override
+	public boolean supportsQueries() {
+		return false;
+	}
+
+	@Override
+	public int countRuntimes() {
+		return 0;
+	}
+
+	@Override
+	public List<RestServiceRuntime> findRuntimes(String id, String status,
+			Date startDate, Date endDate, Map<String, String> params, int page,
+			int pageSize) {
+		return null;
+	}
+
+	@Override
+	public RestServiceRuntime getRuntime(String id) {
+		return null;
 	}
 
 }

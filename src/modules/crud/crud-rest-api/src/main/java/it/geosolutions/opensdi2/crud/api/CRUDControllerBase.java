@@ -28,5 +28,4 @@ public abstract class CRUDControllerBase<T,IDTYPE> {
 		return exception.getMessage();
 	}
 	
-	
 }

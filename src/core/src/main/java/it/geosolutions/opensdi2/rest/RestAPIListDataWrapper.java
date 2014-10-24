@@ -3,6 +3,7 @@
  */
 package it.geosolutions.opensdi2.rest;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class RestAPIListDataWrapper<T> {
 
 	private Map<String , Object> otherProperties = new HashMap<String , Object>();
 	
-	private List<T> data;
+	private List<T> data = Collections.EMPTY_LIST;
 	private int count;
 	private long  totalCount;
 	

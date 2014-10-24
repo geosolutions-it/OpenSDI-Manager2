@@ -6,6 +6,7 @@ package it.geosolutions.opensdi2.rest;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -26,8 +27,10 @@ public interface RestServiceRuntime {
 	
 	Float getProgress();
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSZ'Z'")
 	Date getStartDate();
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSZ'Z'")
 	Date getEndDate();
 	
 	List<RestItemParameter> getParameters();

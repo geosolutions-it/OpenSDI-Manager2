@@ -44,8 +44,8 @@ public class RestPluginsController extends RestAPIBaseController {
 	protected static final Logger LOGGER = Logger.getLogger("it.geosolutions.opensdi2.config");
 	
 	@RequestMapping(value = "/plugins", method = RequestMethod.GET)
-	public @ResponseBody Object plugins() {
-		
+	public @ResponseBody Object plugins() throws Exception
+	{
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
 		RestAPIListDataWrapper<RestPlugin> result = new RestAPIListDataWrapper<RestPlugin>();
@@ -66,9 +66,8 @@ public class RestPluginsController extends RestAPIBaseController {
 			@RequestParam(required = false, defaultValue = "-1") int page,
 			@RequestParam(required = false, defaultValue = "10") int pageSize,
 			@RequestParam(required = false) Map<String, String> params,
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
-		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
 		List<RestService> data = new ArrayList<RestService>();
@@ -77,90 +76,102 @@ public class RestPluginsController extends RestAPIBaseController {
 		result.setCount(0);
 		result.setTotalCount(0);
 
-		int counter = 0, servicesFound = 0, totalCount = 0;
+		int counter = 0, totalCount = 0;
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
-				if (plugin.getServices() != null)
-				_S: for (RestService service : plugin.getServices()) {
-					totalCount = plugin.getServices().size();
-					result.setTotalCount(totalCount);
-					
-					// TODO: delegate the filtering and pagination to the plugin implementation
-					
-					// Filtering on activeStatus
-					if (activeStatus != null && !activeStatus.equals("ALL")) {
-						if (!service.getActiveStatus().equals(activeStatus)) continue _S;
-					}
-
-					// Filtering on plugin serviceId
-					if (serviceId != null && serviceId.length() > 0) {
-						if (!service.getServiceId().equals(serviceId)) continue _S;
-						result.set("serviceId", serviceId);
-					}
-					
-					// Filtering on plugin name
-					if (name != null && name.length() > 0) {
-						if (!service.getName().equalsIgnoreCase(name)) continue _S;
-					}
-
-					// Filtering on parameter value
-					if (params != null && !params.isEmpty()) {
-						Map<String, String> filteringParameters = new HashMap<String, String>();
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					totalCount = plugin.countServices();
+					data = plugin.findServices(serviceId, name, activeStatus, params, page, pageSize);
+				}
+				// Sequential scan otherwise
+				else {
+					if (plugin.getServices() != null)
+					_S: for (RestService service : plugin.getServices()) {
+						totalCount = plugin.getServices().size();
+						result.setTotalCount(totalCount);
 						
-						for (Entry<String, String> entry : params.entrySet()) {
-							final String key = entry.getKey();
-							final String value = entry.getValue();
-							
-							if (key.toLowerCase().startsWith("param_")) {
-								final String paramName = key.toLowerCase().substring("param_".length());
-								filteringParameters.put(paramName, value);
-							}
+						// Filtering on activeStatus
+						if (activeStatus != null && !activeStatus.equals("ALL")) {
+							if (!service.getActiveStatus().equals(activeStatus)) continue _S;
+						}
+	
+						// Filtering on plugin serviceId
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!service.getServiceId().equals(serviceId)) continue _S;
+							result.set("serviceId", serviceId);
 						}
 						
-						if (!filteringParameters.isEmpty()) {
+						// Filtering on plugin name
+						if (name != null && name.length() > 0) {
+							if (!service.getName().equalsIgnoreCase(name)) continue _S;
+						}
+	
+						// Filtering on parameter value
+						if (params != null && !params.isEmpty()) {
+							Map<String, String> filteringParameters = new HashMap<String, String>();
 							
-							if (service.getParameters() == null || service.getParameters().isEmpty()) {
-								continue _S;
-							}
-							else {
-								boolean paramMatches = false;
+							for (Entry<String, String> entry : params.entrySet()) {
+								final String key = entry.getKey();
+								final String value = entry.getValue();
 								
-								for (Entry<String, String> entry : filteringParameters.entrySet()) {
-									final String key = entry.getKey();
-									final String value = entry.getValue();
+								if (key.toLowerCase().startsWith("param_")) {
+									final String paramName = key.toLowerCase().substring("param_".length());
+									filteringParameters.put(paramName, value);
+								}
+							}
+							
+							if (!filteringParameters.isEmpty()) {
+								
+								if (service.getParameters() == null || service.getParameters().isEmpty()) {
+									continue _S;
+								}
+								else {
+									boolean paramMatches = false;
 									
-									for (RestItemParameter pp : service.getParameters()) {
-										if (pp.getParamName().equalsIgnoreCase(key) && pp.getParamValue().equals(value)) {
-											paramMatches = true;
-											break;
+									for (Entry<String, String> entry : filteringParameters.entrySet()) {
+										final String key = entry.getKey();
+										final String value = entry.getValue();
+										
+										for (RestItemParameter pp : service.getParameters()) {
+											if (pp.getParamName().equalsIgnoreCase(key) && pp.getParamValue().equals(value)) {
+												paramMatches = true;
+												break;
+											}
 										}
 									}
-								}
-								
-								if (!paramMatches) {
-									continue _S;	
+									
+									if (!paramMatches) {
+										continue _S;
+									}
 								}
 							}
 						}
-					}
-
-					// Pagination
-					if (page >= 0) {
-						result.set("page", page);
-						result.set("pageSize", pageSize);
-						if (counter < (page*pageSize) || counter > (page*pageSize)+pageSize-1) {
-							counter++;
-							continue _S;
+	
+						// Pagination
+						if (page >= 0) {
+							result.set("page", page);
+							result.set("pageSize", pageSize);
+							if (counter < (page*pageSize)) {
+								counter++;
+								continue _S;
+							}
+							if (counter > (page*pageSize)+pageSize-1) {
+								break _S;
+							}
+							
 						}
+						
+						data.add(service);
+						counter++;
 					}
-					
-					data.add(service);
-					servicesFound++;
-					counter++;
 				}
-				if (servicesFound > 0) {
+				
+				//
+				if (data.size() > 0) {
 					result.setData(data);
-					result.setCount(servicesFound);
+					result.setCount(data.size());
 				}
 			}
 		}
@@ -173,43 +184,40 @@ public class RestPluginsController extends RestAPIBaseController {
 			@PathVariable String pluginName,
 			@PathVariable String serviceId,
 			@RequestParam(required = false) Map<String, String> params,
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
-		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
-				_S: for (RestService service : plugin.getServices()) {
-					
-					// Filtering on plugin name
-					if (serviceId != null && serviceId.length() > 0) {
-						if (!service.getServiceId().equals(serviceId)) continue _S;
+				
+				RestService service = null;
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					service = plugin.getService(serviceId);
+				}
+				
+				// Sequential scan otherwise
+				if (service == null) {
+					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Filtering on plugin name
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!srv.getServiceId().equals(serviceId)) continue _S;
+						}
+						
+						service = srv;
+						break;
 					}
-					
+				}
+				
+				if (service != null) {
 					if (request.getMethod().equals("GET")) {
 						return service;
 					}
 					else if (request.getMethod().equals("POST")) {
-						try {						
-							CharBuffer target = CharBuffer.allocate(1024);
-							request.getReader().read(target);
-							
-							if (target != null) {
-								String requestBody = new String(target.array());
-								
-								// try to parse KvPs from the request body
-								String[] kvps = requestBody.split("&");
-								if (kvps != null && kvps.length > 0) {
-									for (String kvp : kvps) {
-										String[] paramKvP = kvp.split("=");
-										params.put(paramKvP[0], paramKvP[1]);
-									}
-								}
-							}
-						} catch (Exception cause) {
-							LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
-						}
+						extractParameters(params, request);
 						return service.execute(params);
 					}
 				}
@@ -217,6 +225,33 @@ public class RestPluginsController extends RestAPIBaseController {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * @param params
+	 * @param request
+	 */
+	private void extractParameters(Map<String, String> params,
+			HttpServletRequest request) {
+		try {						
+			CharBuffer target = CharBuffer.allocate(1024);
+			request.getReader().read(target);
+			
+			if (target != null) {
+				String requestBody = new String(target.array());
+				
+				// try to parse KvPs from the request body
+				String[] kvps = requestBody.split("&");
+				if (kvps != null && kvps.length > 0) {
+					for (String kvp : kvps) {
+						String[] paramKvP = kvp.split("=");
+						params.put(paramKvP[0], paramKvP[1]);
+					}
+				}
+			}
+		} catch (Exception cause) {
+			LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
+		}
 	}
 	
 	@RequestMapping(value = "/{pluginName}/services/{serviceId}/runtimes", method = RequestMethod.GET)
@@ -230,9 +265,8 @@ public class RestPluginsController extends RestAPIBaseController {
 			@RequestParam(required = false) Date startDate,
 			@RequestParam(required = false) Date endDate,
 			@RequestParam(required = false) Map<String, String> params,
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
-		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
 		List<RestServiceRuntime> data = new ArrayList<RestServiceRuntime>();
@@ -241,97 +275,121 @@ public class RestPluginsController extends RestAPIBaseController {
 		result.setCount(0);
 		result.setTotalCount(0);
 
-		int counter = 0, serviceRuntimesFound = 0, totalCount = 0;
+		int counter = 0, totalCount = 0;
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
-				_S: for (RestService service : plugin.getServices()) {
-					
-					// Filtering on plugin name
-					if (serviceId != null && serviceId.length() > 0) {
-						if (!service.getServiceId().equals(serviceId)) continue _S;
-						result.set("serviceId", serviceId);
+				
+				RestService service = null;
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					service = plugin.getService(serviceId);
+				}
+				
+				// Sequential scan otherwise
+				if (service == null) {
+					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Filtering on plugin name
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!srv.getServiceId().equals(serviceId)) continue _S;
+						}
+						
+						service = srv;
+						break;
 					}
-					
-					if (service.getRuntimes() != null) {
-						totalCount = service.getRuntimes().size();
-						result.setTotalCount(totalCount);
+				}
+				
+				if (service != null) {
+					result.set("serviceId", serviceId);
 
-						_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
-							// TODO: delegate the filtering and pagination to the plugin implementation
-							
-							// Filtering on activeStatus
-							if (status != null && !status.equals("ALL")) {
-								if (!runtime.getStatus().equals(status)) continue _R;
-							}
+					// Try to use the datastore if available
+					if (service.supportsQueries()) {
+						totalCount = service.countRuntimes();
+						data = service.findRuntimes(id, status, startDate, endDate, params, page, pageSize);
+					}
+					// Sequential scan otherwise
+					else {
+						if(service.getRuntimes() != null) {
+							totalCount = service.getRuntimes().size();
+							result.setTotalCount(totalCount);
 
-							// Filtering on runtime Id
-							if (id != null && id.length() > 0) {
-								if (!runtime.getId().equals(id)) continue _R;
-							}
-
-							// Filtering on parameter value
-							if (params != null && !params.isEmpty()) {
-								Map<String, String> filteringParameters = new HashMap<String, String>();
-								
-								for (Entry<String, String> entry : params.entrySet()) {
-									final String key = entry.getKey();
-									final String value = entry.getValue();
-									
-									if (key.toLowerCase().startsWith("param_")) {
-										final String paramName = key.toLowerCase().substring("param_".length());
-										filteringParameters.put(paramName, value);
-									}
+							_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
+								// Filtering on activeStatus
+								if (status != null && !status.equals("ALL")) {
+									if (!runtime.getStatus().equals(status)) continue _R;
 								}
-								
-								if (!filteringParameters.isEmpty()) {
-									
-									if (runtime.getParameters() == null || runtime.getParameters().isEmpty()) {
-										continue _R;
+
+								// Filtering on runtime Id
+								if (id != null && id.length() > 0) {
+									if (!runtime.getId().equals(id)) continue _R;
+								}
+
+								// Filtering on parameter value
+								if (params != null && !params.isEmpty()) {
+									Map<String, String> filteringParameters = new HashMap<String, String>();
+
+									for (Entry<String, String> entry : params.entrySet()) {
+										final String key = entry.getKey();
+										final String value = entry.getValue();
+
+										if (key.toLowerCase().startsWith("param_")) {
+											final String paramName = key.toLowerCase().substring("param_".length());
+											filteringParameters.put(paramName, value);
+										}
 									}
-									else {
-										boolean paramMatches = false;
-										
-										for (Entry<String, String> entry : filteringParameters.entrySet()) {
-											final String key = entry.getKey();
-											final String value = entry.getValue();
-											
-											for (RestItemParameter pp : runtime.getParameters()) {
-												if (pp.getParamName().equalsIgnoreCase(key) && pp.getParamValue().equals(value)) {
-													paramMatches = true;
-													break;
+
+									if (!filteringParameters.isEmpty()) {
+
+										if (runtime.getParameters() == null || runtime.getParameters().isEmpty()) {
+											continue _R;
+										}
+										else {
+											boolean paramMatches = false;
+
+											for (Entry<String, String> entry : filteringParameters.entrySet()) {
+												final String key = entry.getKey();
+												final String value = entry.getValue();
+
+												for (RestItemParameter pp : runtime.getParameters()) {
+													if (pp.getParamName().equalsIgnoreCase(key) && pp.getParamValue().equals(value)) {
+														paramMatches = true;
+														break;
+													}
 												}
 											}
-										}
-										
-										if (!paramMatches) {
-											continue _R;	
+
+											if (!paramMatches) {
+												continue _R;	
+											}
 										}
 									}
 								}
-							}
 
-							// Pagination
-							if (page >= 0) {
-								result.set("page", page);
-								result.set("pageSize", pageSize);
-								if (counter < (page*pageSize)) {
-									counter++;
-									continue _R;
+								// Pagination
+								if (page >= 0) {
+									result.set("page", page);
+									result.set("pageSize", pageSize);
+									if (counter < (page*pageSize)) {
+										counter++;
+										continue _R;
+									}
+									if (counter > (page*pageSize)+pageSize-1) {
+										break _R;
+									}
 								}
-								if (counter > (page*pageSize)+pageSize-1) {
-									break _S;
-								}
+
+								data.add(runtime);
+								counter++;
 							}
-							
-							data.add(runtime);
-							serviceRuntimesFound++;
-							counter++;
 						}
 					}
 				}
-				if (serviceRuntimesFound > 0) {
+			
+				//
+				if (data.size() > 0) {
 					result.setData(data);
-					result.setCount(serviceRuntimesFound);
+					result.setCount(data.size());
 				}
 			}
 		}
@@ -345,53 +403,62 @@ public class RestPluginsController extends RestAPIBaseController {
 			@PathVariable String serviceId,
 			@PathVariable String id,
 			@RequestParam(required = false) Map<String, String> params,
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, HttpServletResponse response) throws Exception 
 	{
-		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
 		for (RestPlugin plugin : plugins) {
 			if (plugin.getPluginName().equals(pluginName)) {
-				_S: for (RestService service : plugin.getServices()) {
-					
-					// Filtering on plugin name
-					if (serviceId != null && serviceId.length() > 0) {
-						if (!service.getServiceId().equals(serviceId)) continue _S;
+				
+				RestService service = null;
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					service = plugin.getService(serviceId);
+				}
+				
+				// Sequential scan otherwise
+				if (service == null) {
+					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Filtering on plugin name
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!srv.getServiceId().equals(serviceId)) continue _S;
+						}
+						
+						service = srv;
+						break;
+					}
+				}
+				
+				if (service != null) {
+					RestServiceRuntime runtime = null;
+
+					// Try to use the datastore if available
+					if (service.supportsQueries()) {
+						runtime = service.getRuntime(id);
 					}
 
-					_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
-						// TODO: delegate the filtering and pagination to the plugin implementation
-						
-						// Filtering on runtime Id
-						if (id != null && id.length() > 0) {
-							if (!runtime.getId().equals(id)) continue _R;
-						}
-
-						if (request.getMethod().equals("GET")) {
-							return runtime;
-						}
-						else if (request.getMethod().equals("DELETE")) {
-							try {						
-								CharBuffer target = CharBuffer.allocate(1024);
-								request.getReader().read(target);
-								
-								if (target != null) {
-									String requestBody = new String(target.array());
-									
-									// try to parse KvPs from the request body
-									String[] kvps = requestBody.split("&");
-									if (kvps != null && kvps.length > 0) {
-										for (String kvp : kvps) {
-											String[] paramKvP = kvp.split("=");
-											params.put(paramKvP[0], paramKvP[1]);
-										}
-									}
-								}
-							} catch (Exception cause) {
-								LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
+					// Sequential scan otherwise
+					if (runtime == null) {
+						_R: for (RestServiceRuntime rt : service.getRuntimes()) {
+							// Filtering on runtime Id
+							if (id != null && id.length() > 0) {
+								if (!rt.getId().equals(id)) continue _R;
 							}
-							return service.stop(runtime, params);
+
+							runtime = rt;
+							break;
 						}
+					}
+
+					//
+					if (request.getMethod().equals("GET")) {
+						return runtime;
+					}
+					else if (request.getMethod().equals("DELETE")) {
+						extractParameters(params, request);
+						return service.stop(runtime, params);
 					}
 				}
 			}

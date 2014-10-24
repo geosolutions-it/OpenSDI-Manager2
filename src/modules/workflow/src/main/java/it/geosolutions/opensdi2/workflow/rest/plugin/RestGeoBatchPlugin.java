@@ -5,6 +5,7 @@ package it.geosolutions.opensdi2.workflow.rest.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestPlugin;
@@ -46,7 +47,7 @@ public class RestGeoBatchPlugin implements RestPlugin {
 	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getServices()
 	 */
 	@Override
-	public List<RestService> getServices() {
+	public List<RestService> getServices() throws Exception {
 		
 		if (flows.isEmpty()) {
 			flows.add(new RestGeoBatchFlow("csvfileingestion", "csvfileingestion", "CSV File Ingestion", "1.4-SNAPSHOT", "ENABLED"));
@@ -62,6 +63,28 @@ public class RestGeoBatchPlugin implements RestPlugin {
 		}
 		
 		return flows;
+	}
+
+	@Override
+	public boolean supportsQueries() {
+		return false;
+	}
+
+	@Override
+	public int countServices() {
+		return 0;
+	}
+
+	@Override
+	public List<RestService> findServices(String serviceId, String name,
+			String activeStatus, Map<String, String> params, int page,
+			int pageSize) {
+		return null;
+	}
+
+	@Override
+	public RestService getService(String serviceId) {
+		return null;
 	}
 
 }

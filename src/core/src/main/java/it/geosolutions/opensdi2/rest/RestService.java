@@ -3,6 +3,7 @@
  */
 package it.geosolutions.opensdi2.rest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,10 +98,20 @@ public abstract class RestService {
 		this.parameters = parameters;
 	}
 	
-	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes();
+	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes() throws Exception;
 
-	@JsonIgnore public abstract String execute(Map<String, String> params);
+	@JsonIgnore public abstract String execute(Map<String, String> params) throws Exception;
 
-	@JsonIgnore public abstract String stop(RestServiceRuntime runtime, Map<String, String> params);
+	@JsonIgnore public abstract String stop(RestServiceRuntime runtime, Map<String, String> params) throws Exception;
+
+	@JsonIgnore public abstract boolean supportsQueries();
+
+	@JsonIgnore public abstract int countRuntimes();
+
+	@JsonIgnore public abstract List<RestServiceRuntime> findRuntimes(String id, String status,
+			Date startDate, Date endDate, Map<String, String> params, int page,
+			int pageSize);
+
+	@JsonIgnore public abstract RestServiceRuntime getRuntime(String id);
 
 }
