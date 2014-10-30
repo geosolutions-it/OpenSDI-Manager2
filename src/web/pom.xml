@@ -80,7 +80,11 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-workflow</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+    		<artifactId>nrl-mvc</artifactId>
+    		<version>1.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>

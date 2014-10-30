@@ -22,6 +22,7 @@
         <module>web-security</module>
 		<module>workflow</module>
 		<module>crud</module>
+		<module>nrl</module<name />
     </modules>
     <!-- profile geocollect -->
     <profiles>
