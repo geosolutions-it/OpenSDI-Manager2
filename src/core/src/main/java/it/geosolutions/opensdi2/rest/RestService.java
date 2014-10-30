@@ -106,6 +106,10 @@ public abstract class RestService {
 
 	@JsonIgnore public abstract boolean supportsQueries();
 
+	//@JsonIgnore public abstract List<RestServiceInfoParam> getInputs();
+
+	//@JsonIgnore public abstract List<RestServiceInfoParam> getOutputs();
+
 	@JsonIgnore public abstract int countRuntimes();
 
 	@JsonIgnore public abstract List<RestServiceRuntime> findRuntimes(String id, String status,

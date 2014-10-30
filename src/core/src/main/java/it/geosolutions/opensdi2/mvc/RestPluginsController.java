@@ -254,6 +254,120 @@ public class RestPluginsController extends RestAPIBaseController {
 		}
 	}
 	
+/**
+ *
+	@RequestMapping(value = "/{pluginName}/services/{serviceId}/inputs", method = RequestMethod.GET)
+	public @ResponseBody Object serviceInputs (
+			@PathVariable String pluginName,
+			@PathVariable String serviceId,
+			HttpServletRequest request, HttpServletResponse response) throws Exception
+	{
+		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
+		
+		List<RestServiceRuntime> data = new ArrayList<RestServiceRuntime>();
+		RestAPIListDataWrapper<RestServiceRuntime> result = new RestAPIListDataWrapper<RestServiceRuntime>();
+		result.set("type", "inputs");
+		result.setCount(0);
+		result.setTotalCount(0);
+
+		int totalCount = 0;
+		for (RestPlugin plugin : plugins) {
+			if (plugin.getPluginName().equals(pluginName)) {
+				RestService service = null;
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					service = plugin.getService(serviceId);
+				}
+				
+				// Sequential scan otherwise
+				if (service == null) {
+					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Filtering on plugin name
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!srv.getServiceId().equals(serviceId)) continue _S;
+						}
+						
+						service = srv;
+						break;
+					}
+				}
+				
+				if (service != null) {
+					result.set("serviceId", serviceId);
+					
+					if(service.getInputs() != null) {
+						data = service.getInputs();
+						totalCount = data.size();
+						result.setTotalCount(totalCount);
+						result.setCount(totalCount);
+					}
+					
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "/{pluginName}/services/{serviceId}/outputs", method = RequestMethod.GET)
+	public @ResponseBody Object serviceOutputs (
+			@PathVariable String pluginName,
+			@PathVariable String serviceId,
+			HttpServletRequest request, HttpServletResponse response) throws Exception
+	{
+		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
+		
+		List<RestServiceRuntime> data = new ArrayList<RestServiceRuntime>();
+		RestAPIListDataWrapper<RestServiceRuntime> result = new RestAPIListDataWrapper<RestServiceRuntime>();
+		result.set("type", "outputs");
+		result.setCount(0);
+		result.setTotalCount(0);
+
+		int totalCount = 0;
+		for (RestPlugin plugin : plugins) {
+			if (plugin.getPluginName().equals(pluginName)) {
+				RestService service = null;
+				
+				// Try to use the datastore if available
+				if (plugin.supportsQueries()) {
+					service = plugin.getService(serviceId);
+				}
+				
+				// Sequential scan otherwise
+				if (service == null) {
+					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Filtering on plugin name
+						if (serviceId != null && serviceId.length() > 0) {
+							if (!srv.getServiceId().equals(serviceId)) continue _S;
+						}
+						
+						service = srv;
+						break;
+					}
+				}
+				
+				if (service != null) {
+					result.set("serviceId", serviceId);
+					
+					if(service.getOutputs() != null) {
+						data = service.getOutputs();
+						totalCount = data.size();
+						result.setTotalCount(totalCount);
+						result.setCount(totalCount);
+					}
+					
+				}
+			}
+		}
+		
+		return result;
+	}
+*
+**/
+	
 	@RequestMapping(value = "/{pluginName}/services/{serviceId}/runtimes", method = RequestMethod.GET)
 	public @ResponseBody Object serviceRuntimes (
 			@PathVariable String pluginName,
