@@ -3,13 +3,16 @@
  */
 package it.geosolutions.opensdi2.workflow.rest.plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestPlugin;
 import it.geosolutions.opensdi2.rest.RestService;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author alessio.fabiani
@@ -17,7 +20,7 @@ import it.geosolutions.opensdi2.rest.RestService;
  */
 public class RestGeoBatchPlugin implements RestPlugin {
 
-	List<RestService> flows = new ArrayList<RestService>();
+	Set<RestService> flows = Collections.newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
 	
 	/* (non-Javadoc)
 	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getPluginName()
@@ -47,19 +50,21 @@ public class RestGeoBatchPlugin implements RestPlugin {
 	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getServices()
 	 */
 	@Override
-	public List<RestService> getServices() throws Exception {
+	public Set<RestService> getServices() throws Exception {
 		
-		if (flows.isEmpty()) {
-			flows.add(new RestGeoBatchFlow("csvfileingestion", "csvfileingestion", "CSV File Ingestion", "1.4-SNAPSHOT", "ENABLED"));
-
-			final RestGeoBatchFlow gtiffFlow = new RestGeoBatchFlow("gtifffileingestion", "gtifffileingestion", "Prepare GeoTIFF and publish", "1.4-SNAPSHOT", "ENABLED");
-			flows.add(gtiffFlow);
-			List<RestItemParameter> parameters = new ArrayList<RestItemParameter>();
-			parameters.add(new RestGeoBatchParameter("testParam", "testValue"));
-			gtiffFlow.setParameters(parameters);
-
-			flows.add(new RestGeoBatchFlow("ndvifileingestion", "ndvifileingestion", "NDVI File Ingestion", "1.4-SNAPSHOT", "DISABLED"));
-			flows.add(new RestGeoBatchFlow("ndvifilegeneration", "ndvifilegeneration", "NDVI Stats Generation", "1.4-SNAPSHOT", "DISABLED"));
+		synchronized(flows) {
+			if (flows.isEmpty()) {
+				flows.add(new RestGeoBatchFlow("csvfileingestion", "csvfileingestion", "CSV File Ingestion", "1.4-SNAPSHOT", "ENABLED"));
+	
+				final RestGeoBatchFlow gtiffFlow = new RestGeoBatchFlow("gtifffileingestion", "gtifffileingestion", "Prepare GeoTIFF and publish", "1.4-SNAPSHOT", "ENABLED");
+				flows.add(gtiffFlow);
+				List<RestItemParameter> parameters = new ArrayList<RestItemParameter>();
+				parameters.add(new RestGeoBatchParameter("testParam", "testValue"));
+				gtiffFlow.setParameters(parameters);
+	
+				flows.add(new RestGeoBatchFlow("ndvifileingestion", "ndvifileingestion", "NDVI File Ingestion", "1.4-SNAPSHOT", "DISABLED"));
+				flows.add(new RestGeoBatchFlow("ndvifilegeneration", "ndvifilegeneration", "NDVI Stats Generation", "1.4-SNAPSHOT", "DISABLED"));
+			}
 		}
 		
 		return flows;

@@ -5,6 +5,7 @@ package it.geosolutions.opensdi2.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -22,7 +23,7 @@ public interface RestPlugin {
 
 	String getVersion();
 
-	List<RestService> getServices() throws Exception;
+	Set<RestService> getServices() throws Exception;
 
 	boolean supportsQueries();
 

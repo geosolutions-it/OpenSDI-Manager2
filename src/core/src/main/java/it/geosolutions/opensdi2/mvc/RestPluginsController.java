@@ -245,7 +245,11 @@ public class RestPluginsController extends RestAPIBaseController {
 				if (kvps != null && kvps.length > 0) {
 					for (String kvp : kvps) {
 						String[] paramKvP = kvp.split("=");
-						params.put(paramKvP[0], paramKvP[1]);
+						if (paramKvP.length == 0) {
+							params.put(paramKvP[0], paramKvP[1]);
+						} else {
+							params.put("rawData", paramKvP[0]);
+						}
 					}
 				}
 			}
