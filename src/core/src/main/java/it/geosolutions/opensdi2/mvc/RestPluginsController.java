@@ -12,6 +12,7 @@ import it.geosolutions.opensdi2.rest.RestService;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
 import java.nio.CharBuffer;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -186,6 +187,9 @@ public class RestPluginsController extends RestAPIBaseController {
 			@RequestParam(required = false) Map<String, String> params,
 			HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
+		// the user principal
+		final Principal auth = request.getUserPrincipal();
+		
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
 		for (RestPlugin plugin : plugins) {
@@ -196,11 +200,17 @@ public class RestPluginsController extends RestAPIBaseController {
 				// Try to use the datastore if available
 				if (plugin.supportsQueries()) {
 					service = plugin.getService(serviceId);
+					
+					// Checking that the Service is available and correctly initialized
+					if (service != null && !service.getActiveStatus().equals("ENABLED")) return null;
 				}
 				
 				// Sequential scan otherwise
 				if (service == null) {
 					_S: for (RestService srv : plugin.getServices()) {
+						
+						// Checking that the Service is available and correctly initialized
+						if (!srv.getActiveStatus().equals("ENABLED")) continue _S;
 						
 						// Filtering on plugin name
 						if (serviceId != null && serviceId.length() > 0) {
@@ -217,8 +227,8 @@ public class RestPluginsController extends RestAPIBaseController {
 						return service;
 					}
 					else if (request.getMethod().equals("POST")) {
-						extractParameters(params, request);
-						return service.execute(params);
+						final String requestBody = extractParameters(params, request);
+						return service.execute(auth, requestBody, params);
 					}
 				}
 			}
@@ -230,8 +240,9 @@ public class RestPluginsController extends RestAPIBaseController {
 	/**
 	 * @param params
 	 * @param request
+	 * @return 
 	 */
-	private void extractParameters(Map<String, String> params,
+	private String extractParameters(Map<String, String> params,
 			HttpServletRequest request) {
 		try {						
 			CharBuffer target = CharBuffer.allocate(1024);
@@ -245,17 +256,19 @@ public class RestPluginsController extends RestAPIBaseController {
 				if (kvps != null && kvps.length > 0) {
 					for (String kvp : kvps) {
 						String[] paramKvP = kvp.split("=");
-						if (paramKvP.length == 0) {
+						if (paramKvP.length == 2) {
 							params.put(paramKvP[0], paramKvP[1]);
-						} else {
-							params.put("rawData", paramKvP[0]);
 						}
 					}
 				}
+				
+				return requestBody;
 			}
 		} catch (Exception cause) {
 			LOGGER.log(Level.WARNING, "Exception occurred while reading the request content.", cause);
 		}
+		
+		return null;
 	}
 	
 /**
@@ -385,6 +398,9 @@ public class RestPluginsController extends RestAPIBaseController {
 			@RequestParam(required = false) Map<String, String> params,
 			HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
+		// the user principal
+		final Principal auth = request.getUserPrincipal();
+
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 		
 		List<RestServiceRuntime> data = new ArrayList<RestServiceRuntime>();
@@ -428,11 +444,12 @@ public class RestPluginsController extends RestAPIBaseController {
 					}
 					// Sequential scan otherwise
 					else {
-						if(service.getRuntimes() != null) {
-							totalCount = service.getRuntimes().size();
+						final List<RestServiceRuntime> runtimes = service.getRuntimes(auth);
+						if(runtimes != null) {
+							totalCount = runtimes.size();
 							result.setTotalCount(totalCount);
 
-							_R: for (RestServiceRuntime runtime : service.getRuntimes()) {
+							_R: for (RestServiceRuntime runtime : runtimes) {
 								// Filtering on activeStatus
 								if (status != null && !status.equals("ALL")) {
 									if (!runtime.getStatus().equals(status)) continue _R;
@@ -523,6 +540,9 @@ public class RestPluginsController extends RestAPIBaseController {
 			@RequestParam(required = false) Map<String, String> params,
 			HttpServletRequest request, HttpServletResponse response) throws Exception 
 	{
+		// the user principal
+		final Principal auth = request.getUserPrincipal();
+
 		List<RestPlugin> plugins = OpenSDIManagerConfigExtensions.extensions(RestPlugin.class);
 
 		for (RestPlugin plugin : plugins) {
@@ -559,7 +579,7 @@ public class RestPluginsController extends RestAPIBaseController {
 
 					// Sequential scan otherwise
 					if (runtime == null) {
-						_R: for (RestServiceRuntime rt : service.getRuntimes()) {
+						_R: for (RestServiceRuntime rt : service.getRuntimes(auth)) {
 							// Filtering on runtime Id
 							if (id != null && id.length() > 0) {
 								if (!rt.getId().equals(id)) continue _R;

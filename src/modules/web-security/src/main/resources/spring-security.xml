@@ -10,6 +10,7 @@
 		<http-basic />
 		<anonymous />
 		<intercept-url pattern="/mvc/admin/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/mvc/process/**" access="ROLE_ADMIN, ROLE_USER" />
 	</http>
 	
 	
@@ -20,7 +21,7 @@
     </authentication-manager>
 	 <beans:bean id="geoStoreAuthenticationProvider" class="it.geosolutions.geostore.services.security.GeoStoreAuthenticationProvider">
 	 <!-- externalize using Property Override Configurer -->
-    	<beans:property name="geoStoreRestURL" value="http://localhost:9190/geostore/rest/"></beans:property>
+    	<beans:property name="geoStoreRestURL" value="http://localhost:9191/geostore/rest/"></beans:property>
     	<beans:property name="allowedRoles">
     			<beans:list>
 					<beans:value>ADMIN</beans:value>
@@ -28,6 +29,5 @@
 				</beans:list>
     	</beans:property>
     </beans:bean>
-
 
 </beans:beans>

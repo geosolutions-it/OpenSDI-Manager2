@@ -3,6 +3,7 @@
  */
 package it.geosolutions.opensdi2.rest;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,13 @@ public abstract class RestService {
 	}
 
 	/**
+	 * @param activeStatus the activeStatus to set
+	 */
+	public void setActiveStatus(String activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	/**
 	 * 
 	 * @return
 	 */
@@ -98,9 +106,9 @@ public abstract class RestService {
 		this.parameters = parameters;
 	}
 	
-	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes() throws Exception;
+	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception;
 
-	@JsonIgnore public abstract String execute(Map<String, String> params) throws Exception;
+	@JsonIgnore public abstract String execute(Principal auth, String requestBody, Map<String, String> params) throws Exception;
 
 	@JsonIgnore public abstract String stop(RestServiceRuntime runtime, Map<String, String> params) throws Exception;
 

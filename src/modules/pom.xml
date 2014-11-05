@@ -21,6 +21,7 @@
         <module>rest-facade</module>
         <module>web-security</module>
 		<module>workflow</module>
+        <module>wps-rest</module>
 		<module>crud</module>
     </modules>
     <!-- profile geocollect -->

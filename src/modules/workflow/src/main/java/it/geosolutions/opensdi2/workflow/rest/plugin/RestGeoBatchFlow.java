@@ -6,6 +6,7 @@ package it.geosolutions.opensdi2.workflow.rest.plugin;
 import it.geosolutions.opensdi2.rest.RestService;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,7 @@ public class RestGeoBatchFlow extends RestService {
 	 * @see it.geosolutions.opensdi2.rest.RestService#getRuntimes()
 	 */
 	@Override
-	public List<RestServiceRuntime> getRuntimes() throws Exception {
+	public List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception {
 		return runtimes;
 	}
 
@@ -46,7 +47,7 @@ public class RestGeoBatchFlow extends RestService {
 	 * @see it.geosolutions.opensdi2.rest.RestService#execute()
 	 */
 	@Override
-	public String execute(Map<String, String> params) throws Exception {
+	public String execute(Principal auth, String requestBody, Map<String, String> params) throws Exception {
 		runtimes = new ArrayList<RestServiceRuntime>();
 		
 		runtimes.add(new RestGeoBatchConsumer("65368e58-1133-4bf9-bb43-4b67b5769778", "name_1", "description_1", "SUCCESS", 100.0f, new Date(), new Date()));
