@@ -7,17 +7,20 @@ import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
 import it.geosolutions.opensdi2.rest.RestService;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
+import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.wps10.ResponseFormType;
 
 import org.geotools.data.wps.WebProcessingService;
+import org.geotools.ows.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,13 +39,13 @@ public abstract class RestWPSProcess extends RestService {
 	@Autowired
 	protected AdministratorGeoStoreClient wpsRestAPIGeoStoreAdminClient;
 	
-	protected WebProcessingService wps;
-	
 	protected URL url;
 
 	protected String processIden;
 
-	protected ResponseFormType response ;
+	protected ResponseFormType response;
+	
+	protected Map<String, RestServiceRuntime> runtimes = new ConcurrentHashMap<String, RestServiceRuntime>();
     
 	/**
 	 * 
@@ -61,13 +64,24 @@ public abstract class RestWPSProcess extends RestService {
 			String version, String activeStatus, String wpsUrl, String processIden) {
 		this(serviceId, name, description, version, activeStatus);
 		try {
+			//testing connections
 			this.url = new URL(wpsUrl);
-			this.wps = new WebProcessingService(this.url);
+			//connect();
 			this.processIden = processIden;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "WPS Service [" + serviceId + "] could not be initialized due to an Exception!", e);
 			setActiveStatus("DISABLED");
 		}
+	}
+
+	/**
+	 * @return 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	protected WebProcessingService connect() throws IOException, ServiceException {
+		WebProcessingService wps = new WebProcessingService(this.url);
+		return wps;
 	}
 
 	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception;

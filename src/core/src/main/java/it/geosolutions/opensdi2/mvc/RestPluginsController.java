@@ -245,7 +245,7 @@ public class RestPluginsController extends RestAPIBaseController {
 	private String extractParameters(Map<String, String> params,
 			HttpServletRequest request) {
 		try {						
-			CharBuffer target = CharBuffer.allocate(1024);
+			CharBuffer target = CharBuffer.allocate(4 * 1024 * 1024);
 			request.getReader().read(target);
 			
 			if (target != null) {
