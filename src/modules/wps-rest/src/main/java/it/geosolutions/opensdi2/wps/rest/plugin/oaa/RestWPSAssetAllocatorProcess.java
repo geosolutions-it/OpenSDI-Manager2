@@ -41,8 +41,6 @@ import net.opengis.wps10.Wps10Factory;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.geotools.data.wps.WPSUtils;
-import org.geotools.data.wps.WebProcessingService;
 import org.geotools.data.wps.request.DescribeProcessRequest;
 import org.geotools.data.wps.request.ExecuteProcessRequest;
 import org.geotools.data.wps.response.DescribeProcessResponse;
@@ -82,6 +80,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 	/* (non-Javadoc)
 	 * @see it.geosolutions.opensdi2.wps.rest.plugin.RestWPSProcess#execute(java.util.Map)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public String execute(Principal auth, String requestBody, Map<String, String> params) throws Exception {
 		
@@ -99,7 +98,6 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 				
 				if (user.isAuthenticated()) {
 					// connect to the WPS
-					WebProcessingService wps = connect();
 					WPSCapabilitiesType capabilities = wps.getCapabilities();
 			
 			        // get the first process and execute it
@@ -229,10 +227,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 				    			List<EObject> assetInputData = new ArrayList<EObject>();
 				    			for (String asset : assets) {
 				    				String cData = "<![CDATA[" + asset + "]]>";
-				    				
 				    				ComplexDataType cdt = Wps10Factory.eINSTANCE.createComplexDataType();
-				    				cdt.getData().clear();
-				    				cdt.getData().add(cData);
+				    				//cdt.getData().add(0, new CDATAEncoder(asset));
+				    				cdt.getData().add(0, cData);
 				    				cdt.setMimeType("application/octet-stream");
 				    				//net.opengis.wps10.DataType data = WPSUtils.createInputDataType(cData, WPSUtils.INPUTTYPE_COMPLEXDATA, null, "application/octet-stream");
 				    				net.opengis.wps10.DataType data = Wps10Factory.eINSTANCE.createDataType();

@@ -7,7 +7,6 @@ import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
 import it.geosolutions.opensdi2.rest.RestService;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
-import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.Date;
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 import net.opengis.wps10.ResponseFormType;
 
 import org.geotools.data.wps.WebProcessingService;
-import org.geotools.ows.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,6 +39,8 @@ public abstract class RestWPSProcess extends RestService {
 	
 	protected URL url;
 
+	protected WebProcessingService wps;
+	
 	protected String processIden;
 
 	protected ResponseFormType response;
@@ -66,22 +66,12 @@ public abstract class RestWPSProcess extends RestService {
 		try {
 			//testing connections
 			this.url = new URL(wpsUrl);
-			//connect();
+			this.wps = new WebProcessingService(this.url);
 			this.processIden = processIden;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "WPS Service [" + serviceId + "] could not be initialized due to an Exception!", e);
 			setActiveStatus("DISABLED");
 		}
-	}
-
-	/**
-	 * @return 
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	protected WebProcessingService connect() throws IOException, ServiceException {
-		WebProcessingService wps = new WebProcessingService(this.url);
-		return wps;
 	}
 
 	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception;
