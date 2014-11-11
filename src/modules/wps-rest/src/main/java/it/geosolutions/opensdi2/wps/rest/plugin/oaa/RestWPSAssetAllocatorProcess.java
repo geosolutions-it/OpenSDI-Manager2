@@ -11,6 +11,7 @@ import it.geosolutions.geostore.services.rest.model.RESTResource;
 import it.geosolutions.geostore.services.rest.model.RESTStoredData;
 import it.geosolutions.geostore.services.rest.model.SecurityRuleList;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
+import it.geosolutions.opensdi2.wps.rest.plugin.CDATAEncoder;
 import it.geosolutions.opensdi2.wps.rest.plugin.RestWPSProcess;
 import it.geosolutions.opensdi2.wps.rest.plugin.RestWPSProcessExecution;
 
@@ -111,7 +112,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 			        while (iterator.hasNext())
 			        {
 			            process = (ProcessBriefType) iterator.next();
-			            if (process.getIdentifier().getValue().equalsIgnoreCase(processIden))
+			            if (process.getIdentifier().getValue().equalsIgnoreCase( processIden ))
 			            {
 			                found = true;
 			
@@ -120,18 +121,19 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 			        }
 			
 			        // exit if my process doesn't exist on server
-			        if (!found)
-			        {
-			            LOGGER.log(Level.WARNING, "WPS Process [" + processIden + "] not found!");
-			            return null;
-			        }
+//			        if (!found)
+//			        {
+//			            LOGGER.log(Level.WARNING, "WPS Process [" + processIden + "] not found!");
+//			            return null;
+//			        }
 			        
 			        // parsing the Asset Allocator inputs
 			        
 			        // do a full describeprocess on my process
 			        // http://geoserver.itc.nl:8080/wps100/WebProcessingService?REQUEST=DescribeProcess&IDENTIFIER=org.n52.wps.server.algorithm.collapse.SimplePolygon2PointCollapse&VERSION=1.0.0&SERVICE=WPS
 			        DescribeProcessRequest descRequest = wps.createDescribeProcessRequest();
-			        descRequest.setIdentifier(processIden);
+			        //descRequest.setIdentifier(processIden);
+			        descRequest.setIdentifier( "geo:area" );
 
 			        DescribeProcessResponse descResponse = wps.issueRequest(descRequest);
 
@@ -149,7 +151,8 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
 			        // based on the describeprocess, setup the execute
 			        ExecuteProcessRequest exeRequest = wps.createExecuteProcessRequest();
-			        exeRequest.setIdentifier(processIden);
+			        //exeRequest.setIdentifier(processIden);
+			        exeRequest.setIdentifier( "geo:area" );
 			        
 			        String name = null;
 			        String description = null;
@@ -226,17 +229,18 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 				    		if (assets != null && assets.size() > 0) {
 				    			List<EObject> assetInputData = new ArrayList<EObject>();
 				    			for (String asset : assets) {
-				    				String cData = "<![CDATA[" + asset + "]]>";
 				    				ComplexDataType cdt = Wps10Factory.eINSTANCE.createComplexDataType();
-				    				//cdt.getData().add(0, new CDATAEncoder(asset));
-				    				cdt.getData().add(0, cData);
-				    				cdt.setMimeType("application/octet-stream");
+				    				cdt.getData().add(0, new CDATAEncoder(asset));
+				    				//String cData = "<![CDATA[" + asset + "]]>";
+				    				//cdt.getData().add(0, cData);
+				    				cdt.setMimeType("application/json");
 				    				//net.opengis.wps10.DataType data = WPSUtils.createInputDataType(cData, WPSUtils.INPUTTYPE_COMPLEXDATA, null, "application/octet-stream");
 				    				net.opengis.wps10.DataType data = Wps10Factory.eINSTANCE.createDataType();
 				    				data.setComplexData(cdt);
 				    				assetInputData.add(data);
 				    			}
-			    				exeRequest.addInput("asset", assetInputData);
+			    				//exeRequest.addInput("asset", assetInputData);
+				    			exeRequest.addInput("geom", assetInputData);
 				    		}
 				    	}
 				    }
