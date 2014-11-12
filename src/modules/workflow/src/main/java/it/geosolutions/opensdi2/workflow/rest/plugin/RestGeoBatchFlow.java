@@ -67,7 +67,7 @@ public class RestGeoBatchFlow extends RestService {
 	}
 
 	@Override
-	public String stop(RestServiceRuntime runtime, Map<String, String> params) throws Exception {
+	public String stop(Principal auth, RestServiceRuntime runtime, Map<String, String> params) throws Exception {
 		if (runtimes != null) {
 			if (runtimes.contains(runtime)) {
 				runtimes.remove(runtime);
@@ -79,24 +79,24 @@ public class RestGeoBatchFlow extends RestService {
 	}
 
 	@Override
-	public boolean supportsQueries() {
+	public boolean supportsQueries(Principal auth) {
 		return false;
 	}
 
 	@Override
-	public int countRuntimes() {
-		return 0;
+	public int countRuntimes(Principal auth) {
+		return -1;
 	}
 
 	@Override
-	public List<RestServiceRuntime> findRuntimes(String id, String status,
+	public List<RestServiceRuntime> findRuntimes(Principal auth, String id, String status,
 			Date startDate, Date endDate, Map<String, String> params, int page,
 			int pageSize) {
 		return null;
 	}
 
 	@Override
-	public RestServiceRuntime getRuntime(String id) {
+	public RestServiceRuntime getRuntime(Principal auth, String id) {
 		return null;
 	}
 

@@ -78,20 +78,20 @@ public abstract class RestWPSProcess extends RestService {
 
 	@JsonIgnore public abstract String execute(Principal auth, String requestBody, Map<String, String> params) throws Exception;
 
-	@JsonIgnore public abstract String stop(RestServiceRuntime runtime, Map<String, String> params) throws Exception;
+	@JsonIgnore public abstract String stop(Principal auth, RestServiceRuntime runtime, Map<String, String> params) throws Exception;
 
-	@JsonIgnore public abstract boolean supportsQueries();
+	@JsonIgnore public abstract boolean supportsQueries(Principal auth);
 
 	//@JsonIgnore public abstract List<RestServiceInfoParam> getInputs();
 
 	//@JsonIgnore public abstract List<RestServiceInfoParam> getOutputs();
 
-	@JsonIgnore public abstract int countRuntimes();
+	@JsonIgnore public abstract int countRuntimes(Principal auth);
 
-	@JsonIgnore public abstract List<RestServiceRuntime> findRuntimes(String id, String status,
+	@JsonIgnore public abstract List<RestServiceRuntime> findRuntimes(Principal auth, String id, String status,
 			Date startDate, Date endDate, Map<String, String> params, int page,
 			int pageSize);
 
-	@JsonIgnore public abstract RestServiceRuntime getRuntime(String id);
+	@JsonIgnore public abstract RestServiceRuntime getRuntime(Principal auth, String id);
 
 }

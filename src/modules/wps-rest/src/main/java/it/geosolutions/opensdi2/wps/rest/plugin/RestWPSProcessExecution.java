@@ -33,6 +33,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 	private Date startDate;
 	private Date endDate;
 	private ExecuteResponseType executeResponse;
+	private String statusLocation;
 	private float progress;
 	private String status;
 
@@ -41,15 +42,25 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 	private String description;
 
 	public RestWPSProcessExecution(String executionId, String name, String description,
-			WebProcessingService wps, ExecuteResponseType executeResponse) {
+			WebProcessingService wps, String statusLocation) {
 		this.executionId = executionId;
 		this.name = name;
 		this.description = description;
 		this.wps = wps;
-		this.executeResponse = executeResponse;
+		this.statusLocation = statusLocation;
 		
-		this.startDate = (Date) executeResponse.getStatus().getCreationTime();
-		this.status = "RUNNING";
+		try {
+			URL statusURL = new URL(statusLocation);
+			this.executeResponse = wps.issueStatusRequest(statusURL).getExecuteResponse();
+			this.startDate = (Date) executeResponse.getStatus().getCreationTime();
+			this.status = "RUNNING";
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Could not retrieve the process Execution Response.", e);
+			
+			this.progress = 100.0f;
+			this.status = "FAIL";
+		}
+		
 	}
 
 	/*
@@ -112,8 +123,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 			if (executeResponse.getStatus().getProcessFailed() == null 
 					&& executeResponse.getStatus().getProcessSucceeded() == null) {
 
-				String location = executeResponse.getStatusLocation();
-				URL url = new URL(location);
+				URL url = new URL(statusLocation);
 				ExecuteProcessResponse response = wps.issueStatusRequest(url);
 
 				if (response.getExceptionResponse() != null) {
