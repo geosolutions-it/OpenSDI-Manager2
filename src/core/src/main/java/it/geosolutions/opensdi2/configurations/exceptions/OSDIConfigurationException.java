@@ -1,6 +1,5 @@
 /*
- *  OpenSDI Manager 2
- *  Copyright (C) 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -18,26 +17,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.worflow.transform;
+package it.geosolutions.opensdi2.configurations.exceptions;
 
-import java.util.List;
+/**
+ * @author DamianoG
+ *
+ */
+public class OSDIConfigurationException extends Exception{
 
-import org.junit.Assert;
-import org.junit.Test;
-
-public class TestMapList {
-	List<MapperTestContainer> tests;
-
-	public List<MapperTestContainer> getTests() {
-		return tests;
-	}
-
-	public void setTests(List<MapperTestContainer> tests) {
-		this.tests = tests;
-	}
-	
-	@Test
-	public void fakeTest(){
-	    Assert.assertTrue(true);
-	}
+    public OSDIConfigurationException(Throwable e){
+        super(e);
+    }
 }

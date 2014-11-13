@@ -20,14 +20,15 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
+import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,14 +48,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-	/**
-	 * Set the configuration to set up the base directory
-	 * @param config
-	 */
-	@Autowired
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
+        public static final String RUNTIME_DIR = "runtimeDir";
+    
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
 	 * 
@@ -84,6 +79,7 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
+	        configureModule(request);
 		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
 
 	}
@@ -109,7 +105,7 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
-
+	        configureModule(request);
 		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
 	}
 
@@ -129,6 +125,22 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "folder", required = false) String folder,
 			@RequestParam(value = "file", required = true) String file,
 			HttpServletResponse resp) {
+	        //DamianoG 27/11/2014 Where is the Request Object here???
 		super.downloadFile(folder, file, resp);
+	}
+	
+	/**
+	 * This Method is responsible for retrieve the configuration object from the request, search for the runtimeDir parameter and set
+	 * the related superclass instance variable
+	 * 
+	 * @param request
+	 */
+	private void configureModule(HttpServletRequest request){
+	    OSDIConfigurationKVP config = (OSDIConfigurationKVP)request.getAttribute(ConfigurationInterceptor.CONFIGURATION_OBJ_ID);
+	    String runtimeDir = (String)config.getValue(RUNTIME_DIR);
+	    if(StringUtils.isBlank(runtimeDir)){
+	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");
+	    }
+	    setRuntimeDir(runtimeDir);
 	}
 }

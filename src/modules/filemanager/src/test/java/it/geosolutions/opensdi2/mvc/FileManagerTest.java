@@ -22,7 +22,9 @@ package it.geosolutions.opensdi2.mvc;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
+import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
@@ -52,6 +55,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * Test class for FileManager
  * 
  * @author adiaz
+ * @author DamianoG
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,6 +64,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
+	
 	
 	/**
 	 * Controller to be tested
@@ -107,10 +112,8 @@ public class FileManagerTest {
 			currentFiles = new LinkedList<File>();
 			currentFolders = new LinkedList<File>();
 			// folder is generated for the test
-			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt(); 
-			OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
-			config.setBaseFolder(basePath + ControllerUtils.SEPARATOR);
-			fileManager.setRuntimeDir(config.getBaseFolder());
+			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt();
+			System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath + ControllerUtils.SEPARATOR);
 			// create test folder
 			File file = new File(basePath);
 			file.mkdir();
@@ -137,7 +140,8 @@ public class FileManagerTest {
 	@Test
 	public void testFileList(){
 		HttpServletResponse response = new MockHttpServletResponse();
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		HttpServletRequest request = simulateConfigurationInterceptor();
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -155,10 +159,11 @@ public class FileManagerTest {
 	@Test
 	public void testFileDeleteFiles(){
 		HttpServletResponse response = new MockHttpServletResponse();
+		HttpServletRequest request = simulateConfigurationInterceptor();
 		for(File file: currentFiles){
-			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, null, null, file.getName(), new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, null, null, file.getName(), request, response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -176,10 +181,11 @@ public class FileManagerTest {
 	@Test
 	public void testFileDeleteFolder(){
 		HttpServletResponse response = new MockHttpServletResponse();
+		HttpServletRequest request = simulateConfigurationInterceptor();
 		for(File file: currentFolders){
-			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null, new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null, request, response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -199,6 +205,14 @@ public class FileManagerTest {
 	public void cleanup() throws IOException{
 		File file = new File(basePath);
 		FileUtils.deleteDirectory(file);
+	}
+	
+	private HttpServletRequest simulateConfigurationInterceptor(){
+	    HttpServletRequest req = new MockHttpServletRequest();
+	    OSDIConfigurationKVP conf = new OSDIConfigurationKVP("test", "test");
+	    conf.addNew(FileManager.RUNTIME_DIR, basePath + ControllerUtils.SEPARATOR);
+	    req.setAttribute(ConfigurationInterceptor.CONFIGURATION_OBJ_ID, conf);
+	    return req;
 	}
 
 }
