@@ -24,8 +24,8 @@ package it.geosolutions.opensdi2.worflow.transform;
  * 
  */
 
-import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
-import it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.DefaultPreBuilder;
+import it.geosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
+import it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.DefaultPreBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
