@@ -1,0 +1,40 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
+            http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="byName">
+      
+   	<context:annotation-config/>
+
+   	<!-- GeoStore Client -->
+   	<bean id="wpsRestAPIGeoStoreAdminClient" class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
+   	    <property name="geostoreRestUrl" value="http://localhost:9191/geostore/rest/" />
+   	    <property name="username" value="admin" />
+   	    <property name="password" value="admin" />
+   	</bean>
+   	
+   	<!-- REST Plugins -->
+    <bean id="wpsRestAPIPlugin" class="it.geosolutions.opensdi2.wps.rest.plugin.RestWPSPlugin" />
+
+    <!-- REST WPS Processes -->
+    <bean id="wpsRestAPIOAAProcess" class="it.geosolutions.opensdi2.wps.rest.plugin.oaa.RestWPSAssetAllocatorProcess">
+        <!-- serviceId -->
+        <constructor-arg index="0" value="oaa-wps-process" />
+        <!-- name -->
+        <constructor-arg index="1" value="OAAWPSProcess" />
+        <!-- description -->
+        <constructor-arg index="2" value="On Demand Asset Allocator WPS Process" />
+        <!-- version -->
+        <constructor-arg index="3" value="1.0" />
+        <!-- activeStatus -->
+        <constructor-arg index="4" value="ENABLED" />
+        <!-- wpsUrl -->
+        <constructor-arg index="5" value="http://localhost:8080/geoserver/wps" />
+        <!-- processIden -->
+        <constructor-arg index="6" value="default:Service" />
+	</bean>
+    
+</beans>
