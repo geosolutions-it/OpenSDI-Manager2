@@ -30,11 +30,6 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-workflow</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>it.geosolutions.opensdi2</groupId>
-			<artifactId>opensdi2-wps-rest</artifactId>
-		</dependency>
 		
 		<dependency>
 			<groupId>it.geosolutions.opensdi2</groupId>
@@ -94,6 +89,24 @@
 				</dependency>
 			</dependencies>
 			
+		</profile>
+		<profile>
+			<id>wps</id>
+			<dependencies>
+		        <dependency>
+			        <groupId>it.geosolutions.opensdi2</groupId>
+			        <artifactId>opensdi2-wps-rest</artifactId>
+		        </dependency>
+		    </dependencies>
+		</profile>
+		<profile>
+			<id>geobatch</id>
+			<dependencies>
+		        <dependency>
+			        <groupId>it.geosolutions.opensdi2</groupId>
+                    <artifactId>opensdi2-geobatch-rest</artifactId>
+		        </dependency>
+		    </dependencies>
 		</profile>
 		
 	</profiles>

@@ -161,11 +161,7 @@
                 <artifactId>opensdi2-workflow</artifactId>
                 <version>${project.version}</version>
             </dependency>
-			<dependency>
-                <groupId>it.geosolutions.opensdi2</groupId>
-                <artifactId>opensdi2-wps-rest</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-web</artifactId>
@@ -435,6 +431,7 @@
 		<!-- ================ Profiled modules ========================= -->
 		<!-- =========================================================== -->
 		<profiles>
+		    <!-- ================ GeoCollect ========================= -->
 			<profile>
 			<id>geocollect</id>
 			<dependencyManagement>
@@ -447,7 +444,35 @@
 				</dependencies>
 			</dependencyManagement>
 			</profile>
+		
+		    <!-- ================ wps ========================= -->
+			<profile>
+			<id>wps</id>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+                        <groupId>it.geosolutions.opensdi2</groupId>
+                        <artifactId>opensdi2-wps-rest</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+				</dependencies>
+			</dependencyManagement>
+			</profile>
+		    <!-- ================ geobatch ========================= -->
+			<profile>
+			<id>geobatch</id>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+                        <groupId>it.geosolutions.opensdi2</groupId>
+                        <artifactId>opensdi2-geobatch-rest</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+				</dependencies>
+			</dependencyManagement>
+			</profile>
 		</profiles>
+		
     <modules>
         <module>core</module>
         <module>modules</module>
