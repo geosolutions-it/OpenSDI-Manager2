@@ -23,26 +23,19 @@ package it.geosolutions.opensdi2.worflow;
  * 
  */
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import it.geosolutions.opensdi2.workflow.ActionSequence;
 import it.geosolutions.opensdi2.workflow.WorkflowContext;
 import it.geosolutions.opensdi2.workflow.WorkflowException;
-import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
-import it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
-import it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder;
-import it.getosolutions.opensdi2.workflow.utils.MapUtil;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.PropertyAccessor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

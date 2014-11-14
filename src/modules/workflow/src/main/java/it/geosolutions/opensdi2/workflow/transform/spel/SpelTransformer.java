@@ -18,10 +18,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.workflow.transform.spel;
+package it.geosolutions.opensdi2.workflow.transform.spel;
 
-import it.getosolutions.opensdi2.workflow.transform.PreBuilder;
-import it.getosolutions.opensdi2.workflow.transform.Transformer;
+import it.geosolutions.opensdi2.workflow.transform.PreBuilder;
+import it.geosolutions.opensdi2.workflow.transform.Transformer;
 
 import java.util.ArrayList;
 import java.util.List;
