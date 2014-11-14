@@ -15,24 +15,24 @@ import org.xml.sax.ext.LexicalHandler;
  * 
  */
 public class CDATAEncoder implements EncoderDelegate {
-	
-	String cData;
-	
-	public CDATAEncoder(String cData) {
-		this.cData = cData;
-	}
-	
-	@Override
-	public void encode(ContentHandler output) throws Exception {
-		((LexicalHandler) output).startCDATA();
-		Reader r = new StringReader(cData);
+
+    String cData;
+
+    public CDATAEncoder(String cData) {
+        this.cData = cData;
+    }
+
+    @Override
+    public void encode(ContentHandler output) throws Exception {
+        ((LexicalHandler) output).startCDATA();
+        Reader r = new StringReader(cData);
         char[] buffer = new char[1024];
         int read;
         while ((read = r.read(buffer)) > 0) {
             output.characters(buffer, 0, read);
         }
         r.close();
-		((LexicalHandler) output).endCDATA();
-	}
+        ((LexicalHandler) output).endCDATA();
+    }
 
 }

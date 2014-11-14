@@ -438,9 +438,9 @@ public class RestPluginsController extends RestAPIBaseController {
 					result.set("serviceId", serviceId);
 
 					// Try to use the datastore if available
-					if (service.supportsQueries()) {
-						totalCount = service.countRuntimes();
-						data = service.findRuntimes(id, status, startDate, endDate, params, page, pageSize);
+					if (service.supportsQueries(auth)) {
+						totalCount = service.countRuntimes(auth);
+						data = service.findRuntimes(auth, id, status, startDate, endDate, params, page, pageSize);
 					}
 					// Sequential scan otherwise
 					else {
@@ -573,8 +573,8 @@ public class RestPluginsController extends RestAPIBaseController {
 					RestServiceRuntime runtime = null;
 
 					// Try to use the datastore if available
-					if (service.supportsQueries()) {
-						runtime = service.getRuntime(id);
+					if (service.supportsQueries(auth)) {
+						runtime = service.getRuntime(auth, id);
 					}
 
 					// Sequential scan otherwise
@@ -596,7 +596,7 @@ public class RestPluginsController extends RestAPIBaseController {
 					}
 					else if (request.getMethod().equals("DELETE")) {
 						extractParameters(params, request);
-						return service.stop(runtime, params);
+						return service.stop(auth, runtime, params);
 					}
 				}
 			}
