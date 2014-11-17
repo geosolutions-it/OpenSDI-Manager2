@@ -17,11 +17,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.configurations.model;
+package it.geosolutions.opensdi2.configurations.dao;
 
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundEx;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
 
 /**
  * 
@@ -37,26 +38,26 @@ public interface ConfigDAO {
      * Persist a new configuration
      * 
      * @param config
-     * @throws OSDIConfigurationDuplicatedIDEx if a configuration with the same ID already exist  
+     * @throws OSDIConfigurationDuplicatedIDException if a configuration with the same ID already exist  
      */
-    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDEx;
+    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException;
     
     /**
      * Merge an in-memory modified configuration with the related persisted configuration
      * 
      * @param config
      * @return true if the merge changed at least one stored value, false if nothing happened
-     * @throws OSDIConfigurationNotFoundEx  if no configuration with the provided scopeID and instanceID is found.
-     * @throws OSDIConfigurationInternalErrorEx if an unexpected error occurs during the update operation
+     * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
+     * @throws OSDIConfigurationInternalErrorException if an unexpected error occurs during the update operation
      */
-    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundEx, OSDIConfigurationInternalErrorEx;
+    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
     
     /**
      * Load the requested configuration
      * 
      * @param scopeID
      * @param instanceID
-     * @throws OSDIConfigurationNotFoundEx  if no configuration with the provided scopeID and instanceID is found.
+     * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
      */
-    public OSDIConfiguration load(String scopeID, String instanceID) throws OSDIConfigurationNotFoundEx;
+    public OSDIConfiguration load(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException;
 }

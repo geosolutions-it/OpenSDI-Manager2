@@ -19,19 +19,17 @@
  */
 package it.geosolutions.opensdi2.configurations.services;
 
-import org.apache.log4j.Logger;
-
 import it.geosolutions.opensdi2.configurations.eventshandling.ConfigDepotObserver;
 import it.geosolutions.opensdi2.configurations.eventshandling.Event;
 import it.geosolutions.opensdi2.configurations.eventshandling.EventPublisher;
 import it.geosolutions.opensdi2.configurations.eventshandling.OSDIEvent;
 import it.geosolutions.opensdi2.configurations.eventshandling.ObserverListManager;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundEx;
-import it.geosolutions.opensdi2.configurations.mockclasses.MockEventsManagerConfigDepot;
-import it.geosolutions.opensdi2.configurations.model.ConfigDAO;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author DamianoG
@@ -40,22 +38,22 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
  * Developers should implements the abstact methods {@link #addNewConfiguration(String, String, OSDIConfiguration) and {@link #updateExistingConfiguration(String, String, OSDIConfiguration)} instead of the 
  * related methods defined in the Interface and the event handling comes for free.
  * 
- * The methods {link {@link #loadExistingConfiguration(String, String)} and {link {@link #setDao(it.geosolutions.opensdi2.configurations.model.ConfigDAO)} must be implemented from scratch. 
+ * The methods {link {@link #loadExistingConfiguration(String, String)} and {link {@link #setDao(it.geosolutions.opensdi2.configurations.dao.ConfigDAO)} must be implemented from scratch. 
  * 
  */
-public abstract class EventsManagerConfigDepot implements ConfigDepot, EventPublisher {
+public abstract class ObservableConfigDepot implements ConfigDepot, EventPublisher {
 
-    private final static Logger LOGGER = Logger.getLogger(EventsManagerConfigDepot.class);
+    private final static Logger LOGGER = Logger.getLogger(ObservableConfigDepot.class);
     
     private ObserverListManager observers;
     
-    public EventsManagerConfigDepot(){
+    public ObservableConfigDepot(){
         observers = new ObserverListManager();
     }
 
     @Override
     public void addNewConfiguration(OSDIConfiguration config)
-            throws OSDIConfigurationDuplicatedIDEx {
+            throws OSDIConfigurationDuplicatedIDException {
         
         if(!config.validateIDs()){
             throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contain whitespaces");
@@ -75,7 +73,7 @@ public abstract class EventsManagerConfigDepot implements ConfigDepot, EventPubl
 
     @Override
     public void updateExistingConfiguration(OSDIConfiguration config)
-            throws OSDIConfigurationNotFoundEx, OSDIConfigurationInternalErrorEx {
+            throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
         
         if(!config.validateIDs()){
             throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contain whitespaces");

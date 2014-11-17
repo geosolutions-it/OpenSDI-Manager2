@@ -60,5 +60,18 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>            
         </dependency>
+        <!-- =========================================================== -->
+        <!--     APACHE COMMONS                                          -->
+        <!-- =========================================================== -->
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-sample-data</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

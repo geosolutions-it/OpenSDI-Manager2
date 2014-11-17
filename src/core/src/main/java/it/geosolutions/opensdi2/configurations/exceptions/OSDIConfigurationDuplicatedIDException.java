@@ -23,6 +23,9 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  * @author DamianoG
  *
  */
-public class OSDIConfigurationNotFoundEx extends Exception {
+public class OSDIConfigurationDuplicatedIDException extends Exception {
 
+    public OSDIConfigurationDuplicatedIDException(String message){
+        super(message);
+    }
 }

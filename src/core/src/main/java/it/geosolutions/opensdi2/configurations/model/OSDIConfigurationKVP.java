@@ -85,6 +85,10 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
         return configParamsMap.get(key);
     }
 
+    public int getNumberOfProperties(){
+        return configParamsMap.size();
+    }
+    
     @Override
     public boolean validateIDs() {
         if(StringUtils.isEmpty(scopeID) || StringUtils.containsWhitespace(scopeID)){

@@ -19,10 +19,15 @@
  */
 package it.geosolutions.opensdi2.configurations.exceptions;
 
+import java.io.IOException;
+
 /**
  * @author DamianoG
  *
  */
-public class OSDIConfigurationDuplicatedIDEx extends Exception {
-
+public class OSDIConfigurationNotFoundException extends Exception {
+    
+    public OSDIConfigurationNotFoundException(String message){
+        super(message);
+    }
 }

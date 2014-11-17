@@ -19,10 +19,10 @@
  */
 package it.geosolutions.opensdi2.configurations.mockclasses;
 
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundEx;
-import it.geosolutions.opensdi2.configurations.model.ConfigDAO;
+import it.geosolutions.opensdi2.configurations.dao.ConfigDAO;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 
@@ -37,14 +37,14 @@ public class MockDAO implements ConfigDAO{
     private final static Logger LOGGER = Logger.getLogger(MockDAO.class);
     
     @Override
-    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDEx {
+    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException {
         
         LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Saved!");
     }
 
     @Override
-    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundEx,
-            OSDIConfigurationInternalErrorEx {
+    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundException,
+            OSDIConfigurationInternalErrorException {
         
         LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Merged!");
         return true;
@@ -52,7 +52,7 @@ public class MockDAO implements ConfigDAO{
 
     @Override
     public OSDIConfiguration load(String scopeID, String instanceID)
-            throws OSDIConfigurationNotFoundEx {
+            throws OSDIConfigurationNotFoundException {
         
         OSDIConfigurationKVP osdiConfig = new OSDIConfigurationKVP(scopeID, instanceID);
         osdiConfig.addNew("key1", "value1");

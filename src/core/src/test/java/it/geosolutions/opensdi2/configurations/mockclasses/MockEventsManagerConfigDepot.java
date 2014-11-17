@@ -21,16 +21,16 @@ package it.geosolutions.opensdi2.configurations.mockclasses;
 
 import org.apache.log4j.Logger;
 
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundEx;
-import it.geosolutions.opensdi2.configurations.model.ConfigDAO;
+import it.geosolutions.opensdi2.configurations.dao.ConfigDAO;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
-import it.geosolutions.opensdi2.configurations.services.EventsManagerConfigDepot;
+import it.geosolutions.opensdi2.configurations.services.ObservableConfigDepot;
 
 /**
  * @author DamianoG
  *
  */
-public class MockEventsManagerConfigDepot extends EventsManagerConfigDepot{
+public class MockEventsManagerConfigDepot extends ObservableConfigDepot{
 
     private final static Logger LOGGER = Logger.getLogger(MockEventsManagerConfigDepot.class);
     
@@ -43,7 +43,7 @@ public class MockEventsManagerConfigDepot extends EventsManagerConfigDepot{
 
     @Override
     public OSDIConfiguration loadExistingConfiguration(String scopeID, String instanceID)
-            throws OSDIConfigurationNotFoundEx {
+            throws OSDIConfigurationNotFoundException {
         OSDIConfiguration config = dao.load(scopeID, instanceID);
         LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Loaded!");
         return config;

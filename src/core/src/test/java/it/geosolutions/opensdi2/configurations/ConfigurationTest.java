@@ -19,13 +19,13 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorEx;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundEx;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver1;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver2;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
-import it.geosolutions.opensdi2.configurations.services.EventsManagerConfigDepot;
+import it.geosolutions.opensdi2.configurations.services.ObservableConfigDepot;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ConfigurationTest extends Assert{
     
     @Autowired
-    EventsManagerConfigDepot depot;
+    ObservableConfigDepot depot;
     
     @Autowired
     MockObserver1 mockObs1;
@@ -69,7 +69,7 @@ public class ConfigurationTest extends Assert{
             assertTrue(!mockObs1.newConfigHandled);
             assertTrue(!mockObs2.newConfigHandled);
             depot.addNewConfiguration(osdiConfig);
-        } catch (OSDIConfigurationDuplicatedIDEx e) {
+        } catch (OSDIConfigurationDuplicatedIDException e) {
             fail();
         }
         assertTrue(mockObs1.newConfigHandled);
@@ -79,9 +79,9 @@ public class ConfigurationTest extends Assert{
             assertTrue(!mockObs1.configUpdatedHandled);
             assertTrue(!mockObs2.configUpdatedHandled);
             depot.updateExistingConfiguration(osdiConfig);
-        } catch (OSDIConfigurationNotFoundEx e) {
+        } catch (OSDIConfigurationNotFoundException e) {
             fail();
-        } catch (OSDIConfigurationInternalErrorEx e) {
+        } catch (OSDIConfigurationInternalErrorException e) {
             fail();
         }
         assertTrue(mockObs1.configUpdatedHandled);

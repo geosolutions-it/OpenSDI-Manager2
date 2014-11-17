@@ -23,6 +23,9 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  * @author DamianoG
  *
  */
-public class OSDIConfigurationInternalErrorEx extends Exception {
+public class OSDIConfigurationInternalErrorException extends Exception {
 
+    public OSDIConfigurationInternalErrorException(String message){
+        super(message);
+    }
 }
