@@ -22,6 +22,7 @@ package it.geosolutions.opensdi2.configurations.model.converters;
 import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
@@ -32,11 +33,11 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
  * @author DamianoG
  * 
  */
-public class OSDIPropertiesBuilder implements OSDIConfigBuilder {
+public class PropertiesConfigurationConverter implements OSDIConfigConverter {
 
     /**
-     * This implementation expects an input object instance of org.apache.commons.configuration.Configuration otherwise an unchecked exception is
-     * thrown. The concrete return type is OSDIConfigurationKVP
+     * This implementation expects an input object instance of org.apache.commons.configuration.Configuration otherwise an unchecked exception is thrown. 
+     * The concrete return type is always an instance of OSDIConfigurationKVP
      */
     @Override
     public OSDIConfiguration buildConfig(Object configToBeConverted, String scopeID,
@@ -57,4 +58,25 @@ public class OSDIPropertiesBuilder implements OSDIConfigBuilder {
         return outConfig;
     }
 
+    /**
+     * This implementation expects an input object instance of OSDIConfigurationKVP otherwise an IllegalArgumentException is thrown. 
+     * The concrete return type is always an instance of org.apache.commons.configuration.Configuration
+     */
+    @Override
+    public Object buildConfig(OSDIConfiguration configToBeConverted) {
+        if (!(configToBeConverted instanceof OSDIConfigurationKVP)) {
+            throw new IllegalArgumentException(
+                    "You are using the class OSDIPropertiesConverter as implementation of the OSDIConfigConverter interface, you need to pass to this method an instance of OSDIConfigurationKVP");
+        }
+        OSDIConfigurationKVP inConfig = (OSDIConfigurationKVP)configToBeConverted;
+        Configuration outConfig = new PropertiesConfiguration();
+
+        Iterator<String> iter = inConfig.getAllKeys().iterator();
+        String tmpKey = "";
+        while (iter.hasNext()) {
+            tmpKey = iter.next();
+            outConfig.addProperty(tmpKey, inConfig.getValue(tmpKey));
+        }
+        return outConfig;
+    }
 }

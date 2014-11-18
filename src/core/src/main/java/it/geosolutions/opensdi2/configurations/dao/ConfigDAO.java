@@ -37,20 +37,21 @@ public interface ConfigDAO {
     /**
      * Persist a new configuration
      * 
-     * @param config
-     * @throws OSDIConfigurationDuplicatedIDException if a configuration with the same ID already exist  
+     * @param newConfig
+     * @throws OSDIConfigurationDuplicatedIDException if a configuration with the same ID already exist
+     * @throws OSDIConfigurationNotFoundException if the module with the scopeID stored in the newConfig object provided doesn't still exist  
      */
-    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException;
+    public void save(OSDIConfiguration newConfig) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
     
     /**
      * Merge an in-memory modified configuration with the related persisted configuration
      * 
-     * @param config
+     * @param updatedConfig
      * @return true if the merge changed at least one stored value, false if nothing happened
      * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
      * @throws OSDIConfigurationInternalErrorException if an unexpected error occurs during the update operation
      */
-    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
+    public boolean merge(OSDIConfiguration updatedConfig) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
     
     /**
      * Load the requested configuration

@@ -19,10 +19,12 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
+import java.util.Iterator;
+
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
-import it.geosolutions.opensdi2.configurations.model.converters.OSDIConfigBuilder;
-import it.geosolutions.opensdi2.configurations.model.converters.OSDIPropertiesBuilder;
+import it.geosolutions.opensdi2.configurations.model.converters.OSDIConfigConverter;
+import it.geosolutions.opensdi2.configurations.model.converters.PropertiesConfigurationConverter;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -30,16 +32,16 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test suite for the implementations of the OSDIConfigBuilder interface
+ * Test suite for the implementations of the {@link OSDIConfigConverter} interface
  * 
  * @author DamianoG
  *
  */
-public class OSDIConfigurationBuilderTest extends Assert{
+public class OSDIConfigurationConverterTest extends Assert{
 
     @Test
-    public void propertiesBuilderNegativeTest(){
-        OSDIConfigBuilder builder = new OSDIPropertiesBuilder();
+    public void propertiesValues2OSDIconfNegativeTest(){
+        OSDIConfigConverter builder = new PropertiesConfigurationConverter();
         boolean failed = false;
         try{
             builder.buildConfig(new String("stringa string !!#*!!"), "scopeID_test", "instanceID_test");
@@ -53,8 +55,8 @@ public class OSDIConfigurationBuilderTest extends Assert{
     }
     
     @Test
-    public void propertiesBuilderPositiveTest(){
-        OSDIConfigBuilder builder = new OSDIPropertiesBuilder();
+    public void propertiesValues2OSDIconfPositiveTest(){
+        OSDIConfigConverter builder = new PropertiesConfigurationConverter();
         Configuration config = new PropertiesConfiguration();
         config.addProperty("key1", "value1");
         config.addProperty("key2", "value2");
@@ -65,5 +67,26 @@ public class OSDIConfigurationBuilderTest extends Assert{
         assertEquals("value1", ((OSDIConfigurationKVP)conf).getValue("key1"));
         assertEquals("value2", ((OSDIConfigurationKVP)conf).getValue("key2"));
         assertEquals("value3", ((OSDIConfigurationKVP)conf).getValue("key3"));
+    }
+    
+    @Test
+    public void propertiesOSDIconf2ValuesPositiveTest(){
+        OSDIConfigConverter builder = new PropertiesConfigurationConverter();
+        OSDIConfigurationKVP conf = new OSDIConfigurationKVP("scopeID_test", "instanceID_test"); 
+        conf.addNew("key1", "value1");
+        conf.addNew("key2", "value2");
+        conf.addNew("key3", "value3");
+        Configuration confSet = (Configuration)builder.buildConfig(conf);
+        assertTrue(confSet instanceof PropertiesConfiguration);
+        int count = 0;
+        Iterator<String> iter = ((PropertiesConfiguration)confSet).getKeys();
+        while(iter.hasNext()){
+            iter.next();
+            count++;
+        }
+        assertEquals(3, count);
+        assertEquals("value1", confSet.getProperty("key1"));
+        assertEquals("value2", confSet.getProperty("key2"));
+        assertEquals("value3", confSet.getProperty("key3"));
     }
 }

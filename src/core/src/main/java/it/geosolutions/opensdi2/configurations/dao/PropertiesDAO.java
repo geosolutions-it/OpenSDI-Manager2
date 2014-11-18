@@ -24,11 +24,13 @@ import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDupli
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
-import it.geosolutions.opensdi2.configurations.model.converters.OSDIConfigBuilder;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
+import it.geosolutions.opensdi2.configurations.model.converters.OSDIConfigConverter;
 import it.geosolutions.opensdi2.utils.PropertiesDirFiltersFactory;
 import it.geosolutions.opensdi2.utils.PropertiesDirFiltersFactory.FILTER_TYPE;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -36,6 +38,9 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * DAta Object implementation of the configuration system persisted on properties files.
+ * This implementation uses the library apache commons configuration to deal with properties files management 
+ * 
  * @author DamianoG
  *
  */
@@ -46,7 +51,8 @@ public class PropertiesDAO implements ConfigDAO {
     @Autowired
     private OpenSDIManagerConfig configDirManager;
     
-    private OSDIConfigBuilder configBuilder;
+    @Autowired
+    private OSDIConfigConverter configBuilder;
     
     private File propertiesConfigDir;
     
@@ -61,38 +67,73 @@ public class PropertiesDAO implements ConfigDAO {
         }
     }
     
+    // TODO add transactions
     @Override
-    public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException {
-        
+    public void save(OSDIConfiguration newConfig) throws OSDIConfigurationDuplicatedIDException,
+            OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
+        if (isThisConfigIsAlreadyPresent(newConfig.getScopeID(), newConfig.getInstanceID())) {
+            throw new OSDIConfigurationDuplicatedIDException("A configuration with scopeID '"
+                    + newConfig.getScopeID() + "' and instanceID '" + newConfig.getInstanceID()
+                    + "' is already present.");
+        }
+        Object configAsParamsSet = configBuilder.buildConfig(newConfig);
+        PropertiesConfiguration propertiesConfig = (PropertiesConfiguration) configAsParamsSet;
+
+        PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
+        File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE,
+                newConfig.getScopeID()));
+        File instanceConfig = new File(moduleList[0], factory.INSTANCE_CONFIGNAME_PREFIX
+                + newConfig.getInstanceID());
+        try {
+            propertiesConfig.save(instanceConfig);
+        } catch (ConfigurationException e) {
+            throw new OSDIConfigurationInternalErrorException(
+                    "Error occurred while saving a new configuration, exception msg is: '"
+                            + e.getMessage() + "'");
+        }
     }
 
+    //TODO add transactions
     @Override
-    public boolean merge(OSDIConfiguration config) throws OSDIConfigurationNotFoundException,
+    public boolean merge(OSDIConfiguration updatedConfig) throws OSDIConfigurationNotFoundException,
             OSDIConfigurationInternalErrorException {
-
-        return false;
+        boolean outcome = false;
+        File configFile = searchConfigurationFile(updatedConfig.getScopeID(), updatedConfig.getInstanceID());
+        PropertiesConfiguration  oldConfig = loadConfigurationInstance(configFile);
+        OSDIConfigurationKVP updatedConfigKVP = (OSDIConfigurationKVP)updatedConfig;
+        Iterator<String> iter = updatedConfigKVP.getAllKeys().iterator();
+        String tmpKey = "";
+        while(iter.hasNext()){
+            tmpKey = iter.next();
+            Object newValue = updatedConfigKVP.getValue(tmpKey);
+            Object oldValue = oldConfig.getProperty(tmpKey);
+            if(newValue!=null && oldValue!=null && newValue.equals(oldValue)){
+                oldConfig.setProperty(tmpKey, newValue);
+                outcome = true;
+            }
+        }
+        try {
+            oldConfig.save();
+        } catch (ConfigurationException e) {
+            throw new OSDIConfigurationInternalErrorException("Error occurred while saving the updated configuration, exception msg is: '" + e.getMessage() + "'");
+        }
+        return outcome;
     }
 
     @Override
     public OSDIConfiguration load(String scopeID, String instanceID)
             throws OSDIConfigurationNotFoundException {
-        PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
-        //Get the correct module configuration directory
-        File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, scopeID));
-        assertResourceIsUnique(moduleList, scopeID);
-        //Search in the module directory the proper instance configuration file
-        File[] instanceList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
-        assertResourceIsUnique(instanceList, instanceID);
+        //Search the configuration file corresponding to the provided scopeID and instanceID inside the datadir
+        File configFile = searchConfigurationFile(scopeID, instanceID);
         //Load the config with apache commons configuration
-        Configuration config = null;
-        try {
-            config = new PropertiesConfiguration(instanceList[0]);
-        } catch (ConfigurationException e) {
-            throw new OSDIConfigurationNotFoundException(e.getMessage());
-        }
+        Configuration config = loadConfigurationInstance(configFile);
         return configBuilder.buildConfig(config, scopeID, instanceID);
     }
 
+    //
+    // PRIVATE INTERNAL UTILITIES METHODs
+    //
+    
     private boolean basicsDirectoryChecks(File dir) {
         if(dir == null || !dir.exists() || !dir.isDirectory() || !dir.canRead() || !dir.canWrite()){
             return false;
@@ -108,4 +149,39 @@ public class PropertiesDAO implements ConfigDAO {
             throw new OSDIConfigurationNotFoundException("Seems that more than 1 resource with ID '" + resourceID + "' has been found... this should never happen and may means that there's a bug somewhere, open a ticket on the application issue tracker.");
         }
     }
+    
+    private File searchConfigurationFile(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException{
+        PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
+        //Get the correct module configuration directory
+        File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, scopeID));
+        assertResourceIsUnique(moduleList, scopeID);
+        //Search in the module directory the proper instance configuration file
+        File[] instanceList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
+        assertResourceIsUnique(instanceList, instanceID);
+        return instanceList[0];
+    }
+    
+    private PropertiesConfiguration  loadConfigurationInstance(File configFile) throws OSDIConfigurationNotFoundException{
+        PropertiesConfiguration  config = null;
+        try {
+            config = new PropertiesConfiguration(configFile);
+        } catch (ConfigurationException e) {
+            throw new OSDIConfigurationNotFoundException(e.getMessage());
+        }
+        return config;
+    }
+    
+    private boolean isThisConfigIsAlreadyPresent(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException{
+        PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
+        //Get the correct module configuration directory
+        File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, scopeID));
+        assertResourceIsUnique(moduleList, scopeID);
+        //Search in the module directory the proper instance configuration file
+        File[] instanceList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
+        if (instanceList.length == 0){
+            return true;
+        }
+        return false;
+    }
+
 }

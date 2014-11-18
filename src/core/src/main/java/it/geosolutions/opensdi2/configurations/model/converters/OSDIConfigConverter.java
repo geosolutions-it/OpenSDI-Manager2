@@ -27,13 +27,21 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
  * @author DamianoG
  *
  */
-public interface OSDIConfigBuilder {
+public interface OSDIConfigConverter {
 
     /**
-     * Convert the provided input configuration in an OSDIConfiguration 
+     * Convert the provided input dataset configuration values in an OSDIConfiguration 
      * 
-     * @param configToBeConverted
-     * @return
+     * @param valuesSetToConvert an object representing a set of configuration values to transform in an OSDIConfiguration
+     * @return an instance of an OSDIConfiguration implementation
      */
-    public OSDIConfiguration buildConfig(Object configToBeConverted, String scopeID, String instanceID);
+    public OSDIConfiguration buildConfig(Object valuesSetToConvert, String scopeID, String instanceID);
+    
+    /**
+     * Convert the provided OSDIConfiguration configuration in a set of configuration values 
+     * 
+     * @param configToBeConverted an OSDIConfiguration
+     * @return a set of values in a suitable structure to be persisted
+     */
+    public Object buildConfig(OSDIConfiguration configToBeConverted);
 }

@@ -19,8 +19,13 @@
  */
 package it.geosolutions.opensdi2.configurations.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
@@ -87,6 +92,14 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
 
     public int getNumberOfProperties(){
         return configParamsMap.size();
+    }
+    
+    public Set<String> getAllKeys(){
+        String[] keys = new String[configParamsMap.keySet().size()]; 
+        configParamsMap.keySet().toArray(keys);
+        List<String> keyList = Arrays.asList(keys);
+        Set clonedSet = new HashSet(keyList);
+        return clonedSet;
     }
     
     @Override
