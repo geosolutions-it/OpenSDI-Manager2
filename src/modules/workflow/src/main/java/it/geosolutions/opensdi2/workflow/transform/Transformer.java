@@ -18,8 +18,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.workflow.transform.spel;
-
-public class SpelObjectTranformer extends SpelTransformer<Object, Object>{
-	
+package it.geosolutions.opensdi2.workflow.transform;
+/**
+ * 
+ * @author lorenzo
+ * Main interface for transform objects into other 
+ * @param <SOURCETYPE> the type of the source element
+ * @param <DESTTYPE> the type of the destination element
+ */
+public interface Transformer<SOURCETYPE,DESTTYPE> {
+	public DESTTYPE transform(SOURCETYPE source) throws IllegalArgumentException;
 }

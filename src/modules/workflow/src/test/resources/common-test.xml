@@ -50,6 +50,6 @@
 	</util:map> 
 	<!-- beans -->
 	<bean id="reflectionPropertyAccessor" class="org.springframework.expression.spel.support.ReflectivePropertyAccessor"></bean>
-	<bean id="mapPropertyAccessor" class="it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
-	<bean id="mapPreBuilder" class="it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
+	<bean id="mapPropertyAccessor" class="it.geosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
+	<bean id="mapPreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
 </beans>

@@ -9,7 +9,6 @@
       
    	<context:annotation-config/>
 
-   	<!-- REST Plugins -->
-    <bean id="gbRestAPIPlugin" class="it.geosolutions.opensdi2.workflow.rest.plugin.RestGeoBatchPlugin" />
+   	
 
 </beans>

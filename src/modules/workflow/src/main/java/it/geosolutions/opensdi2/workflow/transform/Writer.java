@@ -18,14 +18,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.workflow.transform;
+package it.geosolutions.opensdi2.workflow.transform;
+
+import java.util.Map;
 /**
- * 
+ * Implementation of the transformer to convert into a <String>-<Object> <Map>
  * @author lorenzo
- * Main interface for transform objects into other 
- * @param <SOURCETYPE> the type of the source element
- * @param <DESTTYPE> the type of the destination element
+ *
+ * @param <T> the output type
  */
-public interface Transformer<SOURCETYPE,DESTTYPE> {
-	public DESTTYPE transform(SOURCETYPE source) throws IllegalArgumentException;
+public interface Writer<T> extends Transformer< Map<String,Object>,T>{
+	public T write(Map<String,Object> obj);
 }

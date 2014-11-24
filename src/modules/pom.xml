@@ -21,7 +21,6 @@
         <module>rest-facade</module>
         <module>web-security</module>
 		<module>workflow</module>
-        <module>wps-rest</module>
 		<module>crud</module>
     </modules>
     <!-- profile geocollect -->
@@ -38,6 +37,19 @@
                 <module>user-management</module>
             </modules>
         </profile>
+        <profile>
+             <id>wps</id>
+            <modules>
+                <module>wps-rest</module>
+            </modules>
+        </profile>
+        <profile>
+             <id>geobatch</id>
+            <modules>
+                <module>geobatch-rest</module>
+            </modules>
+        </profile>
+        
   </profiles>
 
 		

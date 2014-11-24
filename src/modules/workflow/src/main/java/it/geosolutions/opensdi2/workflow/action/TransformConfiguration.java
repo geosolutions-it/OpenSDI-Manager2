@@ -26,7 +26,7 @@ import java.util.Map;
 import org.springframework.expression.PropertyAccessor;
 
 import it.geosolutions.opensdi2.workflow.BlockConfiguration;
-import it.getosolutions.opensdi2.workflow.transform.PreBuilder;
+import it.geosolutions.opensdi2.workflow.transform.PreBuilder;
 /**
  * Utility container to configure the Transform Action
  * @author lorenzo

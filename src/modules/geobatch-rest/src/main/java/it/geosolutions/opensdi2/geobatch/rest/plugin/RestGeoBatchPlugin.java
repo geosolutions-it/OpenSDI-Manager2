@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.geosolutions.opensdi2.workflow.rest.plugin;
+package it.geosolutions.opensdi2.geobatch.rest.plugin;
 
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestPlugin;
