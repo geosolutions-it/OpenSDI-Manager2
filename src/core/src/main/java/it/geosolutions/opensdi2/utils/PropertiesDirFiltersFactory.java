@@ -45,6 +45,8 @@ public class PropertiesDirFiltersFactory {
     final public static String MODULE_NAME_PREFIX = "mod_";
 
     final public static String INSTANCE_CONFIGNAME_PREFIX = "config_";
+    
+    final public static String INSTANCE_CONFIGNAME_EXTENSION = ".properties";
 
     /**
      * Helper method useful for client classes in order to load the proper FileFilter instance
@@ -127,7 +129,7 @@ public class PropertiesDirFiltersFactory {
 
             if (arg0 != null && arg0.isFile() && nameSplitted[0].equals(INSTANCE_CONFIGNAME_PREFIX.substring(0, INSTANCE_CONFIGNAME_PREFIX.length()-1))
                     && instanceSplitted[0].equals(instanceName)
-                    && ("."+instanceSplitted[1]).equals(".properties")) {
+                    && ("."+instanceSplitted[1]).equals(INSTANCE_CONFIGNAME_EXTENSION)) {
                 return true;
             }
             return false;

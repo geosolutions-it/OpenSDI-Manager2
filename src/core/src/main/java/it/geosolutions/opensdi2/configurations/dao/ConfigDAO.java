@@ -35,6 +35,11 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
 public interface ConfigDAO {
 
     /**
+     * Perform the initialization of the connection resources with the underlying persistence system  
+     */
+    public void init();
+    
+    /**
      * Persist a new configuration
      * 
      * @param newConfig
@@ -61,4 +66,13 @@ public interface ConfigDAO {
      * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
      */
     public OSDIConfiguration load(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException;
+    
+    /**
+     * 
+     * @param scopeID
+     * @param instanceID
+     * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
+     * @throws OSDIConfigurationInternalErrorException if a I/O error occurs while deleting the object
+     */
+    public void delete(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
 }

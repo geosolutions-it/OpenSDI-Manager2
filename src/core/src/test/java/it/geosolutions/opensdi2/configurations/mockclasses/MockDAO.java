@@ -37,6 +37,11 @@ public class MockDAO implements ConfigDAO{
     private final static Logger LOGGER = Logger.getLogger(MockDAO.class);
     
     @Override
+    public void init() {
+        LOGGER.info("dummy initialization of the DAO datasource connection");
+    }
+    
+    @Override
     public void save(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException {
         
         LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Saved!");
@@ -59,5 +64,12 @@ public class MockDAO implements ConfigDAO{
         osdiConfig.addNew("key2", "value2");
         LOGGER.info("config: '" + scopeID + "-" + instanceID + "' Loaded!");
         return osdiConfig;
+    }
+
+    @Override
+    public void delete(String scopeID, String instanceID)
+            throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
+        // TODO Auto-generated method stub
+        
     }
 }

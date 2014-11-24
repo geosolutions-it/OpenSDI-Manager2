@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.geotools.test.TestData;
 import org.junit.Assert;
@@ -60,10 +58,10 @@ public class PropertiesDirFiltersFactoryTest extends Assert{
         File[] outList = null;
         outList = datadir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, "test1"));
         assertEquals(1,outList.length);
-        assertEquals(3,outList[0].listFiles().length);
+        assertEquals(5,outList[0].listFiles().length);
         outList = datadir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, "test2"));
         assertTrue(outList.length == 1);
-        assertEquals(0,outList[0].listFiles().length);
+        assertEquals(1,outList[0].listFiles().length);
         outList = datadir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, "test3"));
         assertTrue(outList.length == 0);
     }

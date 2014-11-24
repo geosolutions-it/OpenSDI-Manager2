@@ -46,17 +46,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class PropertiesDAO implements ConfigDAO {
 
-    final public static String PROPERTIES_CONFIG_DIR = "propertiesConfigurations";
+    public final static String PROPERTIES_CONFIG_DIR = "propertiesConfigurations";
     
     @Autowired
     private OpenSDIManagerConfig configDirManager;
     
     @Autowired
-    private OSDIConfigConverter configBuilder;
+    private OSDIConfigConverter configConverter;
     
     private File propertiesConfigDir;
     
-    public PropertiesDAO(){
+    public PropertiesDAO(){}
+    
+    @Override
+    public void init() {
         File baseDir = new File(configDirManager.getBaseFolder());
         if(!basicsDirectoryChecks(baseDir)){
             throw new IllegalStateException("The application DATADIR '" + baseDir + "' doesn't exist or cannot be read or write");
@@ -65,6 +68,14 @@ public class PropertiesDAO implements ConfigDAO {
         if(!basicsDirectoryChecks(propertiesConfigDir)){
             throw new IllegalStateException("The properties configuration directory inside the DATADIR '" + propertiesConfigDir + "' doesn't exist or cannot be read or write");
         }
+    }
+    
+    public void setConfigDirManager(OpenSDIManagerConfig manager){
+        this.configDirManager = manager;
+    }
+    
+    public void setConfigBuilder(OSDIConfigConverter converter){
+        this.configConverter = converter;
     }
     
     // TODO add transactions
@@ -76,14 +87,14 @@ public class PropertiesDAO implements ConfigDAO {
                     + newConfig.getScopeID() + "' and instanceID '" + newConfig.getInstanceID()
                     + "' is already present.");
         }
-        Object configAsParamsSet = configBuilder.buildConfig(newConfig);
+        Object configAsParamsSet = configConverter.buildConfig(newConfig);
         PropertiesConfiguration propertiesConfig = (PropertiesConfiguration) configAsParamsSet;
 
         PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
         File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE,
                 newConfig.getScopeID()));
         File instanceConfig = new File(moduleList[0], factory.INSTANCE_CONFIGNAME_PREFIX
-                + newConfig.getInstanceID());
+                + newConfig.getInstanceID() + factory.INSTANCE_CONFIGNAME_EXTENSION);
         try {
             propertiesConfig.save(instanceConfig);
         } catch (ConfigurationException e) {
@@ -107,7 +118,7 @@ public class PropertiesDAO implements ConfigDAO {
             tmpKey = iter.next();
             Object newValue = updatedConfigKVP.getValue(tmpKey);
             Object oldValue = oldConfig.getProperty(tmpKey);
-            if(newValue!=null && oldValue!=null && newValue.equals(oldValue)){
+            if(newValue!=null && !newValue.equals(oldValue)){
                 oldConfig.setProperty(tmpKey, newValue);
                 outcome = true;
             }
@@ -127,7 +138,17 @@ public class PropertiesDAO implements ConfigDAO {
         File configFile = searchConfigurationFile(scopeID, instanceID);
         //Load the config with apache commons configuration
         Configuration config = loadConfigurationInstance(configFile);
-        return configBuilder.buildConfig(config, scopeID, instanceID);
+        return configConverter.buildConfig(config, scopeID, instanceID);
+    }
+    
+    @Override
+    public void delete(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException,
+            OSDIConfigurationInternalErrorException {
+        // Search the configuration file corresponding to the provided scopeID and instanceID inside the datadir
+        File configFile = searchConfigurationFile(scopeID, instanceID);
+        if(!configFile.delete()){
+            throw new OSDIConfigurationInternalErrorException("Problems while deleting the file configuration for instance with scopeID: '" + scopeID + "' and instanceID: '" + instanceID + "'");
+        }
     }
 
     //
@@ -156,7 +177,7 @@ public class PropertiesDAO implements ConfigDAO {
         File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, scopeID));
         assertResourceIsUnique(moduleList, scopeID);
         //Search in the module directory the proper instance configuration file
-        File[] instanceList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
+        File[] instanceList = moduleList[0].listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
         assertResourceIsUnique(instanceList, instanceID);
         return instanceList[0];
     }
@@ -177,11 +198,10 @@ public class PropertiesDAO implements ConfigDAO {
         File[] moduleList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.MODULE, scopeID));
         assertResourceIsUnique(moduleList, scopeID);
         //Search in the module directory the proper instance configuration file
-        File[] instanceList = propertiesConfigDir.listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
+        File[] instanceList = moduleList[0].listFiles(factory.getFilter(FILTER_TYPE.INSTANCE, instanceID));
         if (instanceList.length == 0){
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
-
 }
