@@ -6,9 +6,13 @@ package it.geosolutions.opensdi2.wps.rest.plugin;
 import it.geosolutions.opensdi2.rest.RestItemParameter;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +20,7 @@ import net.opengis.wps10.ExecuteResponseType;
 
 import org.geotools.data.wps.WebProcessingService;
 import org.geotools.data.wps.response.ExecuteProcessResponse;
+import org.geotools.ows.ServiceException;
 
 /**
  * @author alessio.fabiani
@@ -41,24 +46,41 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 
 	private String description;
 
+	private Map<String, Object> details = new ConcurrentHashMap<String, Object>();
+
+	private Map<String, Object> results = new ConcurrentHashMap<String, Object>();
+
 	public RestWPSProcessExecution(String executionId, String name, String description,
-			WebProcessingService wps, String statusLocation) {
+			WebProcessingService wps, String statusLocation, String status, float progress, Date startDate) {
 		this.executionId = executionId;
 		this.name = name;
 		this.description = description;
 		this.wps = wps;
 		this.statusLocation = statusLocation;
 		
-		try {
-			URL statusURL = new URL(statusLocation);
-			this.executeResponse = wps.issueStatusRequest(statusURL).getExecuteResponse();
-			this.startDate = (Date) executeResponse.getStatus().getCreationTime();
+		if (status != null) {
+			this.status = status;
+		} else {
 			this.status = "RUNNING";
+		}
+
+		this.progress = progress;
+		this.startDate = startDate;
+
+		try {
+			/** Try to get the status from the WPS */
+			final URL statusURL = new URL(statusLocation);
+			this.executeResponse = wps.issueStatusRequest(statusURL).getExecuteResponse();
+
+			if (this.executeResponse != null) {
+				this.startDate = (Date) executeResponse.getStatus().getCreationTime();
+
+				updateRuntimeStatus();
+			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Could not retrieve the process Execution Response.", e);
 			
-			this.progress = 100.0f;
-			this.status = "FAIL";
+			//runtimeFailed();
 		}
 		
 	}
@@ -110,7 +132,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 	 */
 	@Override
 	public Float getProgress() {
-		if (this.progress == 100.0f) return this.progress;
+		if (this.progress == 100.0f && (this.status == "SUCCESS" || this.status == "FAIL")) return this.progress;
 		
 		try {
 			if (executeResponse != null && executeResponse.getStatus().getProcessStarted() != null) {
@@ -119,7 +141,43 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 				this.progress = 0.0f;
 			}
 
-			// loop and wait for the process to be complete
+			updateRuntimeStatus();
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING,  "Exception occurred while evaluating Process Status!", e);
+			
+			runtimeFailed();
+			
+			return 100.0f;
+		}
+		
+		return progress;
+	}
+
+	/**
+	 * @return the statusLocation
+	 */
+	public String getStatusLocation() {
+		return statusLocation;
+	}
+
+	/**
+	 * 
+	 */
+	protected void runtimeFailed() {
+		this.endDate = new Date();
+		this.status = "FAIL";
+		this.progress = 100.0f;
+	}
+
+	/**
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public void updateRuntimeStatus() throws MalformedURLException,
+			IOException, ServiceException {
+		// loop and wait for the process to be complete
+		if (executeResponse != null && executeResponse.getStatus() != null) {
 			if (executeResponse.getStatus().getProcessFailed() == null 
 					&& executeResponse.getStatus().getProcessSucceeded() == null) {
 
@@ -127,9 +185,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 				ExecuteProcessResponse response = wps.issueStatusRequest(url);
 
 				if (response.getExceptionResponse() != null) {
-					progress = 100.0f;
-					this.endDate = new Date();
-					this.status = "FAIL";
+					runtimeFailed();
 				} else {
 					executeResponse = response.getExecuteResponse();
 					progress = executeResponse.getStatus().getProcessStarted().getPercentCompleted().floatValue();
@@ -137,21 +193,14 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 			} else {
 				progress = 100.0f;
 				this.endDate = new Date();
-				
+
 				if (executeResponse.getStatus().getProcessFailed() != null) {
-					this.status = "FAIL";
+					runtimeFailed();
 				} else {
 					this.status = "SUCCESS";
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.log(Level.WARNING,  "Exception occurred while evaluating Process Status!", e);
-			this.endDate = new Date();
-			this.status = "FAIL";
-			return 100.0f;
 		}
-		
-		return progress;
 	}
 
 	/*
@@ -190,6 +239,16 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 	 */
 	public String getExecutionId() {
 		return executionId;
+	}
+
+	@Override
+	public Map<String, Object> getDetails() {
+		return details;
+	}
+
+	@Override
+	public Map<String, Object> getResults() {
+		return results;
 	}
 
 }

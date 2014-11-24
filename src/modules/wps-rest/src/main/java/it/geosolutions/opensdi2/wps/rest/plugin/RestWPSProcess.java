@@ -94,4 +94,20 @@ public abstract class RestWPSProcess extends RestService {
 
 	@JsonIgnore public abstract RestServiceRuntime getRuntime(Principal auth, String id);
 
+	@Override
+	public String getActiveStatus() {
+		if ("DISABLED".equals(super.getActiveStatus())) {
+			try {
+				//testing connections
+				this.wps = new WebProcessingService(this.url);
+				setActiveStatus("ENABLED");
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId() + "] could not be initialized due to an Exception!", e);
+				setActiveStatus("DISABLED");
+			}
+		}
+		
+		return super.getActiveStatus();
+	}
+
 }

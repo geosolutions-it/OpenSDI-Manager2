@@ -5,6 +5,7 @@ package it.geosolutions.opensdi2.rest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -35,4 +36,8 @@ public interface RestServiceRuntime {
 	
 	List<RestItemParameter> getParameters();
 
+	Map<String, Object> getDetails();
+	
+	Map<String, Object> getResults();
+	
 }

@@ -8,6 +8,7 @@ import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author alessio.fabiani
@@ -113,6 +114,18 @@ public class RestGeoBatchConsumer implements RestServiceRuntime {
 	 */
 	public void setParameters(List<RestItemParameter> parameters) {
 		this.parameters = parameters;
+	}
+
+	@Override
+	public Map<String, Object> getDetails() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getResults() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

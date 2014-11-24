@@ -11,9 +11,9 @@
 
    	<!-- GeoStore Client -->
    	<bean id="wpsRestAPIGeoStoreAdminClient" class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
-   	    <property name="geostoreRestUrl" value="http://localhost:9191/geostore/rest/" />
+   	    <property name="geostoreRestUrl" value="http://172.21.173.30:8181/geostore/rest/" />
    	    <property name="username" value="admin" />
-   	    <property name="password" value="admin" />
+   	    <property name="password" value="hellasFORever" />
    	</bean>
    	
    	<!-- REST Plugins -->
@@ -32,9 +32,12 @@
         <!-- activeStatus -->
         <constructor-arg index="4" value="ENABLED" />
         <!-- wpsUrl -->
-        <constructor-arg index="5" value="http://localhost:8080/geoserver/wps" />
+        <constructor-arg index="5" value="http://172.21.173.30:8080/geoserver/wps" />
+        <!-- constructor-arg index="5" value="http://localhost:8080/geoserver/wps" / -->
         <!-- processIden -->
         <constructor-arg index="6" value="default:Service" />
+        
+        <property name="reasourceLoaderProcessIdent" value="gs:ResourceLoader"/>
 	</bean>
     
 </beans>
