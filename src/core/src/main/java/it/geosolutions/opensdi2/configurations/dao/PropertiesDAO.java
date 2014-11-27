@@ -58,7 +58,7 @@ public class PropertiesDAO implements ConfigDAO {
     
     @Override
     public void init() {
-        File baseDir = new File(configDirManager.getBaseFolder());
+        File baseDir = configDirManager.getConfigDir();
         if(!basicsDirectoryChecks(baseDir)){
             throw new IllegalStateException("The application DATADIR '" + baseDir + "' doesn't exist or cannot be read or write");
         }

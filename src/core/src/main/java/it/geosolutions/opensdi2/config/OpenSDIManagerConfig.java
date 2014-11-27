@@ -20,19 +20,27 @@
  */
 package it.geosolutions.opensdi2.config;
 
+import java.io.File;
+
 
 /**
- * Base configuration for OpenSDI-Manager2
- * This bean could centralize all common configuration
+ * Base configuration directory handler for OpenSDI-Manager2
+ * The implementation classes are responsible to provide to the clients the location of the config dir and to load the config dir. 
  * 
  * @author adiaz
+ * @author DamianoG
  *
  */
 public interface OpenSDIManagerConfig {
 
 	/**
-	 * @return base folder for the application
+	 * @return The File representing the root of the OpenSDI-Manager2 config dir
 	 */
-	String getBaseFolder();
+	public File getConfigDir();
+	
+	/**
+	 * This method is responsible for the creation of the File pointer to the config dir. 
+	 */
+	public void initConfigDir();
 
 }

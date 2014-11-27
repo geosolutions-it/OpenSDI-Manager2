@@ -52,6 +52,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * Test class for FileManager
  * 
  * @author adiaz
+ * @author DamianoG
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,6 +61,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
+	
+	@Autowired
+	OpenSDIManagerConfigImpl config;
 	
 	/**
 	 * Controller to be tested
@@ -107,10 +111,9 @@ public class FileManagerTest {
 			currentFiles = new LinkedList<File>();
 			currentFolders = new LinkedList<File>();
 			// folder is generated for the test
-			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt(); 
-			OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
-			config.setBaseFolder(basePath + ControllerUtils.SEPARATOR);
-			fileManager.setRuntimeDir(config.getBaseFolder());
+			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt();
+			System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath + ControllerUtils.SEPARATOR);
+			fileManager.setRuntimeDir(basePath + ControllerUtils.SEPARATOR);
 			// create test folder
 			File file = new File(basePath);
 			file.mkdir();

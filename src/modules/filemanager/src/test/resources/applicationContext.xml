@@ -1,25 +1,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
 	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
-       default-autowire="byName">
-    
-    <bean id="baseConfig" class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl">
-        <property name="baseFolder" value="/tmp"/>
-    </bean>
-      
-    <!-- File upload service -->
-    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
-      <property name="minInterval" value="1000000000"></property>
-      <property name="maxSimultaneousUpload" value="100"></property>
-    </bean>  
-	
+	default-autowire="byName">
+
+	<bean id="baseConfig"
+		class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl" init-method="initConfigDir" >
+		<property name="baseFolderPath" value="/tmp" />
+	</bean>
+
+	<!-- File upload service -->
+	<bean id="fileUploadService"
+		class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
+		<property name="minInterval" value="1000000000"></property>
+		<property name="maxSimultaneousUpload" value="100"></property>
+	</bean>
+
 	<context:component-scan base-package="it.geosolutions.opensdi2.mvc" />
 
 	<bean id="multipartResolver"
-	 class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-		
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
 </beans>

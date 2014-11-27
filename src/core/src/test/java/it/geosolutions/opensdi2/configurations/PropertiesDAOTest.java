@@ -49,7 +49,8 @@ public class PropertiesDAOTest extends Assert{
         try {
             configDir = TestData.file(this, "datadir-testDAOprop");
             OpenSDIManagerConfigImpl configDirHandler = new OpenSDIManagerConfigImpl();
-            configDirHandler.setBaseFolder(configDir.getAbsolutePath());
+            System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, configDir.getAbsolutePath());
+            configDirHandler.initConfigDir();
             propDAO = new PropertiesDAO();
             propDAO.setConfigDirManager(configDirHandler);
             propDAO.setConfigConverter(new PropertiesConfigurationConverter());
@@ -133,7 +134,7 @@ public class PropertiesDAOTest extends Assert{
             OSDIConfiguration config61 = propDAO.load("test6", "instance1");
         }catch(OSDIConfigurationNotFoundException e){
             flag = true;
-            assertEquals("No resource (Module or instance config) with ID 'test6' has been found.", e.getMessage());
+            assertEquals("No resource (Module or instance config) with ID 'test6' has been found. Check if the modules/instance naming conventions have been properly followed.", e.getMessage());
         }
         if(!flag){
             fail();
@@ -144,7 +145,7 @@ public class PropertiesDAOTest extends Assert{
             OSDIConfiguration config61 = propDAO.load("test2", "instaNce4");
         }catch(OSDIConfigurationNotFoundException e){
             flag = true;
-            assertEquals("No resource (Module or instance config) with ID 'instaNce4' has been found.", e.getMessage());
+            assertEquals("No resource (Module or instance config) with ID 'instaNce4' has been found. Check if the modules/instance naming conventions have been properly followed.", e.getMessage());
         }
         if(!flag){
             fail();

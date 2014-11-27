@@ -11,7 +11,7 @@
 
 	<!-- Config dir -->
 	<bean id="baseConfig"
-		class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl">
+		class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl" init-method="initConfigDir">
 	</bean>
 
 	<!-- The configuration DAO -->
@@ -19,7 +19,7 @@
 		class="it.geosolutions.opensdi2.configurations.model.converters.PropertiesConfigurationConverter" />
 
 	<bean id="daoBean"
-		class="it.geosolutions.opensdi2.configurations.dao.PropertiesDAO" init-method="init">
+		class="it.geosolutions.opensdi2.configurations.dao.PropertiesDAO" init-method="init" depends-on="baseConfig">
 		<property name="configDirManager" ref="baseConfig" />
 		<property name="configConverter" ref="converter" />
 	</bean>

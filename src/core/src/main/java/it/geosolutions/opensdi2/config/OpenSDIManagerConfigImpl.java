@@ -20,47 +20,71 @@
  */
 package it.geosolutions.opensdi2.config;
 
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-
+import java.io.File;
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
- * Base configuration for OpenSDI-Manager2 This bean could centralize all common
- * configuration
+ * Base configuration for OpenSDI-Manager2 This bean could centralize all common configuration
  * 
  * @author adiaz
  * 
  */
-public class OpenSDIManagerConfigImpl implements Serializable,
-		OpenSDIManagerConfig {
+public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerConfig {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4107456302675180556L;
+    private static final long serialVersionUID = 4107456302675180556L;
 
-	private String baseFolder;
+    public static String CONFIGDIR_PROPERTY_ENV_NAME = "OSDI_CONFIG_DIR";
 
-	/**
-	 * @return base folder for the application
-	 */
-	public String getBaseFolder() {
-		return baseFolder;
-	}
+    private File baseFolder;
 
-	/**
-	 * Setter for the base folder
-	 * 
-	 * @param base
-	 *            folder for the application
-	 */
-	public void setBaseFolder(String baseFolder) {
-		this.baseFolder = baseFolder;
-		if (this.baseFolder != null
-				&& this.baseFolder.lastIndexOf(ControllerUtils.SEPARATOR) != this.baseFolder
-						.length() - 1) {
-			this.baseFolder += ControllerUtils.SEPARATOR;
-		}
-	}
+    private String baseFolderPath;
+
+    /**
+     * @param baseFolderPath the baseFolderPath to set
+     */
+    public void setBaseFolderPath(String baseFolderPath) {
+        this.baseFolderPath = baseFolderPath;
+    }
+
+    /**
+     * @return base folder for the application
+     */
+    @Override
+    public File getConfigDir() {
+        return baseFolder;
+    }
+
+    @Override
+    public void initConfigDir() {
+        String configDirPath = System.getProperty(CONFIGDIR_PROPERTY_ENV_NAME);
+        if (StringUtils.isBlank(configDirPath)) {
+            if (!StringUtils.isBlank(baseFolderPath)) {
+                configDirPath = baseFolderPath;
+            } else {
+                throw new IllegalStateException(
+                        "No environment variable '"
+                                + CONFIGDIR_PROPERTY_ENV_NAME
+                                + "' has been found nor 'baseFolderPath' property has been set , the datadir cannot been loaded so the Application cannot be started.");
+            }
+        }
+        try {
+            this.baseFolder = new File(configDirPath);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Exception occurred while loading the config dir from the path '"
+                            + configDirPath
+                            + "', the datadir cannot been loaded so the Application cannot be started. exception message is: "
+                            + e.getMessage());
+        }
+        if (!this.baseFolder.isDirectory() || !this.baseFolder.canRead()
+                || !this.baseFolder.canWrite()) {
+            throw new IllegalStateException(
+                    "The config dir from the path '"
+                            + configDirPath
+                            + "' cannot been read or write or it is not a directory... the Application cannot be started.");
+        }
+    }
 
 }

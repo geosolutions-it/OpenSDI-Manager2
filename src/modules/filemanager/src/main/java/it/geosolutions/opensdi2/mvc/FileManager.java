@@ -53,7 +53,8 @@ public class FileManager extends BaseFileManager {
 	 */
 	@Autowired
 	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		this.setRuntimeDir(baseConfig.getBaseFolder());
+	        //TODO DamianoG 27/11/2014 OK, The retrieval of the absolutePath here doesn't make sense, this must be fixed when this module will be adapted to work with the configuration system
+		this.setRuntimeDir(baseConfig.getConfigDir().getAbsolutePath());
 	}
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
