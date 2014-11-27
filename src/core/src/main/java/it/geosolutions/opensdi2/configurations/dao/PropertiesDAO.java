@@ -48,10 +48,8 @@ public class PropertiesDAO implements ConfigDAO {
 
     public final static String PROPERTIES_CONFIG_DIR = "propertiesConfigurations";
     
-    @Autowired
     private OpenSDIManagerConfig configDirManager;
     
-    @Autowired
     private OSDIConfigConverter configConverter;
     
     private File propertiesConfigDir;
@@ -74,7 +72,7 @@ public class PropertiesDAO implements ConfigDAO {
         this.configDirManager = manager;
     }
     
-    public void setConfigBuilder(OSDIConfigConverter converter){
+    public void setConfigConverter(OSDIConfigConverter converter){
         this.configConverter = converter;
     }
     
@@ -164,7 +162,7 @@ public class PropertiesDAO implements ConfigDAO {
     
     private void assertResourceIsUnique(File[] list, String resourceID) throws OSDIConfigurationNotFoundException {
         if(list.length <= 0){
-            throw new OSDIConfigurationNotFoundException("No resource (Module or instance config) with ID '" + resourceID + "' has been found.");
+            throw new OSDIConfigurationNotFoundException("No resource (Module or instance config) with ID '" + resourceID + "' has been found. Check if the modules/instance naming conventions have been properly followed.");
         }
         if(list.length > 1){
             throw new OSDIConfigurationNotFoundException("Seems that more than 1 resource with ID '" + resourceID + "' has been found... this should never happen and may means that there's a bug somewhere, open a ticket on the application issue tracker.");

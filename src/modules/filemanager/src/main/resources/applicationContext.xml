@@ -6,12 +6,9 @@
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-autowire="byName">
-	<bean id="baseConfig" class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl">
-        <property name="baseFolder" value="/tmp"/>
-    </bean>
-      
+	  
     <!-- File upload service -->
-    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
+    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl" >
       <property name="minInterval" value="1000000000"></property>
       <property name="maxSimultaneousUpload" value="100"></property>
       <!-- <property name="temporaryFolder" value="/tmp"></property> -->

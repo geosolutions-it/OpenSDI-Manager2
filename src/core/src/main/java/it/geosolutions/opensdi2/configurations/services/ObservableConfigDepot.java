@@ -25,6 +25,7 @@ import it.geosolutions.opensdi2.configurations.eventshandling.EventPublisher;
 import it.geosolutions.opensdi2.configurations.eventshandling.OSDIEvent;
 import it.geosolutions.opensdi2.configurations.eventshandling.ObserverListManager;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
@@ -53,18 +54,27 @@ public abstract class ObservableConfigDepot implements ConfigDepot, EventPublish
 
     @Override
     public void addNewConfiguration(OSDIConfiguration config)
-            throws OSDIConfigurationDuplicatedIDException {
+            throws OSDIConfigurationException {
         
         if(!config.validateIDs()){
-            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contain whitespaces");
+            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or they contain whitespaces");
         }
-        try{
+        
+        try {
             addNewConfigurationLogic(config);
+        } catch (OSDIConfigurationNotFoundException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new OSDIConfigurationException(e);
+        } catch (OSDIConfigurationInternalErrorException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new OSDIConfigurationException(e);
+        } catch (OSDIConfigurationDuplicatedIDException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new OSDIConfigurationException(e);
         }
         catch(Exception e){
-            LOGGER.error("An error occurs while ADDING the new configuration with the following scopeID/instanceID: '" + config.getScopeID() + "/" + config.getInstanceID() +"'");
-            LOGGER.error(e.getStackTrace());
-            return;
+            LOGGER.error("An unexpected error occurs while ADDING the new configuration with the following scopeID/instanceID: '" + config.getScopeID() + "/" + config.getInstanceID() +"'");
+            throw new OSDIConfigurationException(e);
         }
         //Ok the new configuration should be added correctly, it's time to notify all the observers
         Event e = new OSDIEvent(OSDIEvent.generateEventID(config.getScopeID(), config.getInstanceID()), config.getScopeID(), config.getInstanceID());
@@ -73,18 +83,24 @@ public abstract class ObservableConfigDepot implements ConfigDepot, EventPublish
 
     @Override
     public void updateExistingConfiguration(OSDIConfiguration config)
-            throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
+            throws OSDIConfigurationException {
         
         if(!config.validateIDs()){
-            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contain whitespaces");
+            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or they contain whitespaces");
         }
-        try{
+        
+        try {
             updateExistingConfigurationLogic(config);
+        } catch (OSDIConfigurationNotFoundException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new OSDIConfigurationException(e);
+        } catch (OSDIConfigurationInternalErrorException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new OSDIConfigurationException(e);
         }
         catch(Exception e){
-            LOGGER.error("An error occurs while UPDATING the configuration with the following scopeID/instanceID: '" + config.getScopeID() + "/" + config.getInstanceID() +"'");
-            LOGGER.error(e.getStackTrace());
-            return;
+            LOGGER.error("An unexpected error occurs while UPDATING the configuration with the following scopeID/instanceID: '" + config.getScopeID() + "/" + config.getInstanceID() +"'");
+            throw new OSDIConfigurationException(e);
         }
         //Ok the configuration should be updated correctly, it's time to notify all the observers
         Event e = new OSDIEvent(OSDIEvent.generateEventID(config.getScopeID(), config.getInstanceID()), config.getScopeID(), config.getInstanceID());
@@ -97,7 +113,7 @@ public abstract class ObservableConfigDepot implements ConfigDepot, EventPublish
         return true;
     }
     
-    protected abstract void addNewConfigurationLogic(OSDIConfiguration config);
+    protected abstract void addNewConfigurationLogic(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
     
-    protected abstract void updateExistingConfigurationLogic(OSDIConfiguration config);
+    protected abstract void updateExistingConfigurationLogic(OSDIConfiguration config) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
 }

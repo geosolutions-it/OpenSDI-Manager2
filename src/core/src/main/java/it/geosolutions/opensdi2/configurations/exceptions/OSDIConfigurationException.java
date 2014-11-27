@@ -19,14 +19,13 @@
  */
 package it.geosolutions.opensdi2.configurations.exceptions;
 
-
 /**
  * @author DamianoG
  *
  */
-public class OSDIConfigurationNotFoundException extends Exception {
-    
-    public OSDIConfigurationNotFoundException(String message){
-        super(message);
+public class OSDIConfigurationException extends Exception{
+
+    public OSDIConfigurationException(Throwable e){
+        super(e);
     }
 }

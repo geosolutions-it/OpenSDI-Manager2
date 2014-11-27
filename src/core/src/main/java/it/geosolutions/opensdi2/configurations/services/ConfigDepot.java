@@ -21,6 +21,7 @@ package it.geosolutions.opensdi2.configurations.services;
 
 import it.geosolutions.opensdi2.configurations.dao.ConfigDAO;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
@@ -49,25 +50,24 @@ public interface ConfigDepot {
      * @param scopeID
      * @param instanceID
      * @return an OpenSDI2 module configuration
-     * @throws OSDIConfigurationNotFoundException if no configuration with the provided scopeID and instanceID is found. 
+     * @throws OSDIConfigurationException a wrapper exception that holds the underlying exception has been thrown
      */
-    public OSDIConfiguration loadExistingConfiguration(String scopeID, String instanceID) throws OSDIConfigurationNotFoundException;
+    public OSDIConfiguration loadExistingConfiguration(String scopeID, String instanceID) throws OSDIConfigurationException;
 
     /**
      * Add a new a configuration into the depot. Throws an exception if the key is already present
      * 
      * @param conf an OpenSDI2 module configuration to add. The scopeID and instanceID fields must not be null.
-     * @throws OSDIConfigurationDuplicatedIDException if a configuration with the provided scopeID and instanceID is already present 
+     * @throws OSDIConfigurationException a wrapper exception that holds the underlying exception has been thrown 
      */
-    public void addNewConfiguration(OSDIConfiguration conf) throws OSDIConfigurationDuplicatedIDException;
+    public void addNewConfiguration(OSDIConfiguration conf) throws OSDIConfigurationException;
 
     /** 
      * Update an existing configuration Throws an exception if the config isn't found or if the effective type of the configuration retrieved from the depot is different from the provided one
      * 
      * @param conf a new version of an OpenSDI2 module configuration already present in the system. The scopeID and instanceID fields must not be null. 
-     * @throws OSDIConfigurationNotFoundException  if no configuration with the provided scopeID and instanceID is found.
-     * @throws OSDIConfigurationInternalErrorException if an unexpected error occurs during the update operation 
+     * @throws OSDIConfigurationException a wrapper exception that holds the underlying exception has been thrown
      */
-    public void updateExistingConfiguration(OSDIConfiguration conf)  throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
+    public void updateExistingConfiguration(OSDIConfiguration conf)  throws OSDIConfigurationException;
 
 }

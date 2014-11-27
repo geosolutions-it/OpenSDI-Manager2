@@ -19,9 +19,7 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
-import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver1;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver2;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
@@ -69,7 +67,7 @@ public class ConfigurationTest extends Assert{
             assertTrue(!mockObs1.newConfigHandled);
             assertTrue(!mockObs2.newConfigHandled);
             depot.addNewConfiguration(osdiConfig);
-        } catch (OSDIConfigurationDuplicatedIDException e) {
+        } catch (OSDIConfigurationException e) {
             fail();
         }
         assertTrue(mockObs1.newConfigHandled);
@@ -79,9 +77,7 @@ public class ConfigurationTest extends Assert{
             assertTrue(!mockObs1.configUpdatedHandled);
             assertTrue(!mockObs2.configUpdatedHandled);
             depot.updateExistingConfiguration(osdiConfig);
-        } catch (OSDIConfigurationNotFoundException e) {
-            fail();
-        } catch (OSDIConfigurationInternalErrorException e) {
+        } catch (OSDIConfigurationException e) {
             fail();
         }
         assertTrue(mockObs1.configUpdatedHandled);

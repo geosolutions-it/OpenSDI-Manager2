@@ -23,6 +23,9 @@ package it.geosolutions.opensdi2.mvc;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.RESULTS;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
+import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 import it.geosolutions.opensdi2.service.FileUploadService;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
@@ -173,7 +176,9 @@ public class BaseFileManager extends AbstractFileController {
 			 String file,
 			HttpServletRequest request,
 			HttpServletResponse response) {
-
+	        
+	        OSDIConfigurationKVP config = (OSDIConfigurationKVP)request.getAttribute(ConfigurationInterceptor.CONFIGURATION_OBJ_ID);
+	    
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Performing " + action + " in extJSFileBrowser");
 		}

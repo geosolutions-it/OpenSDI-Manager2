@@ -52,7 +52,7 @@ public class PropertiesDAOTest extends Assert{
             configDirHandler.setBaseFolder(configDir.getAbsolutePath());
             propDAO = new PropertiesDAO();
             propDAO.setConfigDirManager(configDirHandler);
-            propDAO.setConfigBuilder(new PropertiesConfigurationConverter());
+            propDAO.setConfigConverter(new PropertiesConfigurationConverter());
             propDAO.init();
         } catch (Exception e) {
             fail();
