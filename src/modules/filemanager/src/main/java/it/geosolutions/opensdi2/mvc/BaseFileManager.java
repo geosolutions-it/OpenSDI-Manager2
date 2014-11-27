@@ -176,8 +176,6 @@ public class BaseFileManager extends AbstractFileController {
 			 String file,
 			HttpServletRequest request,
 			HttpServletResponse response) {
-	        
-	        OSDIConfigurationKVP config = (OSDIConfigurationKVP)request.getAttribute(ConfigurationInterceptor.CONFIGURATION_OBJ_ID);
 	    
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Performing " + action + " in extJSFileBrowser");
