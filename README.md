@@ -15,17 +15,17 @@ Build and run the application
 
 Let's Assume you have cloned the repo in the location **/OpenSDI-Manager2**
 
-$/OpenSDI-Manager2/src # mvn clean install //Build the war file and install it in the local m2 repo
+`$/OpenSDI-Manager2/src # mvn clean install` Build the war file and install it in the local m2 repo
 
-$/OpenSDI-Manager2/src # mvn clean eclipse:eclipse //Generate the eclipse project files
+`$/OpenSDI-Manager2/src # mvn clean eclipse:eclipse` Generate the eclipse project files
 
-$/OpenSDI-Manager2/src/web # mvn jetty:run //Run locally the latest war built using jetty
+`$/OpenSDI-Manager2/src/web # mvn jetty:run` Run locally the latest war built using jetty
 
-$/OpenSDI-Manager2/src/web # mvn jetty:run -DOSDI_CONFIG_DIR=/work/OPENSDI2_CONFIG //Run locally the application specifing a datadir location
+`$/OpenSDI-Manager2/src/web # mvn jetty:run -DOSDI_CONFIG_DIR=/work/OPENSDI2_CONFIG` Run locally the application specifing a datadir location
 
-$/OpenSDI-Manager2/src/web # mvnDebug jetty:run -DOSDI_CONFIG_DIR=/work/OPENSDI2_CONFIG //Run locally in debug mode, dt_socket is listening on port 8000, the configure remote application Starter in eclipse
+`$/OpenSDI-Manager2/src/web # mvnDebug jetty:run -DOSDI_CONFIG_DIR=/work/OPENSDI2_CONFIG` Run locally in debug mode, dt_socket is listening on port 8000, the configure remote application Starter in eclipse
 
-Base application URL http://localhost:9191/opensdi2-manager (you have to add also /mvc/A_NAME_OF_A_CONTROLLER to see something happen)
+Base application URL `http://localhost:9191/opensdi2-manager` (you have to add also `/mvc/A_NAME_OF_A_CONTROLLER` to see something happen)
 
 Currently available profiles: **geocollect**
 
