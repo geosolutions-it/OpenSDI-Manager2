@@ -28,8 +28,8 @@ public interface EventPublisher {
     /**
      * This method allow observer to be notified by the events fired by a configuration depot.
      *  
-     * @param observer an instance of {@link ConfigDepotObserver} that want to be notified by some events
+     * @param observer an instance of {@link ConfigDepotSubscriber} that want to be notified by some events
      * @return true if the subscribe ends successfully, false otherwise
      */
-    public boolean subscribe(ConfigDepotObserver observer);
+    public boolean subscribe(ConfigDepotSubscriber observer);
 }

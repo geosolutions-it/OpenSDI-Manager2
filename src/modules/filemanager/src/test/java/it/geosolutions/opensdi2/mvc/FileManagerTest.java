@@ -22,8 +22,7 @@ package it.geosolutions.opensdi2.mvc;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
-import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
@@ -66,8 +65,6 @@ public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
 	
-	@Autowired
-	OpenSDIManagerConfigImpl config;
 	
 	/**
 	 * Controller to be tested

@@ -19,7 +19,7 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl;
 import it.geosolutions.opensdi2.configurations.dao.PropertiesDAO;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;

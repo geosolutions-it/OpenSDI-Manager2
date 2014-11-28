@@ -6,11 +6,6 @@
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
 	default-autowire="byName">
 
-	<bean id="baseConfig"
-		class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl" init-method="initConfigDir" >
-		<property name="baseFolderPath" value="/tmp" />
-	</bean>
-
 	<!-- File upload service -->
 	<bean id="fileUploadService"
 		class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">

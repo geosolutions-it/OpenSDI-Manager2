@@ -1,6 +1,5 @@
 /*
- *  OpenSDI Manager 2
- *  Copyright (C) 2012 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -18,29 +17,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.config;
-
-import java.io.File;
-
+package it.geosolutions.opensdi2.configurations.eventshandling;
 
 /**
- * Base configuration directory handler for OpenSDI-Manager2
- * The implementation classes are responsible to provide to the clients the location of the config dir and to load the config dir. 
+ * This class must be implemented by any other class that want to be notified by the events fired by an events-aware Configuration Depot implementation  
  * 
- * @author adiaz
  * @author DamianoG
  *
  */
-public interface OpenSDIManagerConfig {
+public interface ConfigDepotSubscriber {
 
-	/**
-	 * @return The File representing the root of the OpenSDI-Manager2 config dir
-	 */
-	public File getConfigDir();
-	
-	/**
-	 * This method is responsible for the creation of the File pointer to the config dir. 
-	 */
-	public void initConfigDir();
-
+    public Object newConfigAddedEventHandler(Event event);
+    
+    public Object configUpdatedEventHandler(Event event);
 }

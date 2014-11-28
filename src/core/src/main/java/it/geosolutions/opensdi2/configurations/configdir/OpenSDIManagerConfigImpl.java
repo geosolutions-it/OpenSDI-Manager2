@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.config;
+package it.geosolutions.opensdi2.configurations.configdir;
 
 import java.io.File;
 import java.io.Serializable;

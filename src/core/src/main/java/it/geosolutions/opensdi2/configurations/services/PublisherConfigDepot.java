@@ -19,11 +19,11 @@
  */
 package it.geosolutions.opensdi2.configurations.services;
 
-import it.geosolutions.opensdi2.configurations.eventshandling.ConfigDepotObserver;
+import it.geosolutions.opensdi2.configurations.eventshandling.ConfigDepotSubscriber;
 import it.geosolutions.opensdi2.configurations.eventshandling.Event;
 import it.geosolutions.opensdi2.configurations.eventshandling.EventPublisher;
 import it.geosolutions.opensdi2.configurations.eventshandling.OSDIEvent;
-import it.geosolutions.opensdi2.configurations.eventshandling.ObserverListManager;
+import it.geosolutions.opensdi2.configurations.eventshandling.SubscriberListManager;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
@@ -36,20 +36,20 @@ import org.apache.log4j.Logger;
  * @author DamianoG
  * 
  * This Class provides the support for event handling to a Depot instance.  
- * Developers should implements the abstact methods {@link #addNewConfiguration(String, String, OSDIConfiguration) and {@link #updateExistingConfiguration(String, String, OSDIConfiguration)} instead of the 
+ * Developers should implements the abstract methods {@link #addNewConfiguration(String, String, OSDIConfiguration) and {@link #updateExistingConfiguration(String, String, OSDIConfiguration)} instead of the 
  * related methods defined in the Interface and the event handling comes for free.
  * 
  * The methods {link {@link #loadExistingConfiguration(String, String)} and {link {@link #setDao(it.geosolutions.opensdi2.configurations.dao.ConfigDAO)} must be implemented from scratch. 
  * 
  */
-public abstract class ObservableConfigDepot implements ConfigDepot, EventPublisher {
+public abstract class PublisherConfigDepot implements ConfigDepot, EventPublisher {
 
-    private final static Logger LOGGER = Logger.getLogger(ObservableConfigDepot.class);
+    private final static Logger LOGGER = Logger.getLogger(PublisherConfigDepot.class);
     
-    private ObserverListManager observers;
+    private SubscriberListManager observers;
     
-    public ObservableConfigDepot(){
-        observers = new ObserverListManager();
+    public PublisherConfigDepot(){
+        observers = new SubscriberListManager();
     }
 
     @Override
@@ -108,7 +108,7 @@ public abstract class ObservableConfigDepot implements ConfigDepot, EventPublish
     }
     
     @Override
-    public boolean subscribe(ConfigDepotObserver observer) {
+    public boolean subscribe(ConfigDepotSubscriber observer) {
         observers.subscribe(observer);
         return true;
     }

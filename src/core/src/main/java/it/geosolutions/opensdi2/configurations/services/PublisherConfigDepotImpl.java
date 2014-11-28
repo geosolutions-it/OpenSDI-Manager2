@@ -33,9 +33,9 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
  * @author DamianoG
  *
  */
-public class ObservableConfigDepotImpl extends ObservableConfigDepot{
+public class PublisherConfigDepotImpl extends PublisherConfigDepot{
 
-    private final static Logger LOGGER = Logger.getLogger(ObservableConfigDepotImpl.class);
+    private final static Logger LOGGER = Logger.getLogger(PublisherConfigDepotImpl.class);
     
     private ConfigDAO dao;
     

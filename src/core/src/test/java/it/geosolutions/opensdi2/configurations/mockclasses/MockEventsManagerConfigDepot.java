@@ -23,7 +23,7 @@ import it.geosolutions.opensdi2.configurations.dao.ConfigDAO;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
-import it.geosolutions.opensdi2.configurations.services.ObservableConfigDepot;
+import it.geosolutions.opensdi2.configurations.services.PublisherConfigDepot;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * @author DamianoG
  *
  */
-public class MockEventsManagerConfigDepot extends ObservableConfigDepot{
+public class MockEventsManagerConfigDepot extends PublisherConfigDepot{
 
     private final static Logger LOGGER = Logger.getLogger(MockEventsManagerConfigDepot.class);
     

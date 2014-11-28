@@ -11,7 +11,7 @@
 
 	<!-- Config dir -->
 	<bean id="baseConfig"
-		class="it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl" init-method="initConfigDir">
+		class="it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl" init-method="initConfigDir">
 	</bean>
 
 	<!-- The configuration DAO -->
@@ -26,7 +26,7 @@
 
 	<!-- The configuration Depot -->
 	<bean id="depot"
-		class="it.geosolutions.opensdi2.configurations.services.ObservableConfigDepotImpl">
+		class="it.geosolutions.opensdi2.configurations.services.PublisherConfigDepotImpl">
 		<property name="dao" ref="daoBean" />
 	</bean>
 

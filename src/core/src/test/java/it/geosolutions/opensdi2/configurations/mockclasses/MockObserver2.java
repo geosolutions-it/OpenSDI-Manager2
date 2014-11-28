@@ -19,7 +19,7 @@
  */
 package it.geosolutions.opensdi2.configurations.mockclasses;
 
-import it.geosolutions.opensdi2.configurations.eventshandling.ConfigDepotObserver;
+import it.geosolutions.opensdi2.configurations.eventshandling.ConfigDepotSubscriber;
 import it.geosolutions.opensdi2.configurations.eventshandling.Event;
 
 import org.apache.log4j.Logger;
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * @author DamianoG
  *
  */
-public class MockObserver2 implements ConfigDepotObserver{
+public class MockObserver2 implements ConfigDepotSubscriber{
 
     private final static Logger LOGGER = Logger.getLogger(MockObserver2.class);
     

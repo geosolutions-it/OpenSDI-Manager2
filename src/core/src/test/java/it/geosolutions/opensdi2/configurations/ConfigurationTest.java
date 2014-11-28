@@ -23,7 +23,7 @@ import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationExcep
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver1;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver2;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
-import it.geosolutions.opensdi2.configurations.services.ObservableConfigDepot;
+import it.geosolutions.opensdi2.configurations.services.PublisherConfigDepot;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ConfigurationTest extends Assert{
     
     @Autowired
-    ObservableConfigDepot depot;
+    PublisherConfigDepot depot;
     
     @Autowired
     MockObserver1 mockObs1;

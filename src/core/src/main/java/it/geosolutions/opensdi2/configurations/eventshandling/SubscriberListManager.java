@@ -23,31 +23,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class handle a list of observers and notify them when an event occurs
+ * This class handle a list of subscribers and notify them when an event occurs
  * 
  * @author DamianoG
  *
  */
-public class ObserverListManager {
+public class SubscriberListManager {
 
-    public List<ConfigDepotObserver> observerList;
+    public List<ConfigDepotSubscriber> observerList;
     
-    public ObserverListManager(){
-        this.observerList = new ArrayList<ConfigDepotObserver>();
+    public SubscriberListManager(){
+        this.observerList = new ArrayList<ConfigDepotSubscriber>();
     }
     
-    public void subscribe(ConfigDepotObserver observer){
+    public void subscribe(ConfigDepotSubscriber observer){
         observerList.add(observer);
     }
     
     public void fireNewConfigAddedEvent(Event e){
-        for(ConfigDepotObserver obs : observerList){
+        for(ConfigDepotSubscriber obs : observerList){
             obs.newConfigAddedEventHandler(e);
         }
     }
     
     public void fireConfigUpdatedEventOccurred(Event e){
-        for(ConfigDepotObserver obs : observerList){
+        for(ConfigDepotSubscriber obs : observerList){
             obs.configUpdatedEventHandler(e);
         }
     }
