@@ -15,75 +15,84 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author alessio.fabiani
- *
+ * 
  */
 public class RestWPSPlugin implements RestPlugin {
 
-	Set<RestService> wpsProcesses = Collections.newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
-	
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getPluginName()
-	 */
-	@Override
-	public String getPluginName() {
-		return "wps";
-	}
+    Set<RestService> wpsProcesses = Collections
+            .newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
 
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-		return "WPS REST Plugin for OpenSDI2-Manager V.1.0";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.rest.RestPlugin#getPluginName()
+     */
+    @Override
+    public String getPluginName() {
+        return "wps";
+    }
 
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getVersion()
-	 */
-	@Override
-	public String getVersion() {
-		return "1.0";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.rest.RestPlugin#getDescription()
+     */
+    @Override
+    public String getDescription() {
+        return "WPS REST Plugin for OpenSDI2-Manager V.1.0";
+    }
 
-	/* (non-Javadoc)
-	 * @see it.geosolutions.opensdi2.rest.RestPlugin#getServices()
-	 */
-	@Override
-	public Set<RestService> getServices() throws Exception {
-		
-		synchronized(wpsProcesses) {
-			if (wpsProcesses.isEmpty()) {
-				List<RestWPSProcess> wpsAvailableProcesses = OpenSDIManagerConfigExtensions.extensions(RestWPSProcess.class);
-				
-				if (wpsAvailableProcesses != null) {
-					wpsProcesses.addAll(wpsAvailableProcesses);
-				}
-			}
-		}
-		
-		return wpsProcesses;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.rest.RestPlugin#getVersion()
+     */
+    @Override
+    public String getVersion() {
+        return "1.0";
+    }
 
-	@Override
-	public boolean supportsQueries() {
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see it.geosolutions.opensdi2.rest.RestPlugin#getServices()
+     */
+    @Override
+    public Set<RestService> getServices() throws Exception {
 
-	@Override
-	public int countServices() {
-		return 0;
-	}
+        synchronized (wpsProcesses) {
+            if (wpsProcesses.isEmpty()) {
+                List<RestWPSProcess> wpsAvailableProcesses = OpenSDIManagerConfigExtensions
+                        .extensions(RestWPSProcess.class);
 
-	@Override
-	public List<RestService> findServices(String serviceId, String name,
-			String activeStatus, Map<String, String> params, int page,
-			int pageSize) {
-		return null;
-	}
+                if (wpsAvailableProcesses != null) {
+                    wpsProcesses.addAll(wpsAvailableProcesses);
+                }
+            }
+        }
 
-	@Override
-	public RestService getService(String serviceId) {
-		return null;
-	}
+        return wpsProcesses;
+    }
+
+    @Override
+    public boolean supportsQueries() {
+        return false;
+    }
+
+    @Override
+    public int countServices() {
+        return 0;
+    }
+
+    @Override
+    public List<RestService> findServices(String serviceId, String name, String activeStatus,
+            Map<String, String> params, int page, int pageSize) {
+        return null;
+    }
+
+    @Override
+    public RestService getService(String serviceId) {
+        return null;
+    }
 
 }

@@ -25,89 +25,99 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Alessio
- *
+ * 
  */
 public abstract class RestWPSProcess extends RestService {
-	
-	/**
-	 * logger
-	 */
-	protected static final Logger LOGGER = Logger.getLogger(RestWPSProcess.class.getName());
 
-	@Autowired
-	protected AdministratorGeoStoreClient wpsRestAPIGeoStoreAdminClient;
-	
-	protected URL url;
+    /**
+     * logger
+     */
+    protected static final Logger LOGGER = Logger.getLogger(RestWPSProcess.class.getName());
 
-	protected WebProcessingService wps;
-	
-	protected String processIden;
+    @Autowired
+    protected AdministratorGeoStoreClient wpsRestAPIGeoStoreAdminClient;
 
-	protected ResponseFormType response;
-	
-	protected Map<String, RestServiceRuntime> runtimes = new ConcurrentHashMap<String, RestServiceRuntime>();
-    
-	/**
-	 * 
-	 * @param serviceId
-	 * @param name
-	 * @param description
-	 * @param version
-	 * @param activeStatus
-	 */
-	private RestWPSProcess(String serviceId, String name, String description,
-			String version, String activeStatus) {
-		super(serviceId, name, description, version, activeStatus);
-	}
-	
-	public RestWPSProcess(String serviceId, String name, String description,
-			String version, String activeStatus, String wpsUrl, String processIden) {
-		this(serviceId, name, description, version, activeStatus);
-		try {
-			//testing connections
-			this.url = new URL(wpsUrl);
-			this.wps = new WebProcessingService(this.url);
-			this.processIden = processIden;
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "WPS Service [" + serviceId + "] could not be initialized due to an Exception!", e);
-			setActiveStatus("DISABLED");
-		}
-	}
+    protected URL url;
 
-	@JsonIgnore public abstract List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception;
+    protected WebProcessingService wps;
 
-	@JsonIgnore public abstract String execute(Principal auth, String requestBody, Map<String, String> params) throws Exception;
+    protected String processIden;
 
-	@JsonIgnore public abstract String stop(Principal auth, RestServiceRuntime runtime, Map<String, String> params) throws Exception;
+    protected ResponseFormType response;
 
-	@JsonIgnore public abstract boolean supportsQueries(Principal auth);
+    protected Map<String, RestServiceRuntime> runtimes = new ConcurrentHashMap<String, RestServiceRuntime>();
 
-	//@JsonIgnore public abstract List<RestServiceInfoParam> getInputs();
+    /**
+     * 
+     * @param serviceId
+     * @param name
+     * @param description
+     * @param version
+     * @param activeStatus
+     */
+    private RestWPSProcess(String serviceId, String name, String description, String version,
+            String activeStatus) {
+        super(serviceId, name, description, version, activeStatus);
+    }
 
-	//@JsonIgnore public abstract List<RestServiceInfoParam> getOutputs();
+    public RestWPSProcess(String serviceId, String name, String description, String version,
+            String activeStatus, String wpsUrl, String processIden) {
+        this(serviceId, name, description, version, activeStatus);
+        try {
+            // testing connections
+            this.url = new URL(wpsUrl);
+            this.wps = new WebProcessingService(this.url);
+            this.processIden = processIden;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "WPS Service [" + serviceId
+                    + "] could not be initialized due to an Exception!", e);
+            setActiveStatus("DISABLED");
+        }
+    }
 
-	@JsonIgnore public abstract int countRuntimes(Principal auth);
+    @JsonIgnore
+    public abstract List<RestServiceRuntime> getRuntimes(Principal auth) throws Exception;
 
-	@JsonIgnore public abstract List<RestServiceRuntime> findRuntimes(Principal auth, String id, String status,
-			Date startDate, Date endDate, Map<String, String> params, int page,
-			int pageSize);
+    @JsonIgnore
+    public abstract String execute(Principal auth, String requestBody, Map<String, String> params)
+            throws Exception;
 
-	@JsonIgnore public abstract RestServiceRuntime getRuntime(Principal auth, String id);
+    @JsonIgnore
+    public abstract String stop(Principal auth, RestServiceRuntime runtime,
+            Map<String, String> params) throws Exception;
 
-	@Override
-	public String getActiveStatus() {
-		if ("DISABLED".equals(super.getActiveStatus())) {
-			try {
-				//testing connections
-				this.wps = new WebProcessingService(this.url);
-				setActiveStatus("ENABLED");
-			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId() + "] could not be initialized due to an Exception!", e);
-				setActiveStatus("DISABLED");
-			}
-		}
-		
-		return super.getActiveStatus();
-	}
+    @JsonIgnore
+    public abstract boolean supportsQueries(Principal auth);
+
+    // @JsonIgnore public abstract List<RestServiceInfoParam> getInputs();
+
+    // @JsonIgnore public abstract List<RestServiceInfoParam> getOutputs();
+
+    @JsonIgnore
+    public abstract int countRuntimes(Principal auth);
+
+    @JsonIgnore
+    public abstract List<RestServiceRuntime> findRuntimes(Principal auth, String id, String status,
+            Date startDate, Date endDate, Map<String, String> params, int page, int pageSize);
+
+    @JsonIgnore
+    public abstract RestServiceRuntime getRuntime(Principal auth, String id);
+
+    @Override
+    public String getActiveStatus() {
+        if ("DISABLED".equals(super.getActiveStatus())) {
+            try {
+                // testing connections
+                this.wps = new WebProcessingService(this.url);
+                setActiveStatus("ENABLED");
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId()
+                        + "] could not be initialized due to an Exception!", e);
+                setActiveStatus("DISABLED");
+            }
+        }
+
+        return super.getActiveStatus();
+    }
 
 }

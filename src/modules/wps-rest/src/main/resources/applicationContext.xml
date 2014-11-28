@@ -38,6 +38,7 @@
         <constructor-arg index="6" value="default:Service" />
         
         <property name="reasourceLoaderProcessIdent" value="gs:ResourceLoader"/>
+        <property name="mapStoreConfigProcessIdent" value="gs:MapstoreConfig"/>
 	</bean>
     
 </beans>
