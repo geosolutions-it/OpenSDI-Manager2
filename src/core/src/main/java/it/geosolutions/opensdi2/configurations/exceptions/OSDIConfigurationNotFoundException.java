@@ -26,6 +26,11 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  */
 public class OSDIConfigurationNotFoundException extends Exception {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4175737509559115548L;
+
     public OSDIConfigurationNotFoundException(String message){
         super(message);
     }

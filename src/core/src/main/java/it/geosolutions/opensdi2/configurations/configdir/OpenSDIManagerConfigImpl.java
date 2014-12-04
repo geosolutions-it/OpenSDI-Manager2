@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Base configuration for OpenSDI-Manager2 This bean could centralize all common configuration
@@ -33,6 +34,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerConfig {
 
+    private static Logger LOGGER = Logger.getLogger(OpenSDIManagerConfigImpl.class);
+    
     private static final long serialVersionUID = 4107456302675180556L;
 
     public static String CONFIGDIR_PROPERTY_ENV_NAME = "OSDI_CONFIG_DIR";
@@ -46,6 +49,13 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
      */
     public void setBaseFolderPath(String baseFolderPath) {
         this.baseFolderPath = baseFolderPath;
+    }
+    
+    /**
+     * @param baseFolder the baseFolder to set
+     */
+    public void setBaseFolder(File baseFolder) {
+        this.baseFolder = baseFolder;
     }
 
     /**
@@ -86,5 +96,4 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
                             + "' cannot been read or write or it is not a directory... the Application cannot be started.");
         }
     }
-
 }

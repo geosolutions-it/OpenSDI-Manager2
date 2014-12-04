@@ -23,16 +23,12 @@ package it.geosolutions.opensdi2.mvc;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.RESULTS;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
-import it.geosolutions.opensdi2.configurations.model.OSDIConfiguration;
-import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
-import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 import it.geosolutions.opensdi2.service.FileUploadService;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +63,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  * @author adiaz
  * @author Lorenzo Natali
+ * @author DamianoG
  * 
  */
 public class BaseFileManager extends AbstractFileController {
@@ -796,6 +793,12 @@ public class BaseFileManager extends AbstractFileController {
 	@Autowired
 	public void setFileUploadService(FileUploadService fileUploadService) {
 		this.fileUploadService = fileUploadService;
+	}
+
+	@Override
+	public String getInstanceID(HttpServletRequest req) {
+	  //get the instanceID old skool
+          return req.getParameter(INSTANCE_ID);
 	}
 
 }

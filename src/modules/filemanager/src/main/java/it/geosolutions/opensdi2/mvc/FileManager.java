@@ -20,8 +20,8 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
-import it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor;
 
 import java.io.IOException;
 
@@ -39,9 +39,10 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Controller for the base file manager.
  * **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757
- * Once the issue is resolved and Spring Updated, use xml configuration to map base
- * class.
+ * Once the issue is resolved and Spring Updated, use the xml configuration to map multiple URLs to this controller.
+ * 
  * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
+ * @author DamianoG
  *
  */
 @Controller
@@ -136,7 +137,14 @@ public class FileManager extends BaseFileManager {
 	 * @param request
 	 */
 	private void configureModule(HttpServletRequest request){
-	    OSDIConfigurationKVP config = (OSDIConfigurationKVP)request.getAttribute(ConfigurationInterceptor.CONFIGURATION_OBJ_ID);
+	    
+	    OSDIConfigurationKVP config;
+            try {
+                config = (OSDIConfigurationKVP) super.loadConfiguration(request);
+            } catch (OSDIConfigurationException e) {
+                LOGGER.error(e.getMessage(), e);
+                throw new IllegalStateException("The configuration for the module '" + FileManager.class + "' cannot be load...");
+            }
 	    String runtimeDir = (String)config.getValue(RUNTIME_DIR);
 	    if(StringUtils.isBlank(runtimeDir)){
 	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");

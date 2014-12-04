@@ -25,6 +25,11 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  */
 public class OSDIConfigurationInternalErrorException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public OSDIConfigurationInternalErrorException(String message){
         super(message);
     }

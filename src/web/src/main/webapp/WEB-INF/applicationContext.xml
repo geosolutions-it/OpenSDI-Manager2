@@ -11,8 +11,6 @@
 
 
 	<mvc:annotation-driven />
-	<context:component-scan
-		base-package="it.geosolutions.opensdi2.configurations.services.interceptors" />
 	
 	<import resource="classpath*:/applicationContext.xml" />
 

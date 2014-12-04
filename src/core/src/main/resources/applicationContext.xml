@@ -12,6 +12,7 @@
 	<!-- Config dir -->
 	<bean id="baseConfig"
 		class="it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl" init-method="initConfigDir">
+		<property name="baseFolderPath"></property>
 	</bean>
 
 	<!-- The configuration DAO -->
@@ -29,17 +30,6 @@
 		class="it.geosolutions.opensdi2.configurations.services.PublisherConfigDepotImpl">
 		<property name="dao" ref="daoBean" />
 	</bean>
-
-	<!-- The Configuration interceptor -->
-	<mvc:interceptors>
-		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<bean
-				class="it.geosolutions.opensdi2.configurations.services.interceptors.ConfigurationInterceptor">
-				<property name="depot" ref="depot" />
-			</bean>
-		</mvc:interceptor>
-	</mvc:interceptors>
 
 	<bean
 		class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">

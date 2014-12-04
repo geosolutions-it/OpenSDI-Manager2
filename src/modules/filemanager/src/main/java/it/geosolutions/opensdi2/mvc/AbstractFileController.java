@@ -20,15 +20,19 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import java.io.File;
+
+import it.geosolutions.opensdi2.configurations.controller.OSDIModuleController;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 /**
  * Base controller based on files to be extended
  * 
  * @author adiaz
+ * @author DamianoG
  * 
  */
-public abstract class AbstractFileController {
+public abstract class AbstractFileController extends OSDIModuleController{
 	
 	private String runtimeDir;
 
@@ -45,7 +49,8 @@ public abstract class AbstractFileController {
 		if (subFolder != null) {
 			filePath += subFolder + ControllerUtils.SEPARATOR;
 		}
-		filePath += fileName;
+		File f = new File(filePath, fileName);
+		filePath = f.getAbsolutePath();
 		filePath = ControllerUtils.cleanDuplicateSeparators(filePath);
 		return filePath;
 	}

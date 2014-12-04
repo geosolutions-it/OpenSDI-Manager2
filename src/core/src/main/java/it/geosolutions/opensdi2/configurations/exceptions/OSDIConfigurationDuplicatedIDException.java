@@ -25,6 +25,11 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  */
 public class OSDIConfigurationDuplicatedIDException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6180369065718553433L;
+
     public OSDIConfigurationDuplicatedIDException(String message){
         super(message);
     }

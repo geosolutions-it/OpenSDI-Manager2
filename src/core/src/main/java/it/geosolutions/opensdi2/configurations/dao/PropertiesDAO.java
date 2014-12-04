@@ -68,6 +68,10 @@ public class PropertiesDAO implements ConfigDAO {
         }
     }
     
+    public void setPropertiesConfigDir(File propertiesConfigDir) {
+        this.propertiesConfigDir = propertiesConfigDir;
+    }
+
     public void setConfigDirManager(OpenSDIManagerConfig manager){
         this.configDirManager = manager;
     }

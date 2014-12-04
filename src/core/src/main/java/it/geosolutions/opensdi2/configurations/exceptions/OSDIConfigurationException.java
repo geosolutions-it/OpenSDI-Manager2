@@ -25,7 +25,16 @@ package it.geosolutions.opensdi2.configurations.exceptions;
  */
 public class OSDIConfigurationException extends Exception{
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6385528168040180402L;
+
     public OSDIConfigurationException(Throwable e){
         super(e);
+    }
+    
+    public OSDIConfigurationException(String msg){
+        super(msg);
     }
 }
