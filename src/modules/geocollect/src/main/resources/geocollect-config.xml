@@ -33,11 +33,11 @@
 
     <!-- Property Accessors -->
     <bean id="featurePropertyAccessor" class="it.geosolutions.opensdi2.workflow.transform.spel.accessors.SimpleFeaturePropertyAccessor"></bean>
-    <bean id="mapPropertyAccessor" class="it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
+    <bean id="mapPropertyAccessor" class="it.geosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor"></bean>
     <bean id="reflectionPropertyAccessor" class="org.springframework.expression.spel.support.ReflectivePropertyAccessor"></bean>
 
     <!-- Prebuilders -->
-    <bean id="mapPreBuilder" class="it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
+    <bean id="mapPreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
     <bean id="featurePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
         <constructor-arg ref="action3Config"/>
         <constructor-arg value="feature"/>
