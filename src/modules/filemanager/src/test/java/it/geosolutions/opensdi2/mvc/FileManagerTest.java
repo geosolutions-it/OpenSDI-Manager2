@@ -242,12 +242,13 @@ public class FileManagerTest {
 	    MockHttpServletRequest req = new MockHttpServletRequest();
 	    req.setParameter(OSDIModuleController.SCOPE_ID, "filemanager");
 	    req.setParameter(OSDIModuleController.INSTANCE_ID, "instance1");
+	    req.setPathInfo("fileManager");
 	    return req;
 	}
 	
 	private void setupConfigInstanceFile(File propertiesConfigDir, File rootFileManagerTest) throws ConfigurationException{
 	    
-	    CustomFileNameFilter cfnf = new CustomFileNameFilter("mod_filemanager");
+	    CustomFileNameFilter cfnf = new CustomFileNameFilter("mod_fileManager");
 	    File f = propertiesConfigDir.listFiles(cfnf)[0];
 	    
 	    cfnf = new CustomFileNameFilter("config_instance1.properties");
