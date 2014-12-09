@@ -22,24 +22,29 @@ package it.geosolutions.opensdi2.mvc;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import it.geosolutions.opensdi2.config.FileManagerConfig;
-import it.geosolutions.opensdi2.config.FileManagerConfigImpl;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigProxy;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.configurations.controller.OSDIModuleController;
+import it.geosolutions.opensdi2.configurations.dao.PropertiesDAO;
+import it.geosolutions.opensdi2.utils.PropertiesDirFiltersFactory;
 import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
-import org.junit.After;
+import org.geotools.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,23 +54,21 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Test class for FileManager
  * 
  * @author adiaz
+ * @author DamianoG
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath*:applicationContext.xml"})
+@ContextConfiguration(locations="classpath:/applicationContext.xml")
 @WebAppConfiguration
 public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
 	
-	@Autowired
-    private WebApplicationContext wac;
 	
 	/**
 	 * Controller to be tested
@@ -81,17 +84,13 @@ public class FileManagerTest {
 	/**
 	 * Files to generate
 	 */
-	private int files = 10;
+	private int files = 4;
 
 	/**
 	 * Folders to generate
 	 */
-	private int folders = 10;
+	private int folders = 4;
 	
-	/**
-	 * Base path for the test
-	 */
-	String basePath;
 	
 	/**
 	 * Created files
@@ -103,40 +102,77 @@ public class FileManagerTest {
 	 */
 	List<File> currentFolders;
 	
+	@Autowired
+	OpenSDIManagerConfigImpl baseConfig;
+	
+	@Autowired
+	PropertiesDAO daoBean;
+	
 	/**
 	 * Initialize test folder: create files and subfolders for the tests 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws ConfigurationException 
 	 */
 	@Before
-	public void setup(){
-		try {
-			// Clear lists
-			currentFiles = new LinkedList<File>();
-			currentFolders = new LinkedList<File>();
-			// folder is generated for the test
-			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt(); 
-			//OpenSDIManagerConfigImpl config = new OpenSDIManagerConfigImpl();
-			OpenSDIManagerConfigProxy configProxy = (OpenSDIManagerConfigProxy) wac.getBean("baseConfigProxy");
-			FileManagerConfig config = (FileManagerConfig) configProxy.getConfiguration("FileManager", FileManagerConfigImpl.class);
-			config.setBaseFolder(basePath + ControllerUtils.SEPARATOR);
-			fileManager.setRuntimeDir(config.getBaseFolder());
-			// create test folder
-			File file = new File(basePath);
-			file.mkdir();
-			// create files
-			for(int i = 0; i < files; i++){
-				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt() + ".txt");
-				file.createNewFile();
-				currentFiles.add(file);
-			}
-			// create folders
-			for(int i = 0; i < folders; i++){
-				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt());
-				file.mkdir();
-				currentFolders.add(file);
-			}
-		} catch (IOException e) {
-			LOGGER.error(e);
-		}
+	public void setup() throws FileNotFoundException, IOException, ConfigurationException{
+	    
+	    File configDirTest = TestData.file(this, "configDirTest");
+	    File propertiesConfigurationsDir = configDirTest.listFiles(new CustomFileNameFilter("propertiesConfigurations"))[0];
+	    File rootFileManager = TestData.file(this, "rootFileManagerTest");
+	    setupConfigInstanceFile(propertiesConfigurationsDir, rootFileManager);
+	    
+	    baseConfig.setBaseFolder(configDirTest);
+	    daoBean.setPropertiesConfigDir(propertiesConfigurationsDir);
+	    
+	    PropertiesDirFiltersFactory factory = new PropertiesDirFiltersFactory();
+	    
+            File file = null;
+	    currentFiles = Arrays.asList(rootFileManager.listFiles(factory.getFilter(PropertiesDirFiltersFactory.FILTER_TYPE.ALL_FILES, null)));
+	    if(currentFiles.isEmpty()){
+                // create files
+                for (int i = 0; i < files; i++) {
+                    file = new File(rootFileManager, "file"+(i+1));
+                    file.createNewFile();
+                }
+	    }
+	    currentFolders = Arrays.asList(rootFileManager.listFiles(factory.getFilter(PropertiesDirFiltersFactory.FILTER_TYPE.ALL_DIRS, null)));
+            if(currentFolders.isEmpty()){
+                // create folders
+                for (int i = 0; i < folders; i++) {
+                    file = new File(rootFileManager, "folder"+(i+1));
+                    file.mkdir();
+                }
+	    }
+	    
+//	    basePath = configDirTest.getAbsolutePath();
+//            System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath);
+	    
+//		try {
+//			// Clear lists
+//			currentFiles = new LinkedList<File>();
+//			currentFolders = new LinkedList<File>();
+//			// folder is generated for the test
+//			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt();
+//			System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath + ControllerUtils.SEPARATOR);
+//			// create test folder
+//			File file = new File(basePath);
+//			file.mkdir();
+//			// create files
+//			for(int i = 0; i < files; i++){
+//				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt() + ".txt");
+//				file.createNewFile();
+//				currentFiles.add(file);
+//			}
+//			// create folders
+//			for(int i = 0; i < folders; i++){
+//				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt());
+//				file.mkdir();
+//				currentFolders.add(file);
+//			}
+//		} catch (IOException e) {
+//			LOGGER.error(e);
+//		}
 	}
 	
 	/**
@@ -145,7 +181,8 @@ public class FileManagerTest {
 	@Test
 	public void testFileList(){
 		HttpServletResponse response = new MockHttpServletResponse();
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		HttpServletRequest request = buildMockRequest();
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -163,10 +200,11 @@ public class FileManagerTest {
 	@Test
 	public void testFileDeleteFiles(){
 		HttpServletResponse response = new MockHttpServletResponse();
+		HttpServletRequest request = buildMockRequest();
 		for(File file: currentFiles){
-			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, null, null, file.getName(), new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, null, null, file.getName(), request, response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -184,10 +222,11 @@ public class FileManagerTest {
 	@Test
 	public void testFileDeleteFolder(){
 		HttpServletResponse response = new MockHttpServletResponse();
+		HttpServletRequest request = buildMockRequest();
 		for(File file: currentFolders){
-			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null, new MockHttpServletRequest(), response);
+			fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null, request, response);
 		}
-		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, new MockHttpServletRequest(), response);
+		Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null, null, request, response);
 		if(jsonResp != null && jsonResp instanceof Map){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> json = (Map<String, Object>) jsonResp;
@@ -199,14 +238,39 @@ public class FileManagerTest {
 		}
 	}
 	
-	/**
-	 * Remove test folder
-	 * @throws IOException on folder delete
-	 */
-	@After
-	public void cleanup() throws IOException{
-		File file = new File(basePath);
-		FileUtils.deleteDirectory(file);
+	private HttpServletRequest buildMockRequest(){
+	    MockHttpServletRequest req = new MockHttpServletRequest();
+	    req.setParameter(OSDIModuleController.SCOPE_ID, "filemanager");
+	    req.setParameter(OSDIModuleController.INSTANCE_ID, "instance1");
+	    return req;
 	}
+	
+	private void setupConfigInstanceFile(File propertiesConfigDir, File rootFileManagerTest) throws ConfigurationException{
+	    
+	    CustomFileNameFilter cfnf = new CustomFileNameFilter("mod_filemanager");
+	    File f = propertiesConfigDir.listFiles(cfnf)[0];
+	    
+	    cfnf = new CustomFileNameFilter("config_instance1.properties");
+	    PropertiesConfiguration config = new PropertiesConfiguration(f.listFiles(cfnf)[0]);
+	    config.setProperty("runtimeDir", rootFileManagerTest.getAbsolutePath());
+	    config.save();
+	}
+	
+	public class CustomFileNameFilter implements FilenameFilter{
+
+            private String nameToCheck;
+            
+            public CustomFileNameFilter(String name){
+                this.nameToCheck = name;
+            }
+            
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name!=null && nameToCheck !=null && name.equals(nameToCheck)){
+                    return true;
+                }
+                return false;
+            }
+        }
 
 }

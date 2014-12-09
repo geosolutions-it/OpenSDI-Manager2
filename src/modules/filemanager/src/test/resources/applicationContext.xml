@@ -1,43 +1,43 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
 	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
-       default-autowire="byName">
+	default-autowire="byName">
 
-    <context:annotation-config/>
-    
-	<!-- Configuration -->
-    <bean id="fileManagerConfig" class="it.geosolutions.opensdi2.config.FileManagerConfigImpl">
-        <property name="scope" value="FileManager"/>
-        <property name="baseFolder" value="/tmp"/>
-    </bean>
-
-	<bean id="FileManager" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="openSdiManagerConfigExtensions">
- 
-		<property name="target" ref="fileManagerConfig" />
- 
-		<property name="interceptorNames">
-			<list>
-			    <!-- You can put here any interceptor you need -->
-			    <!-- The following ones are the default ones defined on the core configuration -->
-				<value>openSdiManagerConfigHijackBeforeMethodBean</value>
-				<value>openSdiManagerConfigHijackAroundMethodBean</value>
-			</list>
-		</property>
+	<!-- File upload service -->
+	<bean id="fileUploadService"
+		class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
+		<property name="minInterval" value="1000000000"></property>
+		<property name="maxSimultaneousUpload" value="100"></property>
 	</bean>
-	    
-    <!-- File upload service -->
-    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
-      <property name="minInterval" value="1000000000"></property>
-      <property name="maxSimultaneousUpload" value="100"></property>
-    </bean>  
-	
+
 	<context:component-scan base-package="it.geosolutions.opensdi2.mvc" />
 
 	<bean id="multipartResolver"
-	 class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 		
+	<!-- Config dir -->
+	<bean id="baseConfig"
+		class="it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl" >
+		<property name="baseFolderPath" value="./testvalue" />
+	</bean>
+
+	<!-- The configuration DAO -->
+	<bean id="converter"
+		class="it.geosolutions.opensdi2.configurations.model.converters.PropertiesConfigurationConverter" />
+
+	<bean id="daoBean"
+		class="it.geosolutions.opensdi2.configurations.dao.PropertiesDAO" depends-on="baseConfig">
+		<property name="configDirManager" ref="baseConfig" />
+		<property name="configConverter" ref="converter" />
+	</bean>
+
+	<!-- The configuration Depot -->
+	<bean id="depot"
+		class="it.geosolutions.opensdi2.configurations.services.PublisherConfigDepotImpl">
+		<property name="dao" ref="daoBean" />
+	</bean>
+
 </beans>

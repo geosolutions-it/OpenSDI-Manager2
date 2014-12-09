@@ -63,6 +63,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  * @author adiaz
  * @author Lorenzo Natali
+ * @author DamianoG
  * 
  */
 public class BaseFileManager extends AbstractFileController {
@@ -172,7 +173,7 @@ public class BaseFileManager extends AbstractFileController {
 			 String file,
 			HttpServletRequest request,
 			HttpServletResponse response) {
-
+	    
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Performing " + action + " in extJSFileBrowser");
 		}
@@ -792,6 +793,12 @@ public class BaseFileManager extends AbstractFileController {
 	@Autowired
 	public void setFileUploadService(FileUploadService fileUploadService) {
 		this.fileUploadService = fileUploadService;
+	}
+
+	@Override
+	public String getInstanceID(HttpServletRequest req) {
+	  //get the instanceID old skool
+          return req.getParameter(INSTANCE_ID);
 	}
 
 }

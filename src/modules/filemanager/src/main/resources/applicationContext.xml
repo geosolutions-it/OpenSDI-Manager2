@@ -6,34 +6,13 @@
             http://cxf.apache.org/core                      http://cxf.apache.org/schemas/core.xsd
             http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-autowire="byName">
-       
-    <context:annotation-config/>
-
-    <!-- Configuration -->
-    <bean id="fileManagerConfig" class="it.geosolutions.opensdi2.config.FileManagerConfigImpl">
-        <property name="scope" value="FileManager"/>
-        <property name="baseFolder" value="/tmp"/>
-    </bean>
-
-	<bean id="FileManager" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="openSdiManagerConfigExtensions">
- 
-		<property name="target" ref="fileManagerConfig" />
- 
-		<property name="interceptorNames">
-			<list>
-			    <!-- You can put here any interceptor you need -->
-			    <!-- The following ones are the default ones defined on the core configuration -->
-				<value>openSdiManagerConfigHijackBeforeMethodBean</value>
-				<value>openSdiManagerConfigHijackAroundMethodBean</value>
-			</list>
-		</property>
-	</bean>
-    
+	  
     <!-- File upload service -->
-    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl">
+    <bean id="fileUploadService" class="it.geosolutions.opensdi2.service.impl.FileUploadServiceImpl" >
       <property name="minInterval" value="1000000000"></property>
       <property name="maxSimultaneousUpload" value="100"></property>
       <!-- <property name="temporaryFolder" value="/tmp"></property> -->
-    </bean>
+    </bean>  
     
 </beans>
+

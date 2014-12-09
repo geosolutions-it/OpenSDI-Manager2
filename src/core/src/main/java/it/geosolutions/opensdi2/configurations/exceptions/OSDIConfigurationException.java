@@ -1,6 +1,5 @@
 /*
- *  OpenSDI Manager 2
- *  Copyright (C) 2012 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -18,34 +17,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.config;
-
-import java.io.Serializable;
-import java.util.List;
+package it.geosolutions.opensdi2.configurations.exceptions;
 
 /**
- * Base configuration for OpenSDI-Manager2 This bean could centralize all common
- * configuration
- * 
- * @author adiaz
- * 
+ * @author DamianoG
+ *
  */
-public class OpenSDIManagerConfigImpl implements OpenSDIManagerConfigProxy,
-		Serializable {
+public class OSDIConfigurationException extends Exception{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4107456302675180556L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6385528168040180402L;
 
-	public Object getConfiguration(String scope, Class extensionPoint) {
-		List<Object> scopes = OpenSDIManagerConfigExtensions.extensions(scope);
-
-		if (scopes != null && !scopes.isEmpty()) {
-			// TODO: extension priority
-			return scopes.get(0);
-		}
-
-		return null;
-	}
+    public OSDIConfigurationException(Throwable e){
+        super(e);
+    }
+    
+    public OSDIConfigurationException(String msg){
+        super(msg);
+    }
 }

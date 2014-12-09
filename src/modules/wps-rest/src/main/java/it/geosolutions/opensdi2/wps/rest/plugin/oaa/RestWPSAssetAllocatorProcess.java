@@ -6,6 +6,7 @@ package it.geosolutions.opensdi2.wps.rest.plugin.oaa;
 import it.geosolutions.geostore.core.model.Attribute;
 import it.geosolutions.geostore.core.model.Resource;
 import it.geosolutions.geostore.core.model.SecurityRule;
+import it.geosolutions.geostore.core.model.StoredData;
 import it.geosolutions.geostore.core.model.enums.DataType;
 import it.geosolutions.geostore.services.dto.ShortAttribute;
 import it.geosolutions.geostore.services.dto.search.AndFilter;
@@ -68,6 +69,8 @@ import net.opengis.wps10.WPSCapabilitiesType;
 import net.opengis.wps10.Wps10Factory;
 import net.opengis.wps10.impl.OutputDataTypeImpl;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.data.wps.request.DescribeProcessRequest;
@@ -454,7 +457,110 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
     @Override
     public String stop(Principal auth, RestServiceRuntime runtime, Map<String, String> params)
             throws Exception {
-        // TODO Auto-generated method stub
+        
+        synchronized (runtimes) {
+            if (auth != null && auth instanceof UsernamePasswordAuthenticationToken) {
+                UsernamePasswordAuthenticationToken user = (UsernamePasswordAuthenticationToken) auth;
+
+                if (runtime != null && runtime instanceof RestWPSProcessExecution && user.isAuthenticated()) {
+                    
+                    final RestWPSProcessExecution process = (RestWPSProcessExecution) runtime;
+                    
+                    // sync runtimes stored on GeoStore
+                    AndFilter searchFilter = new AndFilter();
+                    searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
+                    searchFilter.add(new FieldFilter(BaseField.NAME, process.getExecutionId(), SearchOperator.EQUAL_TO));
+                    ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
+
+                    if (resources != null && !resources.isEmpty()) {
+                        for (Resource r : resources.getList()) {
+
+                            // Security check
+                            // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
+                            SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
+                            boolean allowed = false;
+                            if (secRules != null && !secRules.getList().isEmpty()) {
+                                allowed = isAllowed(auth, secRules);
+                            } else {
+                                allowed = false;
+                            }
+
+                            if (allowed) {
+                                if ("FAIL".equals(process.getStatus())) {
+                                    /*
+                                     * TODO: issue WPS Dismiss
+                                     */
+                                }
+                               
+                                if (runtimes.containsKey(process.getExecutionId())) {
+                                    try {
+                                        
+                                        /**
+                                         * 1. Cleanup resources from GeoServer
+                                         */
+                                        if (process.getResults() != null && 
+                                                process.getResults().get("mapId") != null) {
+                                            
+                                            final Long mapId = (Long) process.getResults().get("mapId");
+                                            
+                                            searchFilter = new AndFilter();
+                                            searchFilter.add(new CategoryFilter("MAPSTORECONFIG", SearchOperator.EQUAL_TO));
+                                            searchFilter.add(new FieldFilter(BaseField.ID, String.valueOf(mapId), SearchOperator.EQUAL_TO));
+                                            ResourceList mapResources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
+
+                                            if (mapResources != null && !mapResources.isEmpty()) {
+                                                for (Resource m : mapResources.getList()) {
+                                                    StoredData mapStoreConfiguratrion = m.getData();
+                                                    
+                                                    if (mapStoreConfiguratrion != null && 
+                                                            mapStoreConfiguratrion.getData() != null) {
+                                                        JSONObject mapStoreConfigJSON = new JSONObject(mapStoreConfiguratrion.getData());
+                                                        JSONObject customData = (JSONObject) mapStoreConfigJSON.get("customData");
+                                                        JSONArray optimizationToolLayers = (JSONArray) customData.get("optimizationToolLayers");
+                                                        
+                                                        for(int ol = 0; ol < optimizationToolLayers.length(); ol++ ) {
+                                                            System.out.println(optimizationToolLayers.getString(ol));
+                                                            
+                                                            this.wps.getHTTPClient().get(url);
+                                                        }
+                                                    }
+                                                    /*
+                                                     * TODO: cleanup resources from GeoServer
+                                                     * 
+                                                     * "customData": {
+                                                     *    "optimizationToolLayers": [
+                                                     *         "remotewps_oaa:oaa_tracks_0b46bd0ffd7a87b",
+                                                     *         "remotewps_oaa:oaa_waypoints_0b46bd0ffd7a87b"
+                                                     *    ]
+                                                     *  }
+                                                     */
+                                                    
+                                                    //wpsRestAPIGeoStoreAdminClient.deleteResource(m.getId());
+                                                    
+                                                }
+                                            }
+                                        }
+
+                                        /**
+                                         * 2. Cleanup resources from GeoStore
+                                         */
+                                        //wpsRestAPIGeoStoreAdminClient.deleteResource(r.getId());
+
+                                        /**
+                                         * END. Remove bean from Cache
+                                         */
+                                        runtimes.remove(process.getExecutionId());
+                                    } catch (Exception e) {
+                                        throw new ProcessException("Could not remove Runtime [" + process.getExecutionId() + "]", e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         return null;
     }
 

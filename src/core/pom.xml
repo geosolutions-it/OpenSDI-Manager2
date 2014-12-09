@@ -18,16 +18,10 @@
 	</properties>
 
     <dependencies>
-        
-        <!-- Test -->
+        <!-- Servlet API -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
         </dependency>
         
         <!-- =========================================================== -->
@@ -90,6 +84,28 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>            
+        </dependency>
+        <!-- =========================================================== -->
+        <!--     APACHE COMMONS                                          -->
+        <!-- =========================================================== -->
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-sample-data</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
