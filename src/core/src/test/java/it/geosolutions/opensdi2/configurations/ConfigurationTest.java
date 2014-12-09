@@ -19,6 +19,9 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
+import javax.servlet.http.HttpServletRequest;
+
+import it.geosolutions.opensdi2.configurations.controller.OSDIModuleController;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver1;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver2;
@@ -29,6 +32,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -124,5 +129,71 @@ public class ConfigurationTest extends Assert{
             }
         }
         fail();
+    }
+    
+    /**
+     * Check if the scopeID is well extracted from the path
+     */
+    @Test
+    public void scopeIDTest(){
+        
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockModule mm = new MockModule();
+        
+        req.setPathInfo("moduleid/instanceid");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("moduleid/instanceid/aother/path/parts");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("moduleid/instanceid/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/moduleid/instanceid/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/moduleid/instanceid/other/path/parts/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/////moduleid/instanceid/other/path/parts/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        boolean exceptionOccurred = false;
+        req.setPathInfo("");
+        try{
+            mm.getScopeIDTest(req);
+        }
+        catch(IllegalArgumentException ise){
+            assertEquals("no scopeID is found after all the possible attemps... this should never happen...", ise.getMessage());
+            exceptionOccurred = true;
+        }
+        if(!exceptionOccurred){
+            fail();
+        }
+        
+        exceptionOccurred = false;
+        req.setPathInfo("///");
+        try{
+            mm.getScopeIDTest(req);
+        }
+        catch(IllegalArgumentException ise){
+            assertEquals("no scopeID is found... this should never happen...", ise.getMessage());
+            exceptionOccurred = true;
+        }
+        if(!exceptionOccurred){
+            fail();
+        }
+    }
+    
+    public class MockModule extends OSDIModuleController{
+
+        @Override
+        public String getInstanceID(HttpServletRequest req) {
+            return null;
+        }
+
+        protected String getScopeIDTest(HttpServletRequest req){
+            return super.getScopeID(req);
+        }
     }
 }

@@ -25,13 +25,10 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.configurations.services.ConfigDepot;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * 
@@ -100,8 +97,8 @@ public abstract class OSDIModuleController{
         LOGGER.info("Executing module: '" + req.getPathInfo() + "' configuration with ScopeID: '" + scopeID + "' and instanceID: '" + instanceID + "'");
         OSDIConfiguration tmpConf = new OSDIConfigurationKVP(scopeID, instanceID);
         if(!tmpConf.validateIDs()){
-            LOGGER.error("The Configuration Interceptor founds scope and instance IDs that are not valid... Please check your module configurations and installation");
-            throw new OSDIConfigurationException("The Configuration Interceptor founds scope and instance IDs that are not valid... Please check your module configurations and installation");
+            LOGGER.error("A scope and instance IDs are not valid... Please check your module configurations and installation");
+            throw new OSDIConfigurationException("A scope and instance IDs are not valid... Please check your module configurations and installation");
         }
         OSDIConfiguration conf;
         try {
@@ -122,8 +119,36 @@ public abstract class OSDIModuleController{
         return conf;
     }
     
-    private String getScopeID(HttpServletRequest req){
-        return req.getParameter(SCOPE_ID);
+    /**
+     * It returns the scopeID extracting the first part of the path after the servlet path.
+     * If the module is implemented as a spring controller (as suggested) the method request.getPathInfo() 
+     * used in this method internally returns the path after the the URL of the SpringMVC Dispatcher Servlet.
+     * So the first part of the result will be for sure the name of the module as defined by convention.
+     * 
+     * the URL of the SpringMVC Dispatcher Servlet
+     * 
+     * @param req
+     * @return
+     */
+    protected String getScopeID(HttpServletRequest req){
+        String path = req.getPathInfo();
+        if(path == null){
+            throw new IllegalArgumentException("The path found in the request is null... this should never happen...");
+        }
+        LOGGER.debug("Extracting first part of the following path '" + path + "' in order to get the module name...");
+        String [] parts = path.split("/");
+        if(parts == null || parts.length == 0 || parts[0] == null){
+            throw new IllegalArgumentException("no scopeID is found... this should never happen...");
+        }
+        if(StringUtils.isNotEmpty(parts[0])){
+            return parts[0];
+        }
+        for(int i=0; i<parts.length; i++){
+            if(StringUtils.isNotEmpty(parts[i])){
+                return parts[i];
+            }
+        }
+        throw new IllegalArgumentException("no scopeID is found after all the possible attemps... this should never happen...");
     }
 
 }
