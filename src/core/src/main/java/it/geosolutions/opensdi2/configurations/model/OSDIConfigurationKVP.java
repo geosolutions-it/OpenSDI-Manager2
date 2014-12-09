@@ -50,7 +50,7 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
         this.scopeID = scopeID;
         this.instanceID = instanceID;
         if(!validateIDs()){
-            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contains whitespaces");
+            throw new IllegalArgumentException("ScopeID or instanceID are null, empty or contains whitespaces or non alphanumeric characters");
         }
         this.configParamsMap = new HashMap<String, Object>();
     }
@@ -104,10 +104,10 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
     
     @Override
     public boolean validateIDs() {
-        if(StringUtils.isEmpty(scopeID) || StringUtils.containsWhitespace(scopeID)){
+        if(StringUtils.isEmpty(scopeID) || StringUtils.containsWhitespace(scopeID) || !org.apache.commons.lang.StringUtils.isAlphanumeric(scopeID)){
             return false;
         }
-        if(StringUtils.isEmpty(instanceID) || StringUtils.containsWhitespace(instanceID)){
+        if(StringUtils.isEmpty(instanceID) || StringUtils.containsWhitespace(instanceID) || !org.apache.commons.lang.StringUtils.isAlphanumeric(instanceID)){
             return false;
         }
         return true;

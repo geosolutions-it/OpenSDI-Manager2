@@ -77,6 +77,7 @@ public abstract class OSDIModuleController{
      * <ul>
      * <li>Load the <b>scopeID</b> taking it from the first placeholder path</li>
      * <li>Load the <b>instanceID</b> calling the abstract method</li>
+     * <li><strong>If the instanceID is null (or blank)</strong> it will initialized as the scopeID... this case means that the module has only one configuration, called as the module name</li>
      * <li>Use that params to load the configuration using the method loadExistingConfiguration</li>
      * </ul>
      * 
@@ -90,9 +91,13 @@ public abstract class OSDIModuleController{
         String instanceID = getInstanceID(req);
         String scopeID = getScopeID(req);
         
-        if(scopeID==null && instanceID==null){
-            LOGGER.info("Executing module: '" + req.getPathInfo() + "' ...since both scopeID and instanceID are null NO module configuration will be loaded...");
-            return null;
+        if(StringUtils.isBlank(scopeID)){
+            LOGGER.info("Executing module: '" + req.getPathInfo() + "' ...ScopeID is null or blank... This should never happen... Have you overrode the getScopeID method?...");
+            throw new OSDIConfigurationException("ScopeID is null or blank... This should never happen... Have you overrode the getScopeID method?");
+        }
+        if(StringUtils.isBlank(instanceID)){
+            instanceID = scopeID;
+            LOGGER.warn("The instanceID is null or blank and it will be set as the scopeID... A configuration file called as the scopeID is expected...");
         }
         LOGGER.info("Executing module: '" + req.getPathInfo() + "' configuration with ScopeID: '" + scopeID + "' and instanceID: '" + instanceID + "'");
         OSDIConfiguration tmpConf = new OSDIConfigurationKVP(scopeID, instanceID);
@@ -100,7 +105,7 @@ public abstract class OSDIModuleController{
             LOGGER.error("A scope and instance IDs are not valid... Please check your module configurations and installation");
             throw new OSDIConfigurationException("A scope and instance IDs are not valid... Please check your module configurations and installation");
         }
-        OSDIConfiguration conf;
+        OSDIConfiguration conf = null;
         try {
             conf = depot.loadExistingConfiguration(scopeID, instanceID);
         } catch (OSDIConfigurationException e) {
