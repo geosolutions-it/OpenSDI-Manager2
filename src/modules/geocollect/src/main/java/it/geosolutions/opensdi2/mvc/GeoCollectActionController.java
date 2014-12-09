@@ -21,11 +21,7 @@
 package it.geosolutions.opensdi2.mvc;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import it.geosolutions.geocollect.model.http.CommitResponse;
 import it.geosolutions.geocollect.model.http.Status;
 import it.geosolutions.opensdi2.workflow.ActionSequence;
@@ -33,15 +29,11 @@ import it.geosolutions.opensdi2.workflow.WorkflowContext;
 import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.geosolutions.opensdi2.workflow.WorkflowStatus;
 import it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration;
-import it.geosolutions.opensdi2.workflow.utils.TestUtils;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.geotools.data.DataStore;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
