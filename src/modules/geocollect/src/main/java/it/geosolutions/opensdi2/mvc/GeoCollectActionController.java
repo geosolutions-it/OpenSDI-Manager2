@@ -21,7 +21,6 @@
 package it.geosolutions.opensdi2.mvc;
 
 
-import java.io.IOException;
 import it.geosolutions.geocollect.model.http.CommitResponse;
 import it.geosolutions.geocollect.model.http.Status;
 import it.geosolutions.opensdi2.workflow.ActionSequence;
@@ -29,10 +28,14 @@ import it.geosolutions.opensdi2.workflow.WorkflowContext;
 import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.geosolutions.opensdi2.workflow.WorkflowStatus;
 import it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration;
+
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.geotools.data.DataStore;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +50,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/geocollect/action")
+@PreAuthorize("!hasRole('ROLE_ANONYMOUS')")
 public class GeoCollectActionController {
 	
 	/**
