@@ -49,7 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-        public static final String RUNTIME_DIR = "runtimeDir";
+        public static final String ROOT_DIR = "rootDir";
     
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
@@ -146,10 +146,10 @@ public class FileManager extends BaseFileManager {
                 LOGGER.error(e.getMessage(), e);
                 throw new IllegalStateException("The configuration for the module '" + FileManager.class + "' cannot be load...");
             }
-	    String runtimeDir = (String)config.getValue(RUNTIME_DIR);
-	    if(StringUtils.isBlank(runtimeDir)){
+	    String rootDir = (String)config.getValue(ROOT_DIR);
+	    if(StringUtils.isBlank(rootDir)){
 	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");
 	    }
-	    return runtimeDir;
+	    return rootDir;
 	}
 }
