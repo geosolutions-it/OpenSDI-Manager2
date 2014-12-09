@@ -166,6 +166,7 @@ public class BaseFileManager extends AbstractFileController {
 	 * @return
 	 */
 	public Object extJSbrowser(
+	                 String rootDir,
 			 String action,
 			 String folder,
 			 String name,
@@ -185,21 +186,21 @@ public class BaseFileManager extends AbstractFileController {
 
 		// TODO: Known operations for ExtJS file browser.
 		if (EXTJS_FILE_DELETE.equals(action)) {
-			result.put(SUCCESS, deleteFile(file, finalFolder));
+			result.put(SUCCESS, deleteFile(rootDir, file, finalFolder));
 		} else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
-			download(response, file, getFilePath(file, finalFolder));
+			download(response, file, getFilePath(rootDir, file, finalFolder));
 			return null;
 		} else if (EXTJS_FILE_LIST.equals(action)) {
-			return getFileList(folder);
+			return getFileList(rootDir, folder);
 		} else if (EXTJS_FILE_PROPERTIES.equals(action)) {
 			LOGGER.error("TODO operation: " + EXTJS_FILE_PROPERTIES);
 		} else if (EXTJS_FILE_RENAME.equals(action)) {
-			result.put(SUCCESS, renameFolder(finalFolder, name, oldName));
+			result.put(SUCCESS, renameFolder(rootDir, finalFolder, name, oldName));
 		} else if (EXTJS_FILE_THUMB.equals(action)) {
 			serveImageThumb(
 					response,
 					file,
-					getFilePath(file, finalFolder));
+					getFilePath(rootDir, file, finalFolder));
 			return null;
 		} else if (EXTJS_IMAGE.equals(action)) {
 			download(
@@ -207,18 +208,18 @@ public class BaseFileManager extends AbstractFileController {
 					null,
 					response,
 					file,
-					getFilePath(file, finalFolder));
+					getFilePath(rootDir, file, finalFolder));
 			return null;
 		} else if (EXTJS_FILE_UPLOAD.equals(action)) {
 			LOGGER.error("TODO operation: " + EXTJS_FILE_UPLOAD);
 		} else if (EXTJS_FOLDER_DEL.equals(action)) {
-			result.put(SUCCESS, deleteFolder(finalFolder, null));
+			result.put(SUCCESS, deleteFolder(rootDir, finalFolder, null));
 		} else if (EXTJS_FOLDER_LIST.equals(action)) {
-			return getFolderList(folder);
+			return getFolderList(rootDir, folder);
 		} else if (EXTJS_FOLDER_NEW.equals(action)) {
-			result.put(SUCCESS, newFolder(finalFolder));
+			result.put(SUCCESS, newFolder(rootDir, finalFolder));
 		} else if (EXTJS_FOLDER_RENAME.equals(action)) {
-			result.put(SUCCESS, renameFolder(file, name, oldName));
+			result.put(SUCCESS, renameFolder(rootDir, file, name, oldName));
 		} else {
 			LOGGER.error("Unknown operation " + action);
 			result.put(SUCCESS, false);
@@ -243,7 +244,8 @@ public class BaseFileManager extends AbstractFileController {
 	 * @throws IOException
 	 */
 	public void upload(
-			MultipartFile file,
+	                 String rootDir,
+			 MultipartFile file,
 			 String name,
 			 int chunks,
 			 int chunk,
@@ -269,14 +271,14 @@ public class BaseFileManager extends AbstractFileController {
 	        }
 	        if (chunk == chunks - 1) {
 	            // get the final file
-	        	fileUploadService.getCompletedFile(name, getFilePath(name, folder), entry);
+	        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, name, folder), entry);
 	        }
 	    } else {
 	        // init bytes for the chunk upload
 	        Entry<String, ?> entry = fileUploadService.addChunk(name, 1,
 	                0, file);
 	        // get the final file
-        	fileUploadService.getCompletedFile(name, getFilePath(name, folder), entry);
+        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, name, folder), entry);
 	    }
 	}
 
@@ -300,13 +302,14 @@ public class BaseFileManager extends AbstractFileController {
 	 *            servlet response
 	 */
 	public void downloadFile(
+	                String rootDir,
 			String folder,
 			String file,
 			HttpServletResponse resp) {
 		download(
 				resp,
 				file,
-				getFilePath(file,
+				getFilePath(rootDir, file,
 						folder != null && !folder.equals("root") ? folder
 								: null));
 	}
@@ -318,8 +321,8 @@ public class BaseFileManager extends AbstractFileController {
 	 * @param subFolder
 	 * @return true if the file has been delete or false otherwise
 	 */
-	protected boolean deleteFile(String fileName, String subFolder) {
-		String filePath = getFilePath(fileName, subFolder);
+	protected boolean deleteFile(String rootDir, String fileName, String subFolder) {
+		String filePath = getFilePath(rootDir, fileName, subFolder);
 		LOGGER.debug("Deleting file '" + filePath + "'");
 		File file = new File(filePath);
 		if (file.exists()) {
@@ -353,23 +356,23 @@ public class BaseFileManager extends AbstractFileController {
 	 * 
 	 * @return true if the new folder is successfully created and false otherwise
 	 */
-	protected boolean newFolder(String absolutePath) {
+	protected boolean newFolder(String rootDir, String absolutePath) {
 
 		// get the new folder path
 		String newFolderPath = absolutePath;
 		// absolute path could contain target new path or only the parent folder
 		if (newFolderPath != null
 				&& newFolderPath.contains(ControllerUtils.SEPARATOR)) {
-			File targetFile = new File(getFilePath(newFolderPath, null));
+			File targetFile = new File(getFilePath(rootDir, newFolderPath, null));
 			if (targetFile.exists()) {
 				// absolute path is parent folder
-				newFolderPath = generateNewFolderName(newFolderPath);
+				newFolderPath = generateNewFolderName(rootDir, newFolderPath);
 			} else {
 				// absolute path is target new folder. We're going to check the
 				// parent folder
 				String parentFolder = newFolderPath.substring(0,
 						newFolderPath.lastIndexOf(ControllerUtils.SEPARATOR));
-				File parent = new File(getFilePath(parentFolder, null));
+				File parent = new File(getFilePath(rootDir, parentFolder, null));
 				if (!parent.exists()) {
 					LOGGER.error("Can't create folder '" + absolutePath
 							+ "'. Parent folder don't exists");
@@ -383,7 +386,7 @@ public class BaseFileManager extends AbstractFileController {
 			LOGGER.debug("Creating new folder in " + newFolderPath);
 		}
 		try {
-			new File(getFilePath(newFolderPath, null)).mkdir();
+			new File(getFilePath(rootDir, newFolderPath, null)).mkdir();
 			return true;
 		} catch (Exception e) {
 			LOGGER.error("Error creating '" + newFolderPath + "' folder");
@@ -396,23 +399,23 @@ public class BaseFileManager extends AbstractFileController {
 	 * @param parent
 	 * @return new name for the folder
 	 */
-	protected String generateNewFolderName(String parent){
-		String filePath = getFilePath(newFolderName, parent);
+	protected String generateNewFolderName(String rootDir, String parent){
+		String filePath = getFilePath(rootDir, newFolderName, parent);
 		File file = new File(filePath);
 		// generate new folder name
 		if(file.exists()){
 			int i = 1;
 			while (file.exists()){
-				filePath = getFilePath(newFolderName + " (" + (i++) + ")", parent);
+				filePath = getFilePath(rootDir, newFolderName + " (" + (i++) + ")", parent);
 				file = new File(filePath);
 			}
 		}
 		return filePath;
 	}
 
-	protected Object renameFolder(String folder, String newName, String oldName) {
-		String filePath = getFilePath(oldName, folder);
-		String newPath = getFilePath(newName, folder);
+	protected Object renameFolder(String rootDir, String folder, String newName, String oldName) {
+		String filePath = getFilePath(rootDir, oldName, folder);
+		String newPath = getFilePath(rootDir, newName, folder);
 		if(LOGGER.isDebugEnabled()){
 			LOGGER.debug("Renaming folder " + folder + " to " + newName);
 		}
@@ -442,16 +445,16 @@ public class BaseFileManager extends AbstractFileController {
 	 * @param folder
 	 * @return folder list in the folder
 	 */
-	protected List<Map<String, Object>> getFolderList(String folder) {
+	protected List<Map<String, Object>> getFolderList(String rootDir, String folder) {
 		List<Map<String, Object>> data = new LinkedList<Map<String, Object>>();
 		String subFolder = folder != null && !folder.equals("root") ? folder
 				: "";
-		String path = getFilePath("", subFolder);
+		String path = getFilePath(rootDir, "", subFolder);
 
 		File folderToList = new File(path);
 		if (folderToList.exists() && folderToList.isDirectory()) {
 			for (String sub : folderToList.list()) {
-				File file = new File(getFilePath(sub, subFolder));
+				File file = new File(getFilePath(rootDir, sub, subFolder));
 				Map<String, Object> objectData = new HashMap<String, Object>();
 				String id = ControllerUtils.SEPARATOR + sub;
 				if(folder != null){
@@ -487,11 +490,11 @@ public class BaseFileManager extends AbstractFileController {
 	 * @param folder
 	 * @return file list in the folder
 	 */
-	protected Map<String, Object> getFileList(String folder) {
+	protected Map<String, Object> getFileList(String rootDir, String folder) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		String subFolder = folder != null && !folder.equals("root") ? folder
 				: "";
-		String path = getFilePath("", subFolder);
+		String path = getFilePath(rootDir, "", subFolder);
 
 		File folderToList = new File(path);
 		List<Map<String, Object>> data = new LinkedList<Map<String, Object>>();
@@ -499,7 +502,7 @@ public class BaseFileManager extends AbstractFileController {
 		if (folderToList.exists() && folderToList.isDirectory()) {
 			String[] children = folderToList.list();
 			for (String sub : children) {
-				File file = new File(getFilePath(sub, subFolder));
+				File file = new File(getFilePath(rootDir, sub, subFolder));
 				Map<String, Object> objectData = new HashMap<String, Object>();
 				objectData.put("name", sub);
 				objectData.put("size", file.length());
@@ -524,8 +527,8 @@ public class BaseFileManager extends AbstractFileController {
 	 * @param folderName
 	 * @param subFolder
 	 */
-	protected boolean deleteFolder(String folderName, String subFolder) {
-		String folderPath = getFilePath(folderName, subFolder);
+	protected boolean deleteFolder(String rootDir, String folderName, String subFolder) {
+		String folderPath = getFilePath(rootDir, folderName, subFolder);
 		LOGGER.debug("Deleting folder '" + folderPath + "'");
 		File file = new File(folderPath);
 		if (file.exists()) {
