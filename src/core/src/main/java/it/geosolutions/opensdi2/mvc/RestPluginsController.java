@@ -573,9 +573,9 @@ public class RestPluginsController extends RestAPIBaseController {
 					RestServiceRuntime runtime = null;
 
 					// Try to use the datastore if available
-					if (service.supportsQueries(auth)) {
+					//if (service.supportsQueries(auth)) {
 						runtime = service.getRuntime(auth, id);
-					}
+					//}
 
 					// Sequential scan otherwise
 					if (runtime == null) {

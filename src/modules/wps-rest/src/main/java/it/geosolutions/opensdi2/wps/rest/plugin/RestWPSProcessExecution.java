@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.opengis.ows11.ExceptionReportType;
 import net.opengis.ows11.impl.ExceptionTypeImpl;
 import net.opengis.wps10.ExecuteResponseType;
 
@@ -226,6 +227,13 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 
                 if (executeResponse.getStatus().getProcessFailed() != null) {
                     runtimeFailed();
+                    ExceptionReportType exceptionReport = executeResponse.getStatus().getProcessFailed().getExceptionReport();
+                    
+                    if (exceptionReport != null) {
+                        output = exceptionReport.getException().get(0);
+                        
+                        return output;
+                    }
                 } else {
                     this.status = "SUCCESS";
                 }
