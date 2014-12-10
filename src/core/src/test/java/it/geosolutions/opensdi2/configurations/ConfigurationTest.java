@@ -19,16 +19,20 @@
  */
 package it.geosolutions.opensdi2.configurations;
 
+import it.geosolutions.opensdi2.configurations.controller.OSDIModuleController;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver1;
 import it.geosolutions.opensdi2.configurations.mockclasses.MockObserver2;
 import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.configurations.services.PublisherConfigDepot;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -124,5 +128,157 @@ public class ConfigurationTest extends Assert{
             }
         }
         fail();
+    }
+    
+    /**
+     * Check if the scopeID is well extracted from the path
+     */
+    @Test
+    public void scopeIDTest(){
+        
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockModule mm = new MockModule();
+        
+        req.setPathInfo("moduleid/instanceid");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("moduleid/instanceid/aother/path/parts");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("moduleid/instanceid/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/moduleid/instanceid/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/moduleid/instanceid/other/path/parts/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        req.setPathInfo("/////moduleid/instanceid/other/path/parts/");
+        assertEquals("moduleid", mm.getScopeIDTest(req));
+        
+        boolean exceptionOccurred = false;
+        req.setPathInfo("");
+        try{
+            mm.getScopeIDTest(req);
+        }
+        catch(IllegalArgumentException ise){
+            assertEquals("no scopeID is found after all the possible attemps... this should never happen...", ise.getMessage());
+            exceptionOccurred = true;
+        }
+        if(!exceptionOccurred){
+            fail();
+        }
+        
+        exceptionOccurred = false;
+        req.setPathInfo("///");
+        try{
+            mm.getScopeIDTest(req);
+        }
+        catch(IllegalArgumentException ise){
+            assertEquals("no scopeID is found... this should never happen...", ise.getMessage());
+            exceptionOccurred = true;
+        }
+        if(!exceptionOccurred){
+            fail();
+        }
+    }
+    
+    @Test
+    public void nullOrEmptyInstanceIDTest() throws OSDIConfigurationException{
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockModule mm = new MockModule();
+        MockModule2 mm2 = new MockModule2();
+        MockModule3 mm3 = new MockModule3();
+        MockModule4 mm4 = new MockModule4();
+        
+        req.setPathInfo("moduleid/instanceid");
+        mm.setDepot(depot);
+        mm.loadConfiguration(req);
+        
+        req.setPathInfo("moduleid/instanceid");
+        mm2.setDepot(depot);
+        mm2.loadConfiguration(req);
+        
+        req.setPathInfo("moduleid/instanceid");
+        mm3.setDepot(depot);
+        boolean ex = false;
+        try{
+            mm3.loadConfiguration(req);
+        }
+        catch(IllegalArgumentException iae){
+            ex = true;
+        }
+        if(!ex){
+            fail();
+        }
+        
+        req.setPathInfo("moduleid/instanceid");
+        mm4.setDepot(depot);
+        mm4.loadConfiguration(req);
+    }
+    
+    public class MockModule extends OSDIModuleController{
+
+        @Override
+        public String getInstanceID(HttpServletRequest req) {
+            return null;
+        }
+
+        protected String getScopeIDTest(HttpServletRequest req){
+            return super.getScopeID(req);
+        }
+        
+        public void setDepot(){
+            super.depot = depot;
+        }
+    }
+    
+    public class MockModule2 extends OSDIModuleController{
+
+        @Override
+        public String getInstanceID(HttpServletRequest req) {
+            return "    ";
+        }
+
+        protected String getScopeIDTest(HttpServletRequest req){
+            return super.getScopeID(req);
+        }
+        
+        public void setDepot(){
+            super.depot = depot;
+        }
+    }
+    
+    public class MockModule3 extends OSDIModuleController{
+
+        @Override
+        public String getInstanceID(HttpServletRequest req) {
+            return "bubu7-";
+        }
+
+        protected String getScopeIDTest(HttpServletRequest req){
+            return super.getScopeID(req);
+        }
+        
+        public void setDepot(){
+            super.depot = depot;
+        }
+    }
+    
+    public class MockModule4 extends OSDIModuleController{
+
+        @Override
+        public String getInstanceID(HttpServletRequest req) {
+            return "bubu7U";
+        }
+
+        protected String getScopeIDTest(HttpServletRequest req){
+            return super.getScopeID(req);
+        }
+        
+        public void setDepot(){
+            super.depot = depot;
+        }
     }
 }

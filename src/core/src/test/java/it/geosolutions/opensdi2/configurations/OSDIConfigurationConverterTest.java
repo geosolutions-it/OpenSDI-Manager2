@@ -44,7 +44,7 @@ public class OSDIConfigurationConverterTest extends Assert{
         OSDIConfigConverter builder = new PropertiesConfigurationConverter();
         boolean failed = false;
         try{
-            builder.buildConfig(new String("stringa string !!#*!!"), "scopeID_test", "instanceID_test");
+            builder.buildConfig(new String("stringa string !!#*!!"), "scopeIDtest", "instanceIDtest");
         }
         catch(IllegalArgumentException e){
             failed = true;
@@ -61,7 +61,7 @@ public class OSDIConfigurationConverterTest extends Assert{
         config.addProperty("key1", "value1");
         config.addProperty("key2", "value2");
         config.addProperty("key3", "value3");
-        OSDIConfiguration conf = builder.buildConfig(config, "scopeID_test", "instanceID_test");
+        OSDIConfiguration conf = builder.buildConfig(config, "scopeIDtest", "instanceIDtest");
         assertTrue(conf instanceof OSDIConfigurationKVP);
         assertEquals(3, ((OSDIConfigurationKVP)conf).getNumberOfProperties());
         assertEquals("value1", ((OSDIConfigurationKVP)conf).getValue("key1"));
@@ -72,7 +72,7 @@ public class OSDIConfigurationConverterTest extends Assert{
     @Test
     public void propertiesOSDIconf2ValuesPositiveTest(){
         OSDIConfigConverter builder = new PropertiesConfigurationConverter();
-        OSDIConfigurationKVP conf = new OSDIConfigurationKVP("scopeID_test", "instanceID_test"); 
+        OSDIConfigurationKVP conf = new OSDIConfigurationKVP("scopeIDtest", "instanceIDtest"); 
         conf.addNew("key1", "value1");
         conf.addNew("key2", "value2");
         conf.addNew("key3", "value3");

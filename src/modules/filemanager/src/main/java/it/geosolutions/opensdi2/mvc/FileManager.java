@@ -49,7 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-        public static final String RUNTIME_DIR = "runtimeDir";
+        public static final String ROOT_DIR = "rootDir";
     
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
@@ -80,8 +80,8 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
-	        configureModule(request);
-		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
+	        String rootDir = configureModule(request);
+		return super.extJSbrowser(rootDir, action, folder, name, oldName, file, request, response);
 
 	}
 
@@ -106,8 +106,8 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
-	        configureModule(request);
-		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
+	        String rootDir = configureModule(request);
+		super.upload(rootDir, file, name, chunks, chunk, folder, request, servletResponse);
 	}
 
 	/**
@@ -125,9 +125,10 @@ public class FileManager extends BaseFileManager {
 	public void downloadFile(
 			@RequestParam(value = "folder", required = false) String folder,
 			@RequestParam(value = "file", required = true) String file,
+			HttpServletRequest req,
 			HttpServletResponse resp) {
-	        //DamianoG 27/11/2014 Where is the Request Object here???
-		super.downloadFile(folder, file, resp);
+	        String rootDir = configureModule(req);
+		super.downloadFile(rootDir, folder, file, resp);
 	}
 	
 	/**
@@ -136,7 +137,7 @@ public class FileManager extends BaseFileManager {
 	 * 
 	 * @param request
 	 */
-	private void configureModule(HttpServletRequest request){
+	private String configureModule(HttpServletRequest request){
 	    
 	    OSDIConfigurationKVP config;
             try {
@@ -145,10 +146,10 @@ public class FileManager extends BaseFileManager {
                 LOGGER.error(e.getMessage(), e);
                 throw new IllegalStateException("The configuration for the module '" + FileManager.class + "' cannot be load...");
             }
-	    String runtimeDir = (String)config.getValue(RUNTIME_DIR);
-	    if(StringUtils.isBlank(runtimeDir)){
+	    String rootDir = (String)config.getValue(ROOT_DIR);
+	    if(StringUtils.isBlank(rootDir)){
 	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");
 	    }
-	    setRuntimeDir(runtimeDir);
+	    return rootDir;
 	}
 }

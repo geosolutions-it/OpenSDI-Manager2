@@ -40,7 +40,6 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
@@ -144,35 +143,6 @@ public class FileManagerTest {
                     file.mkdir();
                 }
 	    }
-	    
-//	    basePath = configDirTest.getAbsolutePath();
-//            System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath);
-	    
-//		try {
-//			// Clear lists
-//			currentFiles = new LinkedList<File>();
-//			currentFolders = new LinkedList<File>();
-//			// folder is generated for the test
-//			basePath = System.getProperty("java.io.tmpdir") + ControllerUtils.SEPARATOR + random.nextInt();
-//			System.setProperty(OpenSDIManagerConfigImpl.CONFIGDIR_PROPERTY_ENV_NAME, basePath + ControllerUtils.SEPARATOR);
-//			// create test folder
-//			File file = new File(basePath);
-//			file.mkdir();
-//			// create files
-//			for(int i = 0; i < files; i++){
-//				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt() + ".txt");
-//				file.createNewFile();
-//				currentFiles.add(file);
-//			}
-//			// create folders
-//			for(int i = 0; i < folders; i++){
-//				file = new File(basePath + ControllerUtils.SEPARATOR + random.nextInt());
-//				file.mkdir();
-//				currentFolders.add(file);
-//			}
-//		} catch (IOException e) {
-//			LOGGER.error(e);
-//		}
 	}
 	
 	/**
@@ -242,17 +212,18 @@ public class FileManagerTest {
 	    MockHttpServletRequest req = new MockHttpServletRequest();
 	    req.setParameter(OSDIModuleController.SCOPE_ID, "filemanager");
 	    req.setParameter(OSDIModuleController.INSTANCE_ID, "instance1");
+	    req.setPathInfo("fileManager");
 	    return req;
 	}
 	
 	private void setupConfigInstanceFile(File propertiesConfigDir, File rootFileManagerTest) throws ConfigurationException{
 	    
-	    CustomFileNameFilter cfnf = new CustomFileNameFilter("mod_filemanager");
+	    CustomFileNameFilter cfnf = new CustomFileNameFilter("mod_fileManager");
 	    File f = propertiesConfigDir.listFiles(cfnf)[0];
 	    
 	    cfnf = new CustomFileNameFilter("config_instance1.properties");
 	    PropertiesConfiguration config = new PropertiesConfiguration(f.listFiles(cfnf)[0]);
-	    config.setProperty("runtimeDir", rootFileManagerTest.getAbsolutePath());
+	    config.setProperty("rootDir", rootFileManagerTest.getAbsolutePath());
 	    config.save();
 	}
 	
