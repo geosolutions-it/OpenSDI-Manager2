@@ -32,6 +32,7 @@
         <jetty.version>6.1.14</jetty.version>
         <geostore.version>1.3-SNAPSHOT</geostore.version>
         <geotools.version>13-SNAPSHOT</geotools.version>
+        <geoserver-manager.version>1.7-SNAPSHOT</geoserver-manager.version>
         <spring.version>3.2.4.RELEASE</spring.version>
         <spring.security.version>3.1.4.RELEASE</spring.security.version>
         <jackson.version>1.9.10</jackson.version>
@@ -39,7 +40,6 @@
         <mockito.version>1.9.5</mockito.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jetty.port>9191</jetty.port>
-        <gt.version>12.0</gt.version>
     </properties>
 
     <issueManagement>
@@ -318,6 +318,14 @@
                  <version>${geostore.version}</version>
              </dependency>
             <!-- =========================================================== -->
+            <!--     GEOSERVER                                               -->
+            <!-- =========================================================== -->
+            <dependency>
+                <groupId>it.geosolutions</groupId>
+                <artifactId>geoserver-manager</artifactId>
+                <version>${geoserver-manager.version}</version>
+            </dependency>
+            <!-- =========================================================== -->
             <!--     TEST                                                    -->
             <!-- =========================================================== -->
              <dependency>
@@ -328,7 +336,7 @@
              <dependency>
                 <groupId>org.geotools</groupId>
                 <artifactId>gt-sample-data</artifactId>
-                <version>${gt.version}</version>
+                <version>${geotools.version}</version>
             </dependency>
             <!-- =========================================================== -->
             <!--               JETTY                                         -->

@@ -25,13 +25,9 @@ import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.configurations.services.ConfigDepot;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * 
@@ -123,7 +119,12 @@ public abstract class OSDIModuleController{
     }
     
     private String getScopeID(HttpServletRequest req){
-        return req.getParameter(SCOPE_ID);
+        //return req.getParameter(SCOPE_ID);
+        String[] reqPath = req.getPathInfo().split("/");
+        if (reqPath != null && reqPath.length > 1) {
+            return reqPath[1];
+        }
+        return null;
     }
 
 }

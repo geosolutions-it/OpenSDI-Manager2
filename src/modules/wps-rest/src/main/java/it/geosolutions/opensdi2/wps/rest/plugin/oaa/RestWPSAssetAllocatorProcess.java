@@ -3,6 +3,7 @@
  */
 package it.geosolutions.opensdi2.wps.rest.plugin.oaa;
 
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geostore.core.model.Attribute;
 import it.geosolutions.geostore.core.model.Resource;
 import it.geosolutions.geostore.core.model.SecurityRule;
@@ -15,6 +16,7 @@ import it.geosolutions.geostore.services.dto.search.CategoryFilter;
 import it.geosolutions.geostore.services.dto.search.FieldFilter;
 import it.geosolutions.geostore.services.dto.search.SearchFilter;
 import it.geosolutions.geostore.services.dto.search.SearchOperator;
+import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
 import it.geosolutions.geostore.services.rest.model.RESTCategory;
 import it.geosolutions.geostore.services.rest.model.RESTResource;
 import it.geosolutions.geostore.services.rest.model.RESTSecurityRule;
@@ -23,6 +25,7 @@ import it.geosolutions.geostore.services.rest.model.RESTUserGroup;
 import it.geosolutions.geostore.services.rest.model.ResourceList;
 import it.geosolutions.geostore.services.rest.model.SecurityRuleList;
 import it.geosolutions.geostore.services.rest.model.ShortResourceList;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.rest.RestServiceRuntime;
 import it.geosolutions.opensdi2.wps.rest.plugin.CDATAEncoder;
 import it.geosolutions.opensdi2.wps.rest.plugin.RestWPSProcess;
@@ -30,6 +33,7 @@ import it.geosolutions.opensdi2.wps.rest.plugin.RestWPSProcessExecution;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,10 +73,12 @@ import net.opengis.wps10.WPSCapabilitiesType;
 import net.opengis.wps10.Wps10Factory;
 import net.opengis.wps10.impl.OutputDataTypeImpl;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.data.wps.WebProcessingService;
 import org.geotools.data.wps.request.DescribeProcessRequest;
 import org.geotools.data.wps.request.ExecuteProcessRequest;
 import org.geotools.data.wps.response.DescribeProcessResponse;
@@ -96,8 +102,6 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         PRIVATE, SHARED, PUBLIC
     }
 
-    private boolean inited;
-
     private String reasourceLoaderProcessIdent = "gs:ResourceLoader";
     
     private String mapStoreConfigProcessIdent = "gs:MapstoreConfig";
@@ -110,11 +114,10 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
      * @param activeStatus
      */
     public RestWPSAssetAllocatorProcess(String serviceId, String name, String description,
-            String version, String activeStatus, String wpsUrl, String processIden) {
-        super(serviceId, name, description, version, activeStatus, wpsUrl, processIden);
-        this.inited = false;
+            String version, String activeStatus) {
+        super(serviceId, name, description, version, activeStatus);
     }
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -486,10 +489,19 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                             }
 
                             if (allowed) {
-                                if ("FAIL".equals(process.getStatus())) {
+                                if ("RUNNING".equals(process.getStatus())) {
                                     /*
-                                     * TODO: issue WPS Dismiss
+                                     * Issue WPS Dismiss
+                                     * http://host:port/geoserver/wps?service=WPS&version=1.0.0&request=Dismiss&executionId=550e8400-e29b-41d4-a716-446655440000
                                      */
+                                    try {
+                                        if (this.wps != null && process.getStatusLocation() != null) {
+                                            String dismissUrl = process.getStatusLocation().replace("GetExecutionStatus", "Dismiss");
+                                            this.wps.getHTTPClient().get(new URL(dismissUrl));
+                                        }
+                                    } catch (Exception e) {
+                                        LOGGER.log(Level.SEVERE, "Could not Dismiss the WPS Execution Request.", e);
+                                    }
                                 }
                                
                                 if (runtimes.containsKey(process.getExecutionId())) {
@@ -511,21 +523,8 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                             if (mapResources != null && !mapResources.isEmpty()) {
                                                 for (Resource m : mapResources.getList()) {
                                                     StoredData mapStoreConfiguratrion = m.getData();
-                                                    
-                                                    if (mapStoreConfiguratrion != null && 
-                                                            mapStoreConfiguratrion.getData() != null) {
-                                                        JSONObject mapStoreConfigJSON = new JSONObject(mapStoreConfiguratrion.getData());
-                                                        JSONObject customData = (JSONObject) mapStoreConfigJSON.get("customData");
-                                                        JSONArray optimizationToolLayers = (JSONArray) customData.get("optimizationToolLayers");
-                                                        
-                                                        for(int ol = 0; ol < optimizationToolLayers.length(); ol++ ) {
-                                                            System.out.println(optimizationToolLayers.getString(ol));
-                                                            
-                                                            this.wps.getHTTPClient().get(url);
-                                                        }
-                                                    }
                                                     /*
-                                                     * TODO: cleanup resources from GeoServer
+                                                     * Cleanup resources from GeoServer
                                                      * 
                                                      * "customData": {
                                                      *    "optimizationToolLayers": [
@@ -534,9 +533,38 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                                      *    ]
                                                      *  }
                                                      */
-                                                    
-                                                    //wpsRestAPIGeoStoreAdminClient.deleteResource(m.getId());
-                                                    
+                                                    if (mapStoreConfiguratrion != null && 
+                                                            mapStoreConfiguratrion.getData() != null) {
+
+                                                        final String RESTURL  = this.geoServerUrl;
+                                                        final String RESTUSER = this.geoServerUser;
+                                                        final String RESTPW   = this.geoServerPwd;
+                                                        
+                                                        GeoServerRESTManager manager = new GeoServerRESTManager(new URL(RESTURL), RESTUSER, RESTPW);
+
+                                                        JSONObject mapStoreConfigJSON = new JSONObject(mapStoreConfiguratrion.getData());
+                                                        JSONObject customData = (JSONObject) mapStoreConfigJSON.get("customData");
+                                                        JSONArray optimizationToolLayers = (JSONArray) customData.get("optimizationToolLayers");
+                                                        
+                                                        for(int ol = 0; ol < optimizationToolLayers.length(); ol++ ) {
+                                                            final String lyr = optimizationToolLayers.getString(ol);
+                                                            try {
+                                                                final String[] qlfLayerName = lyr.split(":");
+                                                                final String workspace = qlfLayerName[0];
+                                                                final String layer = qlfLayerName[1];
+                                                                if(manager.getPublisher().removeLayer(workspace, layer)) {
+                                                                    manager.getPublisher().removeDatastore(workspace, layer, true);
+                                                                }
+                                                            } catch (Exception e) {
+                                                                LOGGER.log(Level.WARNING, "Could not remove Layer [" + lyr + "]", e);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    /**
+                                                     * Finally cleanup the GeoStore Resources
+                                                     */
+                                                    wpsRestAPIGeoStoreAdminClient.deleteResource(m.getId());
                                                 }
                                             }
                                         }
@@ -544,7 +572,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                         /**
                                          * 2. Cleanup resources from GeoStore
                                          */
-                                        //wpsRestAPIGeoStoreAdminClient.deleteResource(r.getId());
+                                        wpsRestAPIGeoStoreAdminClient.deleteResource(r.getId());
 
                                         /**
                                          * END. Remove bean from Cache
@@ -556,6 +584,11 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 }
                             }
                         }
+                    } else {
+                        /**
+                         * END. Remove bean from Cache
+                         */
+                        runtimes.remove(process.getExecutionId());
                     }
                 }
             }
@@ -623,7 +656,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
     protected RestServiceRuntime initializeRuntimes(Principal auth,
             RestServiceRuntime restServiceRuntime) {
         synchronized (runtimes) {
-            if (!inited) {
+            if (!isInited()) {
                 // Initialize Runtimes from GeoStore
 
                 // sync runtimes stored on GeoStore
@@ -664,6 +697,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                     executionId, owner, name, description, statusLocation, status,
                                     startDate, endDate, progress, mapId, message);
 
+                            mapId = (Long) runtime.getResults().get("mapId");
+                            message = (String) runtime.getDetails().get("message");
+                            
                             runtimes.put(executionId, runtime);
 
                             if (owner == null) {
@@ -696,7 +732,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 }
                             }
                             
-                            runtime.getDetails().put("message", message);
+                            runtime.getDetails().put("message", sanitizeMessage(message));
 
                             if (mapId != null) {
                                 runtime.getResults().put("mapId", mapId);
@@ -704,7 +740,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                         }
                     }
                 }
-                inited = true;
+                setInited(true);
             } else {
                 // Update the restServiceRuntime Status
 
@@ -771,6 +807,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                                 name, description, statusLocation, status,
                                                 startDate, endDate, progress, mapId, message);
 
+                                        mapId = (Long) runtime.getResults().get("mapId");
+                                        message = (String) runtime.getDetails().get("message");
+
                                         if (owner == null) {
                                             owner = extractOwner(secRules);
                                         }
@@ -781,7 +820,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                                     runtime.getDetails().put("resourceId", r.getId());
                                     runtime.getDetails().put("resourceVisibility", extractVisibility(secRules));
-                                    runtime.getDetails().put("message", message);
+                                    runtime.getDetails().put("message", sanitizeMessage(message));
 
                                     if (mapId != null) {
                                         runtime.getResults().put("mapId", mapId);
@@ -811,7 +850,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 attributes.add(new ShortAttribute("statusLocation", (runtime.getStatusLocation() != null ? runtime.getStatusLocation() : ""), DataType.STRING));
                                 attributes.add(new ShortAttribute("status", runtime.getStatus(), DataType.STRING));
                                 attributes.add(new ShortAttribute("progress", String.valueOf(runtime.getProgress()), DataType.STRING));
-                                attributes.add(new ShortAttribute("message", (String) runtime.getDetails().get("message"), DataType.STRING));
+                                attributes.add(new ShortAttribute("message", sanitizeMessage((String) runtime.getDetails().get("message")), DataType.STRING));
                                 
                                 if (runtime.getStartDate() != null) {
                                     attributes.add(new ShortAttribute("startDate", sdf.format(runtime.getStartDate()), DataType.STRING));
@@ -841,6 +880,28 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
             return restServiceRuntime;
         }
+    }
+
+    /**
+     * ATTENTION:
+     * 
+     *  Be sure the GeoStore "gs_attribute.attribute_text" column has enough space to contain the text.
+     *  By default GeoStore sets this column to 'varchar(255)', which is very small.
+     * 
+     * @param message
+     * @return
+     */
+    private static String sanitizeMessage(String message) {
+        String sanitized = StringEscapeUtils.escapeSql(message);
+        
+        //sanitized = sanitized.replaceAll("\n", "").replaceAll("\r", "");
+        
+        return sanitized;
+//        try {
+//            return URLEncoder.encode(sanitized, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            return e.getLocalizedMessage();
+//        }
     }
 
     /**
@@ -1001,7 +1062,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         final RestWPSProcessExecution runtime = new RestWPSProcessExecution(executionId, name,
                 description, wps, statusLocation, status, progress, startDate, endDate);
         
-        runtime.getDetails().put("message", message);
+        runtime.getDetails().put("message", sanitizeMessage(message));
         
         if (mapId != null) {
             runtime.getResults().put("mapId", mapId);
@@ -1143,31 +1204,40 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         return resourceId;
     }
     
-    /**
-     * @return the reasourceLoaderProcessIdent
-     */
-    public String getReasourceLoaderProcessIdent() {
-        return reasourceLoaderProcessIdent;
-    }
+    @Override
+    public synchronized boolean loadConfiguration(OSDIConfigurationKVP osdiConfigurationKVP) {
+        //if (!isInited()) {
+            this.processIden = (String) osdiConfigurationKVP.getValue("oaa-wps-process.processIden");
+            this.reasourceLoaderProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.reasourceLoaderProcessIdent");
+            this.mapStoreConfigProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.mapStoreConfigProcessIdent");
 
-    /**
-     * @param reasourceLoaderProcessIdent the reasourceLoaderProcessIdent to set
-     */
-    public void setReasourceLoaderProcessIdent(String reasourceLoaderProcessIdent) {
-        this.reasourceLoaderProcessIdent = reasourceLoaderProcessIdent;
-    }
+            try {
+                // testing connections
+                if (this.geoServerUrl == null || 
+                        !this.geoServerUrl.equals((String) osdiConfigurationKVP.getValue("process.geoserverUrl"))) {
+                    this.geoServerUrl  = (String) osdiConfigurationKVP.getValue("process.geoserverUrl");
+                    this.geoServerUser = (String) osdiConfigurationKVP.getValue("process.geoserverUsername");
+                    this.geoServerPwd  = (String) osdiConfigurationKVP.getValue("process.geoserverPassword");
+                    
+                    String wpsUrl = this.geoServerUrl + "/wps"; 
+                    this.url = new URL(wpsUrl);
+                    this.wps = new WebProcessingService(this.url);
+                }
+                
+                this.wpsRestAPIGeoStoreAdminClient = new AdministratorGeoStoreClient();
+                this.wpsRestAPIGeoStoreAdminClient.setGeostoreRestUrl((String) osdiConfigurationKVP.getValue("process.geostoreRestUrl"));
+                this.wpsRestAPIGeoStoreAdminClient.setUsername((String) osdiConfigurationKVP.getValue("process.geostoreUsername"));
+                this.wpsRestAPIGeoStoreAdminClient.setPassword((String) osdiConfigurationKVP.getValue("process.geostorePassword"));
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId()
+                        + "] could not be initialized due to an Exception!", e);
+                setActiveStatus("DISABLED");
+                
+                return false;
+            }
+        //}
 
-    /**
-     * @return the mapStoreConfigProcessIdent
-     */
-    public String getMapStoreConfigProcessIdent() {
-        return mapStoreConfigProcessIdent;
-    }
-
-    /**
-     * @param mapStoreConfigProcessIdent the mapStoreConfigProcessIdent to set
-     */
-    public void setMapStoreConfigProcessIdent(String mapStoreConfigProcessIdent) {
-        this.mapStoreConfigProcessIdent = mapStoreConfigProcessIdent;
+        return true;
     }
 }

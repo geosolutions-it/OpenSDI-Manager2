@@ -4,6 +4,7 @@
 package it.geosolutions.opensdi2.wps.rest.plugin;
 
 import it.geosolutions.opensdi2.config.OpenSDIManagerConfigExtensions;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 import it.geosolutions.opensdi2.rest.RestPlugin;
 import it.geosolutions.opensdi2.rest.RestService;
 
@@ -21,6 +22,8 @@ public class RestWPSPlugin implements RestPlugin {
 
     Set<RestService> wpsProcesses = Collections
             .newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
+    
+    OSDIConfigurationKVP configuration;
 
     /*
      * (non-Javadoc)
@@ -93,6 +96,16 @@ public class RestWPSPlugin implements RestPlugin {
     @Override
     public RestService getService(String serviceId) {
         return null;
+    }
+
+    @Override
+    public void setConfiguration(OSDIConfigurationKVP config) {
+        this.configuration = config;
+    }
+
+    @Override
+    public OSDIConfigurationKVP getConfiguration() {
+        return this.configuration;
     }
 
 }
