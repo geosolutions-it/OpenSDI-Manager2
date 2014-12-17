@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
     ">
-    <import resource="geocollect_mailconfig.xml"/>
+    <!-- import resource="geocollect_mailconfig.xml"/-->
 
     <!-- Set the input from the "input" object in the context and sets the output to the "output" object in the context -->
     <bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">
@@ -102,27 +102,82 @@
     <util:map id="writerMappings">
         <entry key="GEOMETRY" value="geometry" />
     </util:map>
+	
+	<util:map id="segWriterMappings">
+        <entry key="GEOMETRY" value="geometry" />
+    </util:map>
 
     <bean id="action3" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="action3Config"></property>
         <property name="attributeMappings" ref="writerMappings"/>
         <property name="id" value="writer"></property>
     </bean>
+	
     <bean id="action4" class="it.geosolutions.opensdi2.workflow.action.EmailAction">
         <property name="configuration" ref="action4Config"></property>
         <property name="id" value="mailer"></property>
     </bean>
     <!-- list of actions for the action sequence -->
-    <util:list id="actions">
+    <util:list id="storeSopActions">
             <ref bean="action1"></ref>
             <!-- <ref bean="action2"></ref> -->
             <ref bean="action3"></ref>
-            <ref bean="action4"></ref>
+            <!-- ref bean="action4"></ref-->
     </util:list>
-
-    <bean id="sequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
-        <property name="actions" ref="actions" />
-        <property name="id" value="sequence"></property>
+    
+	<!-- list of actions for the action sequence -->
+    <util:list id="storeSegActions">
+            <ref bean="action1"></ref>
+            <!-- <ref bean="action2"></ref> -->
+            <ref bean="storeSegnalazione"></ref>
+            <!-- ref bean="action4"></ref-->
+    </util:list>
+    
+    <!-- Beans for the new point insertion -->
+	<bean id="storeSegnalazioneConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="punti_abbandono" />
     </bean>
+
+	<bean id="createSegFeatureConfig" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="outputObjectId" value="transformed"></property>
+        <property name="inputPropertyAccessor" >
+            <util:list>
+                <ref bean="featurePropertyAccessor"></ref>
+            </util:list>
+        </property>
+        <property name="outputPropertyAccessor" ref="featurePropertyAccessor" />
+        <property name="rules" ref="rules"></property>
+        <property name="preBuilder" ref="segFeaturePreBuilder"></property>
+    </bean>
+
+	<bean id="segFeaturePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
+        <constructor-arg ref="storeSegnalazioneConfig"/>
+        <constructor-arg value="feature"/>
+    </bean>
+    
+	<bean id="storeSegnalazione" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="storeSegnalazioneConfig"></property>
+        <property name="attributeMappings" ref="segWriterMappings"/>
+        <property name="id" value="writer"></property>
+    </bean>
+
+    <bean id="storeSopSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="storeSopActions" />
+        <property name="id" value="storeSopSequence"></property>
+    </bean>
+
+    <bean id="storeSegSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="storeSegActions" />
+        <property name="id" value="storeSegSequence"></property>
+    </bean>
+
+    <!-- Mapping of the various available actions -->
+    <util:map id="actionsMapping">
+        <entry key="storesop" value="storeSopSequence" />
+        <entry key="storeseg" value="storeSegSequence" />
+    </util:map>
 
 </beans>
