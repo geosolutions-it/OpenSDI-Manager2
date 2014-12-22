@@ -17,10 +17,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi.model;
+package it.geosolutions.nrl.cip.model;
 
 import static org.junit.Assert.assertEquals;
-import it.geosolutions.opensdi.model.BaseTest;
+import it.geosolutions.nrl.cip.model.BaseTest;
 import it.geosolutions.opensdi.model.Season;
 
 import org.junit.Test;

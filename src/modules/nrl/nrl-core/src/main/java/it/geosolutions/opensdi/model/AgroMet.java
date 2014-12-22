@@ -46,6 +46,11 @@ public class AgroMet {
     private int s_yr;// integer,
     @Column
     private int s_dec;// integer
+    @Column(nullable = false)
+    private int absolute_dek;
+   
+	@Column(nullable = false)
+    private int dek_in_year;
 
     public Long getId() {
         return id;
@@ -126,6 +131,22 @@ public class AgroMet {
     public void setS_dec(int s_dec) {
         this.s_dec = s_dec;
     }
+
+    public int getAbsolute_dek() {
+		return absolute_dek;
+	}
+
+	public void setAbsolute_dek(int absolute_dek) {
+		this.absolute_dek = absolute_dek;
+	}
+
+	public int getDek_in_year() {
+		return dek_in_year;
+	}
+
+	public void setDek_in_year(int dek_in_year) {
+		this.dek_in_year = dek_in_year;
+	}
 
     @Override
     public String toString() {

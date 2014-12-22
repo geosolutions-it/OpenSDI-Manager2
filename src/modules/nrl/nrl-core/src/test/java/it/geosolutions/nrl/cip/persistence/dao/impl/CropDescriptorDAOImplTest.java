@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi.persistence.dao.impl;
+package it.geosolutions.nrl.cip.persistence.dao.impl;
 
 import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.model.Season;
@@ -66,6 +66,9 @@ public class CropDescriptorDAOImplTest extends BaseDAOTest {
             cd.setId(ID);
             cd.setSeasons(Season.RABI_KHARIF);
             cd.setLabel("test descriptor");
+            cd.setArea_default_unit("000_ha");
+            cd.setProd_default_unit("000_tons)");
+            cd.setYield_default_unit("kg_ha");
 
             cropDescriptorDAO.persist(cd);
             id = cd.getId();

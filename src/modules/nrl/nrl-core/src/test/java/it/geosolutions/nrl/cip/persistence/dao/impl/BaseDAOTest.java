@@ -17,15 +17,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi.persistence.dao.impl;
+package it.geosolutions.nrl.cip.persistence.dao.impl;
 
+import it.geosolutions.nrl.cip.persistence.dao.impl.BaseTest;
 import it.geosolutions.opensdi.model.AgroMet;
 import it.geosolutions.opensdi.model.CropData;
 import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
-import it.geosolutions.opensdi.persistence.dao.impl.BaseTest;
 
 import java.util.List;
 
@@ -47,7 +47,6 @@ public abstract class BaseDAOTest extends BaseTest {
 
     protected static CropDescriptorDAO cropDescriptorDAO;
     protected static CropDataDAO cropDataDAO;
-
     protected static AgrometDAO agrometDAO;
 
     public BaseDAOTest() {
