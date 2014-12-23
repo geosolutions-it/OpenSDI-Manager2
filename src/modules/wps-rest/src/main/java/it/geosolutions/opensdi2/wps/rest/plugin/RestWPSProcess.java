@@ -13,11 +13,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.opengis.wps10.ResponseFormType;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.geotools.data.wps.WebProcessingService;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -100,7 +100,7 @@ public abstract class RestWPSProcess extends RestService {
                 this.wps = new WebProcessingService(this.url);
                 setActiveStatus("ENABLED");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId()
+                LOGGER.log(Level.ERROR, "WPS Service [" + getServiceId()
                         + "] could not be initialized due to an Exception!", e);
                 setActiveStatus("DISABLED");
             }

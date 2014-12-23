@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.security.Principal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.logging.Level;
 
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.ExceptionReportType;
@@ -74,6 +74,7 @@ import net.opengis.wps10.Wps10Factory;
 import net.opengis.wps10.impl.OutputDataTypeImpl;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Level;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.emf.common.util.EList;
@@ -102,6 +103,8 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         PRIVATE, SHARED, PUBLIC
     }
 
+    private static final int HOURS_TO_SECONDS = 3600;
+
     private String reasourceLoaderProcessIdent = "gs:ResourceLoader";
     
     private String mapStoreConfigProcessIdent = "gs:MapstoreConfig";
@@ -128,7 +131,6 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
         // check if the process has been initialized or not
         initializeRuntimes(auth, null);
-
         return new ArrayList<RestServiceRuntime>(runtimes.values());
     }
 
@@ -178,7 +180,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                     // exit if my process doesn't exist on server
                     if (!found) {
-                        LOGGER.log(Level.WARNING, "WPS Process [" + processIden + "] not found!");
+                        LOGGER.log(Level.WARN, "WPS Process [" + processIden + "] not found!");
                         return null;
                     }
 
@@ -265,9 +267,13 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                         sdf.applyPattern("yyyyMMdd");
                                         value = sdf.format(date);
                                     } catch (Exception e) {
-                                        LOGGER.log(Level.WARNING,
+                                        LOGGER.log(Level.WARN,
                                                 "Was not possible to convert the [" + fieldname + "] in a suitable date forma!", e);
                                     }
+                                }
+                                
+                                if (fieldname.equalsIgnoreCase("timeHorizon")) {
+                                    value = String.valueOf(Integer.parseInt(value) * HOURS_TO_SECONDS);
                                 }
 
                                 // exeRequest.addInput(fieldname, Arrays.asList(wps.createLiteralInputValue(value)));
@@ -500,7 +506,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                             this.wps.getHTTPClient().get(new URL(dismissUrl));
                                         }
                                     } catch (Exception e) {
-                                        LOGGER.log(Level.SEVERE, "Could not Dismiss the WPS Execution Request.", e);
+                                        LOGGER.log(Level.ERROR, "Could not Dismiss the WPS Execution Request.", e);
                                     }
                                 }
                                
@@ -552,11 +558,14 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                                                 final String[] qlfLayerName = lyr.split(":");
                                                                 final String workspace = qlfLayerName[0];
                                                                 final String layer = qlfLayerName[1];
-                                                                if(manager.getPublisher().removeLayer(workspace, layer)) {
-                                                                    manager.getPublisher().removeDatastore(workspace, layer, true);
+                                                                if(!manager.getPublisher().removeLayer(workspace, layer)) {
+                                                                    LOGGER.warn("Unable to load GeoServer Layer [" + lyr + "]");
+                                                                }
+                                                                if(!manager.getPublisher().removeDatastore(workspace, layer, true)) {
+                                                                    LOGGER.warn("Unable to load GeoServer Store [" + layer + "]");
                                                                 }
                                                             } catch (Exception e) {
-                                                                LOGGER.log(Level.WARNING, "Could not remove Layer [" + lyr + "]", e);
+                                                                LOGGER.log(Level.WARN, "Could not remove Layer [" + lyr + "]", e);
                                                             }
                                                         }
                                                     }
@@ -641,7 +650,10 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
         // check if the process has been initialized or not
         RestServiceRuntime runtime = runtimes.get(id);
-        runtime = initializeRuntimes(auth, runtime);
+        
+        if (runtime != null && "RUNNING".equals(runtime.getStatus())) {
+            runtime = initializeRuntimes(auth, runtime);
+        }
 
         return runtime;
     }
@@ -656,30 +668,73 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
     protected RestServiceRuntime initializeRuntimes(Principal auth,
             RestServiceRuntime restServiceRuntime) {
         synchronized (runtimes) {
-            if (!isInited()) {
-                // Initialize Runtimes from GeoStore
+            // Update the restServiceRuntime Status
 
-                // sync runtimes stored on GeoStore
-                AndFilter searchFilter = new AndFilter();
-                searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
-                searchFilter.add(new FieldFilter(BaseField.METADATA, getServiceId(), SearchOperator.EQUAL_TO));
-                ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
+            /**
+             * TIMING
+             */
+            long start = System.nanoTime();
+            long last = System.nanoTime();
+            String logMessage = "initializeRuntimes START";
+            last = printTiming(start, last, logMessage);
+            /**
+             * 
+             */
+            
+            // sync runtimes stored on GeoStore
+            AndFilter searchFilter = new AndFilter();
+            searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
+            if (restServiceRuntime != null) {
+                searchFilter.add(new FieldFilter(BaseField.NAME, restServiceRuntime.getName(), SearchOperator.EQUAL_TO));
+            }
+            searchFilter.add(new FieldFilter(BaseField.METADATA, getServiceId(), SearchOperator.EQUAL_TO));
+            ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
 
-                if (resources != null && !resources.isEmpty()) {
-                    for (Resource r : resources.getList()) {
+            /**
+             * TIMING
+             */
+            logMessage = "search for Runtimes finished";
+            last = printTiming(start, last, logMessage);
+            /**
+             * 
+             */
+            
+            if (resources != null && !resources.isEmpty()) {
+                for (Resource r : resources.getList()) {
 
-                        // Security check
-                        // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
-                        SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
-                        boolean allowed = false;
-                        if (secRules != null && !secRules.getList().isEmpty()) {
-                            allowed = isAllowed(auth, secRules);
-                        } else {
-                            allowed = false;
-                        }
+                    /**
+                     * TIMING
+                     */
+                    logMessage = "resource [" + r + "]";
+                    last = printTiming(start, last, logMessage);
+                    /**
+                     * 
+                     */
 
-                        if (allowed) {
-                            final String executionId = r.getName();
+                    // Security check
+                    // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
+                    SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
+                    boolean allowed = false;
+                    if (secRules != null && !secRules.getList().isEmpty()) {
+                        allowed = isAllowed(auth, secRules);
+                    } else {
+                        allowed = false;
+                    }
+
+                    /**
+                     * TIMING
+                     */
+                    logMessage = "finished searching for security rules";
+                    last = printTiming(start, last, logMessage);
+                    /**
+                     * 
+                     */
+
+                    final String executionId = r.getName();
+                    RestWPSProcessExecution runtime = null;
+                    if (allowed) {
+                        if (restServiceRuntime == null) {
+                            runtime = (RestWPSProcessExecution) runtimes.get(executionId);
 
                             String owner = null;
                             String name = null;
@@ -688,198 +743,184 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                             String status = null;
                             Date startDate = null;
                             Date endDate = null;
+                            Date refDate = null;
                             float progress = 0;
-                            
+
                             String message = "";
                             Long mapId = null;
-                            
-                            final RestWPSProcessExecution runtime = extractRuntimeFromGeoStore(r,
-                                    executionId, owner, name, description, statusLocation, status,
-                                    startDate, endDate, progress, mapId, message);
+
+                            runtime = extractRuntimeFromGeoStore(r, executionId, owner,
+                                    name, description, statusLocation, status,
+                                    startDate, endDate, refDate, progress, mapId, message);
+
+                            /**
+                             * TIMING
+                             */
+                            logMessage = "finished extraction from GeoStore";
+                            last = printTiming(start, last, logMessage);
+                            /**
+                             * 
+                             */
 
                             mapId = (Long) runtime.getResults().get("mapId");
                             message = (String) runtime.getDetails().get("message");
-                            
-                            runtimes.put(executionId, runtime);
 
-                            if (owner == null) {
-                                owner = extractOwner(secRules);
-                            }
-                            runtime.getDetails().put("owner", owner);
-                            runtime.getDetails().put("resourceId", r.getId());
-                            runtime.getDetails().put("resourceVisibility", extractVisibility(secRules));
-
-                            // if mapId and message are null ...
-                            if (progress == 100.0 && message.length() == 0 && mapId == null) {
-                                try {
+                            try {
+                                if (runtime.getStatus() != null
+                                        && "RUNNING".equalsIgnoreCase(runtime.getStatus())) {
                                     Object outputs = runtime.updateRuntimeStatus();
+
+                                    /**
+                                     * TIMING
+                                     */
+                                    logMessage = "isRunning -> finished updating WPS status";
+                                    last = printTiming(start, last, logMessage);
+                                    /**
+                                     * 
+                                     */
                                     
+                                    progress = runtime.getProgress();
+                                    status = runtime.getStatus();
+                                    endDate = runtime.getEndDate();
+
+                                    if ("FAIL".equals(status)) {
+                                        LOGGER.warn("Process Failed for runtime [" + runtime + "]");
+                                    }
+
                                     if (outputs != null) {
                                         // Add MapConfig Output Here
                                         String results = "";
-                                        
+
                                         if (outputs instanceof ExceptionTypeImpl) {
                                             results = (String) ((ExceptionTypeImpl)outputs).getExceptionText().get(0);
                                             message = results;
-                                        } else if (outputs instanceof OutputDataTypeImpl){
+                                            if (message != null && !message.isEmpty()) {
+                                                runtime.getDetails().put("message", sanitizeMessage(message));
+                                            }
+                                        } else {
                                             OutputDataTypeImpl rawData = (OutputDataTypeImpl) outputs;
                                             results = rawData.getData().getLiteralData().getValue();
                                             mapId = persistMapOnGeoStore(runtime.getExecutionId(), results);
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    LOGGER.log(Level.WARNING, "Could not retrieve the Process Outputs!", e);
-                                }
-                            }
-                            
-                            runtime.getDetails().put("message", sanitizeMessage(message));
-
-                            if (mapId != null) {
-                                runtime.getResults().put("mapId", mapId);
-                            }
-                        }
-                    }
-                }
-                setInited(true);
-            } else {
-                // Update the restServiceRuntime Status
-
-                // sync runtimes stored on GeoStore
-                AndFilter searchFilter = new AndFilter();
-                searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
-                if (restServiceRuntime != null) {
-                    searchFilter.add(new FieldFilter(BaseField.NAME, restServiceRuntime.getName(), SearchOperator.EQUAL_TO));
-                }
-                searchFilter.add(new FieldFilter(BaseField.METADATA, getServiceId(), SearchOperator.EQUAL_TO));
-                ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
-
-                if (resources != null && !resources.isEmpty()) {
-                    for (Resource r : resources.getList()) {
-
-                        // Security check
-                        // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
-                        SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
-                        boolean allowed = false;
-                        if (secRules != null && !secRules.getList().isEmpty()) {
-                            allowed = isAllowed(auth, secRules);
-                        } else {
-                            allowed = false;
-                        }
-
-                        final String executionId = r.getName();
-                        RestWPSProcessExecution runtime = null;
-                        if (allowed) {
-                            if (restServiceRuntime == null) {
-                                runtime = (RestWPSProcessExecution) runtimes.get(executionId);
-                                try {
-                                    String message = "";
-                                    Long mapId = null;
-                                    if (runtime != null) {
-                                        if (runtime.getStatus() != null
-                                                && "RUNNING".equalsIgnoreCase(runtime.getStatus())) {
-                                            Object outputs = runtime.updateRuntimeStatus();
-                                            
-                                            if (outputs != null) {
-                                                // Add MapConfig Output Here
-                                                String results = "";
-                                                
-                                                if (outputs instanceof ExceptionTypeImpl) {
-                                                    results = (String) ((ExceptionTypeImpl)outputs).getExceptionText().get(0);
-                                                    message = results;
-                                                } else {
-                                                    OutputDataTypeImpl rawData = (OutputDataTypeImpl) outputs;
-                                                    results = rawData.getData().getLiteralData().getValue();
-                                                    mapId = persistMapOnGeoStore(runtime.getExecutionId(), results);
-                                                }
+                                            if (mapId != null) {
+                                                runtime.getResults().put("mapId", mapId);
                                             }
                                         }
-                                    } else {
-                                        String owner = null;
-                                        String name = null;
-                                        String description = null;
-                                        String statusLocation = null;
-                                        String status = null;
-                                        Date startDate = null;
-                                        Date endDate = null;
-                                        float progress = 0;
-                                        
-                                        runtime = extractRuntimeFromGeoStore(r, executionId, owner,
-                                                name, description, statusLocation, status,
-                                                startDate, endDate, progress, mapId, message);
-
-                                        mapId = (Long) runtime.getResults().get("mapId");
-                                        message = (String) runtime.getDetails().get("message");
-
-                                        if (owner == null) {
-                                            owner = extractOwner(secRules);
-                                        }
-                                        runtime.getDetails().put("owner", owner);
-
-                                        runtimes.put(executionId, runtime);
                                     }
+                                }
 
-                                    runtime.getDetails().put("resourceId", r.getId());
-                                    runtime.getDetails().put("resourceVisibility", extractVisibility(secRules));
+                                if (mapId != null) {
+                                    runtime.getResults().put("mapId", mapId);
+                                }
+
+                                if (message != null && !message.isEmpty()) {
                                     runtime.getDetails().put("message", sanitizeMessage(message));
-
-                                    if (mapId != null) {
-                                        runtime.getResults().put("mapId", mapId);
-                                    }
-                                } catch (Exception e) {
-                                    LOGGER.log(Level.SEVERE, "[" + executionId + "] Could not update Runtime Status", e);
                                 }
 
-                                r.setLastUpdate(new Date());
-
-                                RESTResource resource = new RESTResource();
-                                resource.setName(executionId);
-                                resource.setMetadata(getServiceId());
-
-                                RESTStoredData store = new RESTStoredData(r.getData().getData());
-                                resource.setStore(store);
-
-                                RESTCategory geoStoreCategory = new RESTCategory("WPS_RUN_CONFIGS");
-                                resource.setCategory(geoStoreCategory);
-
-                                final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-                                List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
-                                attributes.add(new ShortAttribute("name", runtime.getName(), DataType.STRING));
-                                attributes.add(new ShortAttribute("description", runtime.getDescription(), DataType.STRING));
-                                attributes.add(new ShortAttribute("statusLocation", (runtime.getStatusLocation() != null ? runtime.getStatusLocation() : ""), DataType.STRING));
-                                attributes.add(new ShortAttribute("status", runtime.getStatus(), DataType.STRING));
-                                attributes.add(new ShortAttribute("progress", String.valueOf(runtime.getProgress()), DataType.STRING));
-                                attributes.add(new ShortAttribute("message", sanitizeMessage((String) runtime.getDetails().get("message")), DataType.STRING));
-                                
-                                if (runtime.getStartDate() != null) {
-                                    attributes.add(new ShortAttribute("startDate", sdf.format(runtime.getStartDate()), DataType.STRING));
+                                if (owner == null) {
+                                    owner = extractOwner(secRules);
+                                    runtime.getDetails().put("owner", owner);
                                 }
 
-                                if (runtime.getEndDate() != null) {
-                                    attributes.add(new ShortAttribute("endDate", sdf.format(runtime.getEndDate()), DataType.STRING));
-                                }
-
-                                if (runtime.getResults().get("mapId") != null) {
-                                    attributes.add(new ShortAttribute("mapId", String.valueOf(runtime.getResults().get("mapId")), DataType.STRING));    
-                                }
-                                
-                                resource.setAttribute(attributes);
-
-                                wpsRestAPIGeoStoreAdminClient.updateResource(r.getId(), resource);
+                                runtime.getDetails().put("resourceId", r.getId());
+                                runtime.getDetails().put("resourceVisibility", extractVisibility(secRules));
+                            } catch (Exception e) {
+                                LOGGER.log(Level.ERROR, "[" + executionId + "] Could not update Runtime Status", e);
                             }
-                        } else {
-                            runtime = (RestWPSProcessExecution) runtimes.get(executionId);
-                            if (runtime != null) {
-                                runtimes.remove(executionId);
-                            }
+
+                            // Update The Resource on GeoStore
+                            updateGeoStoreResource(r, executionId, runtime);
+
+                            /**
+                             * TIMING
+                             */
+                            logMessage = "finished updating GeoStore";
+                            last = printTiming(start, last, logMessage);
+                            /**
+                             * 
+                             */
+                            
+                            runtimes.put(executionId, runtime);
                         }
+                    } else {
+                        runtimes.remove(executionId);
                     }
                 }
             }
 
             return restServiceRuntime;
         }
+    }
+
+    /**
+     * @param start
+     * @param last
+     * @param message
+     * @return 
+     */
+    private static long printTiming(long start, long last, String message) {
+        if (LOGGER.isDebugEnabled()) {
+            double elapsedTimeFromStart = ((double)System.nanoTime() - start) / 1000000000.0;
+            double elapsedTimeFromLast = ((double)System.nanoTime() - last) / 1000000000.0;
+            String secondsFromStart = new DecimalFormat("#.##########").format(elapsedTimeFromStart).toString();
+            String secondsFromLast = new DecimalFormat("#.##########").format(elapsedTimeFromLast).toString();
+            LOGGER.log(Level.DEBUG, "[Timing (" + secondsFromStart + "s / " + secondsFromLast + "s)] - " + message);
+        }
+        last = System.nanoTime();
+        return last;
+    }
+
+    /**
+     * @param r
+     * @param executionId
+     * @param runtime
+     */
+    protected void updateGeoStoreResource(Resource r, final String executionId,
+            RestWPSProcessExecution runtime) {
+        r.setLastUpdate(new Date());
+
+        RESTResource resource = new RESTResource();
+        resource.setName(executionId);
+        resource.setMetadata(getServiceId());
+
+        RESTStoredData store = new RESTStoredData(r.getData().getData());
+        resource.setStore(store);
+
+        RESTCategory geoStoreCategory = new RESTCategory("WPS_RUN_CONFIGS");
+        resource.setCategory(geoStoreCategory);
+
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
+        attributes.add(new ShortAttribute("name", runtime.getName(), DataType.STRING));
+        attributes.add(new ShortAttribute("description", runtime.getDescription(), DataType.STRING));
+        attributes.add(new ShortAttribute("statusLocation", (runtime.getStatusLocation() != null ? runtime.getStatusLocation() : ""), DataType.STRING));
+        attributes.add(new ShortAttribute("status", runtime.getStatus(), DataType.STRING));
+        attributes.add(new ShortAttribute("progress", String.valueOf(runtime.getProgress()), DataType.STRING));
+        if (runtime.getDetails().get("message") != null && 
+                !((String) runtime.getDetails().get("message")).isEmpty()) {
+            attributes.add(new ShortAttribute("message", sanitizeMessage((String) runtime.getDetails().get("message")), DataType.STRING));
+        }
+        
+        if (runtime.getStartDate() != null) {
+            attributes.add(new ShortAttribute("startDate", sdf.format(runtime.getStartDate()), DataType.STRING));
+        }
+
+        if (runtime.getEndDate() != null) {
+            attributes.add(new ShortAttribute("endDate", sdf.format(runtime.getEndDate()), DataType.STRING));
+        }
+
+        if (runtime.getRefDate() != null) {
+            attributes.add(new ShortAttribute("referenceDate", sdf.format(runtime.getRefDate()), DataType.STRING));
+        }
+        
+        if (runtime.getResults().get("mapId") != null) {
+            attributes.add(new ShortAttribute("mapId", String.valueOf(runtime.getResults().get("mapId")), DataType.STRING));    
+        }
+        
+        resource.setAttribute(attributes);
+
+        wpsRestAPIGeoStoreAdminClient.updateResource(r.getId(), resource);
     }
 
     /**
@@ -958,6 +999,17 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
         boolean allowed = false;
 
+        // is Admin
+        if (auth instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) auth;
+            for (GrantedAuthority userGroupAndrole : authToken.getAuthorities()) {
+                if (userGroupAndrole.getAuthority().equals("ROLE_ADMIN")) {
+                    allowed = true;
+                    break;
+                }
+            }
+        }
+        
         // secured resource
         for (RESTSecurityRule security : secRules.getList()) {
             if (security.getUser() != null && security.getUser().getName().equals(auth.getName())
@@ -1001,7 +1053,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
      */
     protected RestWPSProcessExecution extractRuntimeFromGeoStore(Resource r,
             final String executionId, String owner, String name, String description,
-            String statusLocation, String status, Date startDate, Date endDate, float progress, 
+            String statusLocation, String status, Date startDate, Date endDate, Date refDate, float progress, 
             Long mapId, String message)
             throws NumberFormatException {
         for (Attribute a : r.getAttribute()) {
@@ -1036,7 +1088,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                 try {
                     startDate = sdf.parse(a.getValue());
                 } catch (ParseException e) {
-                    LOGGER.log(Level.WARNING, "Could not parse Runtime StartDate [" + a.getValue() + "]", e);
+                    LOGGER.log(Level.WARN, "Could not parse Runtime Start Date [" + a.getValue() + "]", e);
                 }
             }
 
@@ -1047,10 +1099,21 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                 try {
                     endDate = sdf.parse(a.getValue());
                 } catch (ParseException e) {
-                    LOGGER.log(Level.WARNING, "Could not parse Runtime StartDate [" + a.getValue() + "]", e);
+                    LOGGER.log(Level.WARN, "Could not parse Runtime End Date [" + a.getValue() + "]", e);
                 }
             }
 
+            if ("referenceDate".equals(a.getName())) {
+                final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+                try {
+                    refDate = sdf.parse(a.getValue());
+                } catch (ParseException e) {
+                    LOGGER.log(Level.WARN, "Could not parse Runtime Reference Date [" + a.getValue() + "]", e);
+                }
+            }
+            
             if ("message".equals(a.getName())) {
                 message = a.getValue();
             }
@@ -1060,9 +1123,12 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
             }
         }
         final RestWPSProcessExecution runtime = new RestWPSProcessExecution(executionId, name,
-                description, wps, statusLocation, status, progress, startDate, endDate);
+                description, wps, statusLocation, status, progress, startDate, endDate, refDate);
         
-        runtime.getDetails().put("message", sanitizeMessage(message));
+        if (message != null && 
+                !message.isEmpty()) {
+            runtime.getDetails().put("message", sanitizeMessage(message));
+        }
         
         if (mapId != null) {
             runtime.getResults().put("mapId", mapId);
@@ -1113,7 +1179,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         final String executionId = (String) props.get("executionId");
 
         final RestWPSProcessExecution runtime = new RestWPSProcessExecution(executionId, name,
-                description, wps, statusLocation, null, 0, null, null);
+                description, wps, statusLocation, null, 0, null, null, null);
         runtimes.put(executionId, runtime);
 
         // Creating the GeoStore REST Resource
@@ -1133,6 +1199,21 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
+        Date referenceDate = null;
+        if (requestBody != null && !requestBody.isEmpty()) {
+            try {
+                JSONObject inputParameters = new JSONObject(requestBody);
+                
+                final SimpleDateFormat redSdf = new SimpleDateFormat("yyyy-MM-dd");
+                redSdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                
+                referenceDate = redSdf.parse((String) inputParameters.get("referenceDate"));
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.WARN, "Could not deserialize 'requestBody'", e);
+            }
+        }
+        
         List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
         attributes.add(new ShortAttribute("name", name, DataType.STRING));
         attributes.add(new ShortAttribute("description", description, DataType.STRING));
@@ -1150,6 +1231,10 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
             attributes.add(new ShortAttribute("endDate", sdf.format(runtime.getEndDate()), DataType.STRING));
         }
 
+        if (referenceDate != null) {
+            attributes.add(new ShortAttribute("referenceDate", sdf.format(referenceDate), DataType.STRING));
+        }
+        
         resource.setAttribute(attributes);
 
         // Finally creating the Resource ...
@@ -1206,37 +1291,35 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
     
     @Override
     public synchronized boolean loadConfiguration(OSDIConfigurationKVP osdiConfigurationKVP) {
-        //if (!isInited()) {
-            this.processIden = (String) osdiConfigurationKVP.getValue("oaa-wps-process.processIden");
-            this.reasourceLoaderProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.reasourceLoaderProcessIdent");
-            this.mapStoreConfigProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.mapStoreConfigProcessIdent");
+        this.processIden = (String) osdiConfigurationKVP.getValue("oaa-wps-process.processIden");
+        this.reasourceLoaderProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.reasourceLoaderProcessIdent");
+        this.mapStoreConfigProcessIdent = (String) osdiConfigurationKVP.getValue("oaa-wps-process.mapStoreConfigProcessIdent");
 
-            try {
-                // testing connections
-                if (this.geoServerUrl == null || 
-                        !this.geoServerUrl.equals((String) osdiConfigurationKVP.getValue("process.geoserverUrl"))) {
-                    this.geoServerUrl  = (String) osdiConfigurationKVP.getValue("process.geoserverUrl");
-                    this.geoServerUser = (String) osdiConfigurationKVP.getValue("process.geoserverUsername");
-                    this.geoServerPwd  = (String) osdiConfigurationKVP.getValue("process.geoserverPassword");
-                    
-                    String wpsUrl = this.geoServerUrl + "/wps"; 
-                    this.url = new URL(wpsUrl);
-                    this.wps = new WebProcessingService(this.url);
-                }
-                
-                this.wpsRestAPIGeoStoreAdminClient = new AdministratorGeoStoreClient();
-                this.wpsRestAPIGeoStoreAdminClient.setGeostoreRestUrl((String) osdiConfigurationKVP.getValue("process.geostoreRestUrl"));
-                this.wpsRestAPIGeoStoreAdminClient.setUsername((String) osdiConfigurationKVP.getValue("process.geostoreUsername"));
-                this.wpsRestAPIGeoStoreAdminClient.setPassword((String) osdiConfigurationKVP.getValue("process.geostorePassword"));
-                
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "WPS Service [" + getServiceId()
-                        + "] could not be initialized due to an Exception!", e);
-                setActiveStatus("DISABLED");
-                
-                return false;
+        try {
+            // testing connections
+            if (this.geoServerUrl == null || 
+                    !this.geoServerUrl.equals((String) osdiConfigurationKVP.getValue("process.geoserverUrl"))) {
+                this.geoServerUrl  = (String) osdiConfigurationKVP.getValue("process.geoserverUrl");
+                this.geoServerUser = (String) osdiConfigurationKVP.getValue("process.geoserverUsername");
+                this.geoServerPwd  = (String) osdiConfigurationKVP.getValue("process.geoserverPassword");
+
+                String wpsUrl = this.geoServerUrl + "/wps"; 
+                this.url = new URL(wpsUrl);
+                this.wps = new WebProcessingService(this.url);
             }
-        //}
+
+            this.wpsRestAPIGeoStoreAdminClient = new AdministratorGeoStoreClient();
+            this.wpsRestAPIGeoStoreAdminClient.setGeostoreRestUrl((String) osdiConfigurationKVP.getValue("process.geostoreRestUrl"));
+            this.wpsRestAPIGeoStoreAdminClient.setUsername((String) osdiConfigurationKVP.getValue("process.geostoreUsername"));
+            this.wpsRestAPIGeoStoreAdminClient.setPassword((String) osdiConfigurationKVP.getValue("process.geostorePassword"));
+
+        } catch (Exception e) {
+            LOGGER.log(Level.ERROR, "WPS Service [" + getServiceId()
+                    + "] could not be initialized due to an Exception!", e);
+            setActiveStatus("DISABLED");
+
+            return false;
+        }
 
         return true;
     }

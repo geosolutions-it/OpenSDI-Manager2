@@ -17,9 +17,9 @@
         <!-- serviceId -->
         <constructor-arg index="0" value="oaa-wps-process" />
         <!-- name -->
-        <constructor-arg index="1" value="OAAWPSProcess" />
+        <constructor-arg index="1" value="Optimal Asset Allocator" />
         <!-- description -->
-        <constructor-arg index="2" value="On Demand Asset Allocator WPS Process" />
+        <constructor-arg index="2" value="Optimal Asset Allocator on demand" />
         <!-- version -->
         <constructor-arg index="3" value="1.0" />
         <!-- activeStatus -->

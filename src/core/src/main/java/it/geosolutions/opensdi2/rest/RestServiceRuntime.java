@@ -33,7 +33,10 @@ public interface RestServiceRuntime {
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSZ'Z'")
 	Date getEndDate();
-	
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSZ'Z'")
+	Date getRefDate();
+
 	List<RestItemParameter> getParameters();
 
 	Map<String, Object> getDetails();

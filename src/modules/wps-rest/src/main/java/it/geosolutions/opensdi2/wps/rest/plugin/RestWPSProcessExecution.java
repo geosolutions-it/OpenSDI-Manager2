@@ -43,8 +43,12 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
     private Date startDate;
 
     private Date endDate;
+    
+    private Date refDate;
 
     private ExecuteResponseType executeResponse;
+
+    private ExceptionReportType exceptionResponse;
 
     private String statusLocation;
 
@@ -66,7 +70,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
 
     public RestWPSProcessExecution(String executionId, String name, String description,
             WebProcessingService wps, String statusLocation, String status, float progress,
-            Date startDate, Date endDate) {
+            Date startDate, Date endDate, Date refDate) {
         this.executionId = executionId;
         this.name = name;
         this.description = description;
@@ -82,6 +86,7 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
         this.progress = progress;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.refDate = refDate;
 
         try {
             /** Try to get the status from the WPS */
@@ -202,7 +207,24 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
             return this.exception;
         }
         
+        if (this.executeResponse == null && this.exceptionResponse == null) {
+            /** Try to get the status from the WPS */
+            final URL statusURL = new URL(statusLocation);
+            final ExecuteProcessResponse statusRequest = wps.issueStatusRequest(statusURL);
+            this.executeResponse = statusRequest.getExecuteResponse();
+            this.exceptionResponse = statusRequest.getExceptionResponse();
+        }
+        
         // loop and wait for the process to be complete
+        if (exceptionResponse != null && exceptionResponse.getException() != null && !exceptionResponse.getException().isEmpty()) {
+            runtimeFailed();
+
+            exception = (ExceptionTypeImpl) exceptionResponse.getException().get(0);
+            //String exceptionMessage = (String) exception.getExceptionText().get(0);
+            
+            return exception;
+        }
+        
         if (executeResponse != null && executeResponse.getStatus() != null) {
             if (executeResponse.getStatus().getProcessFailed() == null
                     && executeResponse.getStatus().getProcessSucceeded() == null) {
@@ -219,7 +241,9 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
                     return exception;
                 } else {
                     executeResponse = response.getExecuteResponse();
-                    progress = executeResponse.getStatus().getProcessStarted().getPercentCompleted().floatValue();
+                    if (executeResponse != null && executeResponse.getStatus() != null && executeResponse.getStatus().getProcessStarted() != null) {
+                        progress = executeResponse.getStatus().getProcessStarted().getPercentCompleted().floatValue();
+                    }
                 }
             } else {
                 progress = 100.0f;
@@ -268,6 +292,13 @@ public class RestWPSProcessExecution implements RestServiceRuntime {
     @Override
     public Date getEndDate() {
         return this.endDate;
+    }
+
+    /**
+     * @return the refDate
+     */
+    public Date getRefDate() {
+        return refDate;
     }
 
     /*
