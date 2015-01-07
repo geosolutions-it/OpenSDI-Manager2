@@ -24,7 +24,7 @@ import java.awt.IllegalComponentStateException;
 
 import it.geosolutions.opensdi2.workflow.BaseAction;
 import it.geosolutions.opensdi2.workflow.WorkflowContext;
-import it.getosolutions.opensdi2.workflow.transform.spel.SpelObjectTranformer;
+import it.geosolutions.opensdi2.workflow.transform.spel.SpelObjectTranformer;
 /**
  * Transform objects using SpelObjectTransformer configurable by the confiuration object
  * @author lorenzo

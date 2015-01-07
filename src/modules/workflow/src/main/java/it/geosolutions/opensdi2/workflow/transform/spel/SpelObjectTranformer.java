@@ -18,17 +18,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.workflow.transform;
+package it.geosolutions.opensdi2.workflow.transform.spel;
 
-import java.util.Map;
-/**
- * Creates an object to be populated by a set or rules for the Mapper
- * @author lorenzo
- *
- * @param <DESTTYPE>
- */
-public interface PreBuilder<DESTTYPE> {
-	DESTTYPE build(Map<String,String> rules);
-
-	DESTTYPE build(DESTTYPE outputObject, Map<String, String> rules);
+public class SpelObjectTranformer extends SpelTransformer<Object, Object>{
+	
 }

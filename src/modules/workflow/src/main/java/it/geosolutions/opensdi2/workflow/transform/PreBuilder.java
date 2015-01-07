@@ -18,15 +18,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.getosolutions.opensdi2.workflow.transform;
+package it.geosolutions.opensdi2.workflow.transform;
 
 import java.util.Map;
 /**
- * Implementation of the transformer to convert into a <String>-<Object> <Map>
+ * Creates an object to be populated by a set or rules for the Mapper
  * @author lorenzo
  *
- * @param <T> the output type
+ * @param <DESTTYPE>
  */
-public interface Writer<T> extends Transformer< Map<String,Object>,T>{
-	public T write(Map<String,Object> obj);
+public interface PreBuilder<DESTTYPE> {
+	DESTTYPE build(Map<String,String> rules);
+
+	DESTTYPE build(DESTTYPE outputObject, Map<String, String> rules);
 }

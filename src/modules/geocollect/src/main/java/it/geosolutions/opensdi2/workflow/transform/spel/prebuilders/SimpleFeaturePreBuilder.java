@@ -21,7 +21,7 @@
 package it.geosolutions.opensdi2.workflow.transform.spel.prebuilders;
 
 import it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration;
-import it.getosolutions.opensdi2.workflow.transform.PreBuilder;
+import it.geosolutions.opensdi2.workflow.transform.PreBuilder;
 
 import java.io.IOException;
 import java.util.Map;

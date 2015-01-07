@@ -23,13 +23,12 @@ package it.geosolutions.opensdi2.worflow.transform;
  * 
  */
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
-import it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
-import it.getosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder;
-import it.getosolutions.opensdi2.workflow.utils.MapUtil;
+import static org.junit.Assert.assertTrue;
+import it.geosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
+import it.geosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
+import it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder;
+import it.geosolutions.opensdi2.workflow.utils.MapUtil;
 
 import java.util.ArrayList;
 import java.util.List;

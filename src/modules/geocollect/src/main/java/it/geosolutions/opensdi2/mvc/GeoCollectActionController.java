@@ -20,12 +20,6 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import it.geosolutions.geocollect.model.http.CommitResponse;
 import it.geosolutions.geocollect.model.http.Status;
 import it.geosolutions.opensdi2.workflow.ActionSequence;
@@ -33,15 +27,14 @@ import it.geosolutions.opensdi2.workflow.WorkflowContext;
 import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.geosolutions.opensdi2.workflow.WorkflowStatus;
 import it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration;
-import it.geosolutions.opensdi2.workflow.utils.TestUtils;
 
-import org.apache.commons.io.IOUtils;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.geotools.data.DataStore;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,29 +48,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/geocollect/action")
+@PreAuthorize("!hasRole('ROLE_ANONYMOUS')")
 public class GeoCollectActionController {
 	
 	/**
 	 * Context object to store data to
 	 */
 	private WorkflowContext ctx;
-
-	/**
-	 * Action sequence to execute upon receiving a GeoJSON
-	 */
-	@Autowired
-	private ActionSequence chain;	
 	
 	/**
 	 * DataStoreConfiguration to use
 	 */
 	@Autowired
-	private DataStoreConfiguration cfg;
-	
-	/**
-	 * DataStore instance
-	 */
-	private DataStore store;
+	private DataStoreConfiguration action3Config;
 	
 	/**
 	 * Custom IDs for the workflow
@@ -90,6 +73,11 @@ public class GeoCollectActionController {
 	 */
 	public static final String STORE_FEATURE_ACTION = "store";
 
+	/**
+	 * Mapping of the various configured actions to run
+	 */
+	@Autowired
+	private Map<String, ActionSequence> actionsMapping;
 	
 	/**
 	 * Logger
@@ -105,12 +93,19 @@ public class GeoCollectActionController {
 				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			
 		*/
-		
+
 		// TODO: action "in carico" : set the corresponding feature "working_user" to the username
-		//
-		LOGGER.info(body);
+		//LOGGER.info(body);
+		LOGGER.info("Received call for Action " + action);
+		/*
+		for(String s : actionsMapping.keySet()){
+			LOGGER.info(s);
+		}
+		*/
+
+		if(actionsMapping.containsKey(action)){
+			LOGGER.info("Action Exists");
 		
-		if(STORE_FEATURE_ACTION.equals(action)){
 			// store the feature using a chain of Actions
 			// create a SimpleFeature
 			// Manipulate it (do nothing)
@@ -118,7 +113,6 @@ public class GeoCollectActionController {
 			// Send mail
 			
 			try {
-				store = cfg.getDataStore();
 			
 				// setup the workflow
 				ctx = new WorkflowContext();
@@ -129,7 +123,7 @@ public class GeoCollectActionController {
 				ctx.addContextElement(INPUT_ID, body.toJSONString());
 				
 				// execute the action sequence
-				chain.execute(ctx);
+				actionsMapping.get(action).execute(ctx);
 				
 				if(WorkflowStatus.Status.COMPLETED == ctx.getStatusElements().get(WRITER_ID).getCurrentStatus()){
 					
@@ -150,14 +144,13 @@ public class GeoCollectActionController {
 					// this will go through and the ERROR to be returned
 				}
 				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (WorkflowException wfe) {
 				// TODO Auto-generated catch block
 				wfe.printStackTrace();
 			}
 			
+		}else{
+			LOGGER.info("Action DOES NOT Exists");
 		}
 		
 		CommitResponse r = new CommitResponse();
@@ -165,5 +158,13 @@ public class GeoCollectActionController {
 		
 		r.setStatus(Status.ERROR);
 		return r;
+	}
+
+	public Map<String, ActionSequence> getActionsMapping() {
+		return actionsMapping;
+	}
+
+	public void setActionsMapping(Map<String, ActionSequence> actionsMapping) {
+		this.actionsMapping = actionsMapping;
 	}
 }

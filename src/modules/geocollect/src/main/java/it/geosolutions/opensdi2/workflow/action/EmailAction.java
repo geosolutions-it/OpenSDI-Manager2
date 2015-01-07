@@ -25,20 +25,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
 import freemarker.template.TemplateException;
 
 import it.geosolutions.opensdi2.email.OpenSDIMailer;
-import it.geosolutions.opensdi2.mvc.GeoCollectActionController;
 import it.geosolutions.opensdi2.workflow.BaseAction;
 import it.geosolutions.opensdi2.workflow.WorkflowContext;
 import it.geosolutions.opensdi2.workflow.WorkflowException;
-import it.getosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
-import it.getosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
+import it.geosolutions.opensdi2.workflow.transform.spel.SpelTransformer;
+import it.geosolutions.opensdi2.workflow.transform.spel.accessors.MapPropertyAccessor;
 /**
  * Email Action for workflows. 
  * For now it uses the default <OpenSDI2Mailer> autowired as notificationService.
