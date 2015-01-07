@@ -1,6 +1,5 @@
 /*
- *  OpenSDI Manager 2
- *  Copyright (C) 2012 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -18,21 +17,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.opensdi2.config;
-
+package it.geosolutions.opensdi2.configurations.exceptions;
 
 /**
- * Base configuration for OpenSDI-Manager2
- * This bean could centralize all common configuration
- * 
- * @author adiaz
+ * @author DamianoG
  *
  */
-public interface OpenSDIManagerConfig {
+public class OSDIConfigurationException extends Exception{
 
-	/**
-	 * @return base folder for the application
-	 */
-	String getBaseFolder();
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6385528168040180402L;
 
+    public OSDIConfigurationException(Throwable e){
+        super(e);
+    }
+    
+    public OSDIConfigurationException(String msg){
+        super(msg);
+    }
 }

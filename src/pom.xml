@@ -12,13 +12,8 @@
     
     <developers>
         <developer>
-            <name>Alejandro Diaz</name>
-            <id>alediator</id>
-            <organization>GeoSolutions</organization>
-        </developer>
-        <developer>
-            <name>Alejandro Diaz</name>
-            <id>alediator</id>
+            <name>Damiano Giampaoli</name>
+            <id>DamianoG</id>
             <organization>GeoSolutions</organization>
         </developer>
         <developer>
@@ -43,6 +38,7 @@
         <mockito.version>1.9.5</mockito.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jetty.port>9191</jetty.port>
+        <gt.version>12.0</gt.version>
     </properties>
 
     <issueManagement>
@@ -326,6 +322,11 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+             <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-sample-data</artifactId>
+                <version>${gt.version}</version>
             </dependency>
             <!-- =========================================================== -->
             <!--               JETTY                                         -->

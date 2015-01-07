@@ -22,6 +22,9 @@ package it.geosolutions.opensdi2.worflow.transform;
 
 import java.util.List;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 public class TestMapList {
 	List<MapperTestContainer> tests;
 
@@ -31,5 +34,10 @@ public class TestMapList {
 
 	public void setTests(List<MapperTestContainer> tests) {
 		this.tests = tests;
+	}
+	
+	@Test
+	public void fakeTest(){
+	    Assert.assertTrue(true);
 	}
 }

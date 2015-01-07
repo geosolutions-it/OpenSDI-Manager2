@@ -20,14 +20,15 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,23 +39,18 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Controller for the base file manager.
  * **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757
- * Once the issue is resolved and Spring Updated, use xml configuration to map base
- * class.
+ * Once the issue is resolved and Spring Updated, use the xml configuration to map multiple URLs to this controller.
+ * 
  * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
+ * @author DamianoG
  *
  */
 @Controller
 @RequestMapping("/fileManager")
 public class FileManager extends BaseFileManager {
 	
-	/**
-	 * Set the configuration to set up the base directory
-	 * @param config
-	 */
-	@Autowired
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
+        public static final String ROOT_DIR = "rootDir";
+    
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
 	 * 
@@ -84,7 +80,8 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
-		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
+	        String rootDir = configureModule(request);
+		return super.extJSbrowser(rootDir, action, folder, name, oldName, file, request, response);
 
 	}
 
@@ -109,8 +106,8 @@ public class FileManager extends BaseFileManager {
 			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
-
-		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
+	        String rootDir = configureModule(request);
+		super.upload(rootDir, file, name, chunks, chunk, folder, request, servletResponse);
 	}
 
 	/**
@@ -128,7 +125,31 @@ public class FileManager extends BaseFileManager {
 	public void downloadFile(
 			@RequestParam(value = "folder", required = false) String folder,
 			@RequestParam(value = "file", required = true) String file,
+			HttpServletRequest req,
 			HttpServletResponse resp) {
-		super.downloadFile(folder, file, resp);
+	        String rootDir = configureModule(req);
+		super.downloadFile(rootDir, folder, file, resp);
+	}
+	
+	/**
+	 * This Method is responsible for retrieve the configuration object from the request, search for the runtimeDir parameter and set
+	 * the related superclass instance variable
+	 * 
+	 * @param request
+	 */
+	private String configureModule(HttpServletRequest request){
+	    
+	    OSDIConfigurationKVP config;
+            try {
+                config = (OSDIConfigurationKVP) super.loadConfiguration(request);
+            } catch (OSDIConfigurationException e) {
+                LOGGER.error(e.getMessage(), e);
+                throw new IllegalStateException("The configuration for the module '" + FileManager.class + "' cannot be load...");
+            }
+	    String rootDir = (String)config.getValue(ROOT_DIR);
+	    if(StringUtils.isBlank(rootDir)){
+	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");
+	    }
+	    return rootDir;
 	}
 }

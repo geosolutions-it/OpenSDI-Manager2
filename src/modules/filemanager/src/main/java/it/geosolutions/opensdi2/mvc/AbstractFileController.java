@@ -20,17 +20,37 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import java.io.File;
+
+import it.geosolutions.opensdi2.configurations.controller.OSDIModuleController;
 import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 /**
  * Base controller based on files to be extended
  * 
  * @author adiaz
+ * @author DamianoG
  * 
  */
-public abstract class AbstractFileController {
+public abstract class AbstractFileController extends OSDIModuleController{
 	
-	private String runtimeDir;
+//	/**
+//     * @return the rootDir
+//     */
+//    public String getRootDir() {
+//        return rootDir;
+//    }
+//
+//
+//    /**
+//     * @param rootDir the rootDir to set
+//     */
+//    public void setRootDir(String rootDir) {
+//        this.rootDir = rootDir;
+//    }
+//
+//
+//    private String rootDir;
 
 	
 	/**
@@ -40,28 +60,15 @@ public abstract class AbstractFileController {
 	 * @param subFolder
 	 * @return
 	 */
-	public String getFilePath(String fileName, String subFolder) {
-		String filePath = getRuntimeDir();
+	public String getFilePath(String rootDir, String fileName, String subFolder) {
+		String filePath = rootDir;
 		if (subFolder != null) {
 			filePath += subFolder + ControllerUtils.SEPARATOR;
 		}
-		filePath += fileName;
+		File f = new File(filePath, fileName);
+		filePath = f.getAbsolutePath();
 		filePath = ControllerUtils.cleanDuplicateSeparators(filePath);
 		return filePath;
-	}
-
-	/**
-	 * @return the config
-	 */
-	public String getRuntimeDir() {
-		return this.runtimeDir;
-	}
-
-	/**
-	 * @param config the config to set
-	 */
-	public void setRuntimeDir(String runtimeDir){
-		this.runtimeDir = runtimeDir;
 	}
 	
 
