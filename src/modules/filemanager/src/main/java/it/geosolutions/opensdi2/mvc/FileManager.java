@@ -155,6 +155,11 @@ public class FileManager extends BaseFileManager {
 	}
 	@Override
 	public String getInstanceID(HttpServletRequest req) {
-		return DEFAULT_INSTANCE_ID;
+		String res = super.getInstanceID(req);
+		if(res == null){
+			return DEFAULT_INSTANCE_ID;
+		}else{
+			return res;
+		}
 	}
 }

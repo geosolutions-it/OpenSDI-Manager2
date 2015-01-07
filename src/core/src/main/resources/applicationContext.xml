@@ -12,7 +12,7 @@
 	<!-- Config dir -->
 	<bean id="baseConfig"
 		class="it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl" init-method="initConfigDir">
-		<property name="baseFolderPath"></property>
+		<property name="baseFolderPath" value="CONFIG_DIR"></property>
 	</bean>
 
 	<!-- The configuration DAO -->
