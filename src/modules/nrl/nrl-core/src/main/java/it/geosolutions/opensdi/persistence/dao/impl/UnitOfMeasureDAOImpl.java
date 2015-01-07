@@ -31,7 +31,6 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.genericdao.search.Search;
-import com.googlecode.genericdao.search.jpa.JPASearchProcessor;
 
 /**
  * @author Lorenzo Natali

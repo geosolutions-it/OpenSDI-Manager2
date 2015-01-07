@@ -22,18 +22,11 @@
 
 package it.geosolutions.opensdi.persistence.dao.impl;
 
-import java.io.Serializable;
-
-import com.googlecode.genericdao.search.Search;
-
 import it.geosolutions.opensdi.model.AgroMet;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
+import java.io.Serializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -41,8 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(value = "opensdiTransactionManager")
 public class AgrometDAOImpl extends BaseDAO<AgroMet, Long> implements AgrometDAO {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(AgrometDAOImpl.class);
 
     @Override
     public void persist(AgroMet... entities) {

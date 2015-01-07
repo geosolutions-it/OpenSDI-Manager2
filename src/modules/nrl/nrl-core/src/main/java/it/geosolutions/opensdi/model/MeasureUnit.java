@@ -10,9 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "measure_units")
 @XmlRootElement(name = "MeasureUnit")
 public class MeasureUnit {
-	/** serialVersionUID */
-    private static final long serialVersionUID = 1L;
-    @Id
+	@Id
 	String id;
     
     @Column(updatable=true,nullable=false)

@@ -1,6 +1,5 @@
 package it.geosolutions.opensdi.dto;
 
-import sun.net.www.http.KeepAliveCache;
 import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.model.Season;
 
@@ -111,7 +110,6 @@ public class RESTCropDescriptor {
 			c.setProd_default_unit(prod_default_unit);
 			c.setArea_default_unit(area_default_unit);
 			c.setYield_default_unit(yield_default_unit);
-			Season s =null;
 			if (RABI || KHARIF){
 				if(RABI && KHARIF){
 					c.setSeasons(Season.RABI_KHARIF);

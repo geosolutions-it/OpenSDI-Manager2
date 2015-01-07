@@ -26,6 +26,7 @@ import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
+import it.geosolutions.opensdi.persistence.dao.UnitOfMeasureDAO;
 
 import java.util.List;
 
@@ -48,13 +49,16 @@ public abstract class BaseDAOTest extends BaseTest {
     protected static CropDescriptorDAO cropDescriptorDAO;
     protected static CropDataDAO cropDataDAO;
     protected static AgrometDAO agrometDAO;
+    protected static UnitOfMeasureDAO unitDAO;
 
     public BaseDAOTest() {
 
         cropDescriptorDAO = ctx.getBean("cropDescriptorDao", CropDescriptorDAO.class);
         cropDataDAO = ctx.getBean("cropDataDao", CropDataDAO.class);
         agrometDAO = ctx.getBean("agrometDao", AgrometDAO.class);
+        unitDAO = ctx.getBean("unitOfMeasureDao",UnitOfMeasureDAO.class);
     }
+    
 
     @Before
     public void before() {

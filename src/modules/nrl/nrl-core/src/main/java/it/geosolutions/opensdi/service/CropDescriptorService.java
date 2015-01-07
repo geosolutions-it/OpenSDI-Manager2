@@ -44,7 +44,10 @@ public class CropDescriptorService {
         cropDescriptorDao.merge(c);
     }
 
-    public void delete(String id) {
-        cropDescriptorDao.removeById(id);
+    public boolean delete(String id) {
+        return cropDescriptorDao.removeById(id);
+    }
+    public long getCount(){
+    	return cropDescriptorDao.count(null);
     }
 }

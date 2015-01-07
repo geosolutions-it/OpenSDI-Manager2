@@ -28,8 +28,6 @@ import it.geosolutions.opensdi.model.Season;
 
 import org.junit.Test;
 
-import com.sun.crypto.provider.DESCipher;
-
 /**
  *
  * @author ETj (etj at geo-solutions.it)
@@ -254,7 +252,11 @@ public class CropDataDAOImplTest extends BaseDAOTest {
             LOGGER.info("Bad use case properly trapped: " + e.getMessage());
         }
     }
-
+    /**
+     * Create a crop Descriptor 
+     * @param id the id 
+     * @return the crop Descriptor
+     */
     protected CropDescriptor createCropDescriptor(String id) {
         // create base cropdescriptor
         CropDescriptor descriptor = new CropDescriptor();

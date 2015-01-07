@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>it.geosolutions.opensdi2</groupId>
-        <artifactId>opensdi-manager2</artifactId>
+    <groupId>it.geosolutions.opensdi2</groupId>
+    <artifactId>opensdi2-modules</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
     <properties>
