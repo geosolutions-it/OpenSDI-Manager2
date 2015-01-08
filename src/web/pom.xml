@@ -26,9 +26,15 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-filemanager</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-rest-facade</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-http_proxy-mvc</artifactId>
 		</dependency>
 		
 		<dependency>
@@ -40,11 +46,15 @@
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-web-security</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>it.geosolutions.opensdi2</groupId>
 			<artifactId>opensdi2-crud-rest-api</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-admin</artifactId>
+		</dependency>
 		
 		<!-- Jackson -->
         <dependency>

@@ -172,6 +172,12 @@
 			    <artifactId>opensdi2-crud-model</artifactId>
 			    <version>${project.version}</version>
 		    </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
     
             <!-- =========================================================== -->
             <!--     APACHE COMMONS                                          -->
