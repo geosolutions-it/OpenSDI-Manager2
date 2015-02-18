@@ -28,10 +28,12 @@ import it.geosolutions.opensdi2.workflow.WorkflowException;
 import it.geosolutions.opensdi2.workflow.WorkflowStatus;
 import it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.opengis.filter.identity.FeatureId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -67,6 +69,7 @@ public class GeoCollectActionController {
 	 */
 	private static final String INPUT_ID = "input";
 	private static final String WRITER_ID = "writer";
+	private static final String OUTPUTIDS = "outputids";
 
 	/**
 	 * Available actions
@@ -130,13 +133,20 @@ public class GeoCollectActionController {
 					// SUCCESS
 					CommitResponse r = new CommitResponse();
 					
-					// TODO: what to set here?
-					// datastorewriter does not return anything at the moment
-					r.setId("2");
-					
-					r.setStatus(Status.SUCCESS);
-					
-					return r;
+					// datastorewriter stores the output feature ids in the "outputid" context element
+					Object outputids = ctx.getContextElements().get(OUTPUTIDS);
+					if(outputids != null && outputids instanceof List){
+						
+						List<FeatureId> outList = (List<FeatureId>)outputids;
+						if(!outList.isEmpty()){
+							// There should be only one ID
+							r.setId(outList.get(0).getID());
+						}
+
+						r.setStatus(Status.SUCCESS);
+						
+						return r;
+					}
 					
 				}else{
 					// FAIL!

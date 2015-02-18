@@ -22,7 +22,8 @@ package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.geocollect.model.http.CommitResponse;
 import it.geosolutions.geocollect.model.http.Status;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
+import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationException;
+import it.geosolutions.opensdi2.configurations.model.OSDIConfigurationKVP;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Once the issue is resolved and Spring Updated, use xml configuration to map base
  * class.
  * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
+ * @author Lorenzo Pini (lorenzo.pini at geo-solutions.it)
  *
  */
 @Controller
@@ -62,6 +64,14 @@ public class GeoCollectDataController extends BaseFileManager {
 	private static final String GC_BASE_DIR = "geocollect";
 	private static final String GC_MEDIA_DIR = "media";
 	private static final String GC_CONFIG_DIR = "config";
+	
+	/**
+	 * propertyName to be set in the config_<instancename>.properties file
+	 */
+	public static final String ROOT_DIR = "rootDir";
+	
+	public static final String DEFAULT_INSTANCE_ID = "default";
+	public static final String SCOPE_ID = "geocollect";
 
 	/**
 	 * Upload a media content in the upload folder
@@ -86,7 +96,9 @@ public class GeoCollectDataController extends BaseFileManager {
 					throws IOException {
 		String folder = generateFolder(mission,source,id);
 		//note now it doesn't support chunked requests
-		super.upload(file, name, -1, -1, folder, request, servletResponse);
+		String rootDir = computeRootDir(request);
+		
+		super.upload(rootDir, file, name, -1, -1, folder, request, servletResponse);
 		CommitResponse cr =  new CommitResponse();
 		cr.setStatus(Status.SUCCESS);
 		return cr;
@@ -100,14 +112,17 @@ public class GeoCollectDataController extends BaseFileManager {
 			HttpServletRequest request, HttpServletResponse response){
 		
 		String sourcePath = getGeoCollectPath(GC_MEDIA_DIR,mission, source, null);
-		Map<String, Object> folders = getFileList(sourcePath);
+		String rootDir = computeRootDir(request);
+		Map<String, Object> folders = getFileList(rootDir, sourcePath);
 		Map<String,Object> result = new HashMap<String,Object>();
+		
 		//TODO make it recursive to explore the whole files
 		for (String folderName: folders.keySet()){
 			if(folders.get(folderName) instanceof Map){
 				Map<String, Object> objectData = (Map<String, Object>) folders.get(folderName);
 				if( "folder".equals(objectData.get("iconCls") )){//TODO do a better check
-					Map<String, Object> detailobj = getFileList(sourcePath + objectData.get("name"));
+					
+					Map<String, Object> detailobj = getFileList(rootDir, sourcePath + objectData.get("name"));
 					
 					result.putAll(getImages(detailobj));
 				}else{
@@ -148,7 +163,8 @@ public class GeoCollectDataController extends BaseFileManager {
 	 */
 	private String generateFolder(String mission, String source, String id) {
 		String rel_path = getGeoCollectPath(GC_MEDIA_DIR,mission, source, id);
-		String path = getFilePath("",rel_path);
+		String rootDir = computeRootDir(null);
+		String path = getFilePath(rootDir, "",rel_path);
 		new File(path).mkdirs();
 		return rel_path;
 	}
@@ -170,16 +186,6 @@ public class GeoCollectDataController extends BaseFileManager {
 		return rel_path;
 	}
 
-
-	/**
-	 * Set the configuration to set up the base directory
-	 * @param config
-	 */
-	@Autowired
-	public void setBaseConfig(OpenSDIManagerConfig baseConfig){
-		
-		this.setRuntimeDir(baseConfig.getBaseFolder());
-	}
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
 	 * 
@@ -209,7 +215,8 @@ public class GeoCollectDataController extends BaseFileManager {
 			@RequestParam(value = "file", required = false) String file,
 			HttpServletRequest request, HttpServletResponse response) {
 
-		return super.extJSbrowser(action, folder, name, oldName, file, request, response);
+		String rootDir = computeRootDir(request);
+		return super.extJSbrowser(rootDir, action, folder, name, oldName, file, request, response);
 
 	}
 
@@ -234,8 +241,8 @@ public class GeoCollectDataController extends BaseFileManager {
 			@RequestParam(required = false) String folder,
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
-
-		super.upload(file, name, chunks, chunk, folder, request, servletResponse);
+		String rootDir = computeRootDir(request);
+		super.upload(rootDir, file, name, chunks, chunk, folder, request, servletResponse);
 	}
 
 
@@ -249,18 +256,55 @@ public class GeoCollectDataController extends BaseFileManager {
 	 * @param resp
 	 *            servlet response
 	 */
-	@RequestMapping(value = "/download", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/download", method = { RequestMethod.POST, RequestMethod.GET })
 	public void downloadFile(
 			@RequestParam(value = "folder", required = false) String folder,
 			@RequestParam(value = "file", required = true) String file,
 			HttpServletResponse resp) {
-		super.downloadFile(folder, file, resp);
+		
+		String rootDir = computeRootDir(null);
+		super.downloadFile(rootDir, folder, file, resp);
 	}
 
 	@Override
 	protected List<Object> getActions(File file) {
 		// TODO Auto-generated method stub
 		return super.getActions(file);
+	}
+	
+	/**
+	 * This Method is responsible for retrieve the configuration object from the request, search for the runtimeDir parameter and set
+	 * the related superclass instance variable
+	 * 
+	 * @param request
+	 */
+	private String computeRootDir(HttpServletRequest request){
+	    
+	    OSDIConfigurationKVP config;
+            try {
+            	config = (OSDIConfigurationKVP) depot.loadExistingConfiguration(SCOPE_ID, getInstanceID(request));
+            } catch (OSDIConfigurationException e) {
+                LOGGER.error(e.getMessage(), e);
+                throw new IllegalStateException("The configuration for the module '" + FileManager.class + "' cannot be load...");
+            }
+	    String rootDir = (String)config.getValue(ROOT_DIR);
+	    if(StringUtils.isBlank(rootDir)){
+	        throw new IllegalStateException("The module configuration provided has an empty '"+ROOT_DIR+"' value");
+	    }
+	    return rootDir;
+	}
+	
+	@Override
+	public String getInstanceID(HttpServletRequest req) {
+		if(req == null){
+			return DEFAULT_INSTANCE_ID;
+		}
+		
+		String res = super.getInstanceID(req);
+		if(res == null){
+			return DEFAULT_INSTANCE_ID;
+		}else{
+			return res;
+		}
 	}
 }

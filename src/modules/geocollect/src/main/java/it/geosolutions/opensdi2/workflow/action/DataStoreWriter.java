@@ -28,6 +28,7 @@ import it.geosolutions.opensdi2.workflow.utils.GeoCollectUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.DataStore;
@@ -37,6 +38,7 @@ import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.identity.FeatureId;
 
 /**
  * Insert an input {@link SimpleFeature} into the configured {@link DataStore}
@@ -80,7 +82,9 @@ public class DataStoreWriter extends BaseAction {
 				
 				// Only collections can be added to the store
 				// Create a collection with a single feature before adding to the store
-				featureStore.addFeatures(DataUtilities.collection(feature));
+				List<FeatureId> outputIds = featureStore.addFeatures(DataUtilities.collection(feature));
+				
+				ctx.addContextElement("outputids", outputIds);
 				
 				// Commit the transaction
 				transaction.commit();
