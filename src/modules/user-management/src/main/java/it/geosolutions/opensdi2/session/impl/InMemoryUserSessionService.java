@@ -131,4 +131,12 @@ public class InMemoryUserSessionService implements UserSessionService {
         return false;
     }
 
+	@Override
+	public void refreshSession(String sessionId) {
+		if(sessions.containsKey(sessionId)) {
+			sessions.get(sessionId).refresh();
+		}
+		
+	}
+
 }

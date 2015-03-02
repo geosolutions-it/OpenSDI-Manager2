@@ -23,7 +23,9 @@ package it.geosolutions.opensdi2.session.impl;
 import it.geosolutions.opensdi2.session.UserSession;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -41,6 +43,8 @@ public class UserSessionImpl implements UserSession {
     
     private Calendar expiration;
     
+    private long expirationInterval = 0l;
+    
     public UserSessionImpl(String id, UserDetails user, Calendar expiration) {
         super();
         this.id = id;
@@ -51,7 +55,7 @@ public class UserSessionImpl implements UserSession {
     public UserSessionImpl(UserDetails user, Calendar expiration) {
         super();
         this.user = user;
-        this.expiration = expiration;
+        this.setExpiration(expiration);
     }
     
     public void setId(String id) {
@@ -64,6 +68,9 @@ public class UserSessionImpl implements UserSession {
 
     public void setExpiration(Calendar expiration) {
         this.expiration = expiration;
+        if(expiration != null) {
+        	expirationInterval = expiration.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+        }
     }
 
     @Override
@@ -84,4 +91,15 @@ public class UserSessionImpl implements UserSession {
         return false;
     }
 
+	@Override
+	public void refresh() {
+		if(expiration != null) {
+			Calendar newExpiration = Calendar.getInstance();
+			newExpiration.setTimeInMillis(newExpiration.getTimeInMillis() + expirationInterval);
+			setExpiration(newExpiration);
+		}
+		
+	}
+
+    
 }

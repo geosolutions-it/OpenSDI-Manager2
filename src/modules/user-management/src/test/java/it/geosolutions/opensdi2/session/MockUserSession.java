@@ -20,27 +20,32 @@
  */
 package it.geosolutions.opensdi2.session;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Calendar;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * Basic interface for a UserSession.
- * The sesssion has a unique identifier, contains user data and allows for
- * expiration check.
- * 
- * @author Mauro Bartolomeoli
- */
-public interface UserSession {
-    public String getId();
-    
-    public UserDetails getUser();
-    
-    public void setId(String id);
-    
-    public void setUser(UserDetails user);
-    
-    public boolean isExpired();
-    
-    public void refresh();
+import it.geosolutions.opensdi2.session.impl.UserSessionImpl;
+
+public class MockUserSession extends UserSessionImpl {
+	
+	private Calendar mockExpiration; 
+	
+	public MockUserSession(String id, UserDetails user, Calendar expiration) {
+		super(id, user, expiration);
+	}
+
+	public MockUserSession(UserDetails user, Calendar expiration) {
+		super(user, expiration);
+	}
+
+	@Override
+	public void setExpiration(Calendar expiration) {
+		super.setExpiration(expiration);
+		mockExpiration = expiration;
+	}
+
+	public Calendar getExpiration() {
+		return mockExpiration;
+	}
+	
 }

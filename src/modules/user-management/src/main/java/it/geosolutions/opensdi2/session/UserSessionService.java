@@ -20,6 +20,8 @@
  */
 package it.geosolutions.opensdi2.session;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -29,7 +31,22 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Mauro Bartolomeoli
  */
 public interface UserSessionService {
+	/**
+	 * Gets user data for the given session id (if existing).
+	 * 
+	 * @param sessionId
+	 * @return
+	 */
     public UserDetails getUserData(String sessionId);
+    
+    /**
+     * Refresh an expiring session by the given interval.
+     * 
+     * @param sessionId
+     * @param interval
+     * @param unit
+     */
+    public void refreshSession(String sessionId);
     
     /**
      * Register a new session. The session id is given.

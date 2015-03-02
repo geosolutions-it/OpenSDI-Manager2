@@ -64,8 +64,15 @@ public class SessionController {
      * @return
      */
     @RequestMapping(value = "/user/{sessionId}", method = RequestMethod.GET)
-    public @ResponseBody UserDetails getUser(@PathVariable String sessionId) {
-        return userSessionService.getUserData(sessionId);
+	public @ResponseBody
+	UserDetails getUser(
+			@PathVariable String sessionId,
+			@RequestParam(required = false, value = "refresh", defaultValue = "true") boolean refresh) {
+        UserDetails details = userSessionService.getUserData(sessionId);
+        if(details != null && refresh) {
+        	userSessionService.refreshSession(sessionId);
+        }
+        return details;
     }
     
     /**
@@ -75,9 +82,13 @@ public class SessionController {
      * @return
      */
     @RequestMapping(value = "/username/{sessionId}", method = RequestMethod.GET)
-    public @ResponseBody String getUserName(@PathVariable String sessionId) {
+    public @ResponseBody String getUserName(@PathVariable String sessionId,
+			@RequestParam(required = false, value = "refresh", defaultValue = "true") boolean refresh) {
         UserDetails userData = userSessionService.getUserData(sessionId);
         if(userData != null) {
+        	if(refresh) {
+        		userSessionService.refreshSession(sessionId);
+        	}
             return userData.getUsername();
         }
         return null;
