@@ -85,10 +85,22 @@ public class InMemoryUserSessionServiceTest {
         assertTrue(userSessionService.isOwner(sessionId, TEST_USER.getUsername()));
     }
     
+    @Test
     public void testExpire() {
         Calendar expire = Calendar.getInstance();
         expire.add(Calendar.MINUTE, -10);
-        String sessionId = userSessionService.registerNewSession(new UserSessionImpl(TEST_USER, null));
+        String sessionId = userSessionService.registerNewSession(new UserSessionImpl(TEST_USER, expire));
         assertNull(userSessionService.getUserData(sessionId));
+    }
+    
+    @Test
+    public void testRefresh(){
+    	Calendar expire = Calendar.getInstance();
+        expire.add(Calendar.SECOND, 1);
+        MockUserSession session = new MockUserSession(TEST_USER, expire);
+		String sessionId = userSessionService.registerNewSession(session);
+		assertTrue(session.getExpiration().getTimeInMillis() - expire.getTimeInMillis() == 0);
+        userSessionService.refreshSession(sessionId);
+        assertTrue(session.getExpiration().getTimeInMillis() - expire.getTimeInMillis() > 0);
     }
 }
