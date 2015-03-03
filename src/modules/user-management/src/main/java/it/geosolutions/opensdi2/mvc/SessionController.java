@@ -146,7 +146,7 @@ public class SessionController {
      * @return
      */
     @RequestMapping(value = "/{sessionId}", method = RequestMethod.DELETE)
-    @PreAuthorize("(!hasRole('ROLE_ANONYMOUS') and @userSessionService.isOwner(#sessionId,principal)) or hasRole('ROLE_ADMIN')")
+    //@PreAuthorize("(!hasRole('ROLE_ANONYMOUS') and @userSessionService.isOwner(#sessionId,principal)) or hasRole('ROLE_ADMIN')")
     public void removeSession(@PathVariable String sessionId) {
        userSessionService.removeSession(sessionId);
     }

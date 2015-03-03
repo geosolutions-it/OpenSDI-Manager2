@@ -94,12 +94,13 @@ public class InMemoryUserSessionServiceTest {
     }
     
     @Test
-    public void testRefresh(){
+    public void testRefresh() throws InterruptedException{
     	Calendar expire = Calendar.getInstance();
         expire.add(Calendar.SECOND, 1);
         MockUserSession session = new MockUserSession(TEST_USER, expire);
 		String sessionId = userSessionService.registerNewSession(session);
 		assertTrue(session.getExpiration().getTimeInMillis() - expire.getTimeInMillis() == 0);
+		Thread.sleep(100);
         userSessionService.refreshSession(sessionId);
         assertTrue(session.getExpiration().getTimeInMillis() - expire.getTimeInMillis() > 0);
     }
