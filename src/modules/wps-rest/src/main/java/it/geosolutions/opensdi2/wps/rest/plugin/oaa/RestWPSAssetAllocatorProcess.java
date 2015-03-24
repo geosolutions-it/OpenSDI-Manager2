@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import javax.xml.namespace.QName;
+
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.ExceptionReportType;
 import net.opengis.ows11.ExceptionType;
@@ -86,10 +88,16 @@ import org.geotools.data.wps.response.DescribeProcessResponse;
 import org.geotools.data.wps.response.ExecuteProcessResponse;
 import org.geotools.ows.ServiceException;
 import org.geotools.process.ProcessException;
+import org.geotools.wps.WPS;
+import org.geotools.wps.WPSConfiguration;
+import org.geotools.xml.Encoder;
+import org.geotools.xml.EncoderDelegate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.xml.sax.ContentHandler;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -187,6 +195,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     /**
                      * Collect the Asset Allocator inputs
                      */
+                    List<String> assets = new ArrayList<String>();
+                    List<String> metocs = new ArrayList<String>();
+
                     // do a full DescribeProcess on my process
                     // http://geoserver.itc.nl:8080/wps100/WebProcessingService?REQUEST=DescribeProcess&IDENTIFIER=org.n52.wps.server.algorithm.collapse.SimplePolygon2PointCollapse&VERSION=1.0.0&SERVICE=WPS
                     DescribeProcessRequest descRequest = wps.createDescribeProcessRequest();
@@ -287,57 +298,20 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 oAAExecType.getDataInputs().getInput().add(input);
                             }
                         } else {
-                            List<String> assets = new ArrayList<String>();
-
                             while (jsonP.nextToken() != JsonToken.END_ARRAY) {
+                                // Parsing Assets
+                                if (fieldname.equalsIgnoreCase("assets")) {
+                                    StringBuilder asset = extractJsonProperties(jsonP, "Asset");
 
-                                StringBuilder asset = new StringBuilder();
-
-                                asset.append("{\"Asset\": {");
-
-                                while (jsonP.nextToken() != JsonToken.END_OBJECT) {
-                                    fieldname = jsonP.getCurrentName();
-                                    jsonP.nextToken(); // move to value, or START_OBJECT/START_ARRAY
-
-                                    if (jsonP.getCurrentToken() != JsonToken.START_OBJECT) {
-
-                                        asset.append("\"").append(fieldname).append("\":");
-
-                                        final String value = jsonP.getText();
-                                        if (!isNumeric(value))
-                                            asset.append("\"");
-                                        asset.append(value);
-                                        if (!isNumeric(value))
-                                            asset.append("\"");
-                                        asset.append(",");
-                                    } else if (jsonP.getCurrentToken() == JsonToken.START_OBJECT) {
-
-                                        asset.append("{\"").append(fieldname).append("\": {");
-
-                                        while (jsonP.nextToken() != JsonToken.END_OBJECT) {
-                                            fieldname = jsonP.getCurrentName();
-                                            jsonP.nextToken(); // move to value, or START_OBJECT/START_ARRAY
-
-                                            asset.append("\"").append(fieldname).append("\":");
-
-                                            final String value = jsonP.getText();
-                                            if (!isNumeric(value))
-                                                asset.append("\"");
-                                            asset.append(value);
-                                            if (!isNumeric(value))
-                                                asset.append("\"");
-                                            asset.append(",");
-                                        }
-
-                                        asset.deleteCharAt(asset.length() - 1);
-                                        asset.append("}");
-                                    }
+                                    assets.add(asset.toString());
                                 }
+                                
+                                // Parsing Metocs
+                                if (fieldname.equalsIgnoreCase("metocs")) {
+                                    StringBuilder metoc = extractJsonProperties(jsonP, "Metoc");
 
-                                asset.deleteCharAt(asset.length() - 1);
-                                asset.append("}}");
-
-                                assets.add(asset.toString());
+                                    metocs.add(metoc.toString());                                    
+                                }
                             }
 
                             if (assets != null && assets.size() > 0) {
@@ -369,7 +343,8 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     jsonP.close();
 
                     // set the Cascade WPS process Body
-                    ((InputReferenceType) oAAWpsCascadeReference).setBody(oAAExecType);
+                    ((InputReferenceType) oAAWpsCascadeReference).setBody(new WPSEncodeDelegate(
+                            oAAExecType, WPS.Execute));
 
                     // reference to the Resource Loader Cascaded Process
                     EObject resLoaderWpsCascadeReference = Wps10Factory.eINSTANCE.createInputReferenceType();
@@ -407,13 +382,38 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     resLoaderExecType.getDataInputs().getInput().add(input);
                     
                     // set the Cascade WPS process Body
-                    ((InputReferenceType) resLoaderWpsCascadeReference).setBody(resLoaderExecType);
+                    ((InputReferenceType) resLoaderWpsCascadeReference).setBody(new WPSEncodeDelegate(
+                            resLoaderExecType, WPS.Execute));
                     
                     // Finally create the MapStore Config Execute Request chaining the Resource Loader one
                     // and send an async exec request to the WPS
                     ExecuteProcessRequest mapStoreConfigExecRequest = wps.createExecuteProcessRequest();
                     mapStoreConfigExecRequest.setIdentifier(mapStoreConfigProcessIdent);
                     mapStoreConfigExecRequest.addInput("layerDescriptor", Arrays.asList(resLoaderWpsCascadeReference));
+                    
+                    if (metocs != null && metocs.size() > 0) {
+                        List<EObject> metocInputData = new ArrayList<EObject>();
+                        for (String metoc : metocs) {
+                            ComplexDataType cdt = Wps10Factory.eINSTANCE.createComplexDataType();
+                            cdt.getData().add(0, new CDATAEncoder(metoc));
+                            cdt.setMimeType("application/json");
+                            net.opengis.wps10.DataType data = Wps10Factory.eINSTANCE.createDataType();
+                            data.setComplexData(cdt);
+                            metocInputData.add(data);
+                        }
+                        
+                        mapStoreConfigExecRequest.addInput("metoc", metocInputData);
+                        /*for (EObject mtc : metocInputData) {
+                            InputType metocInput = Wps10Factory.eINSTANCE.createInputType();
+                            CodeType metocInputIdent = Ows11Factory.eINSTANCE.createCodeType();
+                            metocInputIdent.setValue("metoc");
+                            metocInput.setIdentifier(metocInputIdent);
+                            metocInput.setData((net.opengis.wps10.DataType) mtc);
+
+                            mapStoreConfigExecRequest.getDataInputs().getInput().add(metocInput);
+                        }*/
+                    }
+                    
                     ExecuteProcessResponse response = issueWPSAsyncRequest(mapStoreConfigExecRequest);
 
                     /**
@@ -443,6 +443,63 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         }
 
         return null;
+    }
+
+    /**
+     * @param jsonP
+     * @return
+     * @throws IOException
+     * @throws JsonParseException
+     */
+    protected StringBuilder extractJsonProperties(JsonParser jsonP, String objectId) throws IOException,
+            JsonParseException {
+        StringBuilder asset = new StringBuilder();
+
+        asset.append("{\""+objectId+"\": {");
+
+        while (jsonP.nextToken() != JsonToken.END_OBJECT) {
+            String propertyname = jsonP.getCurrentName();
+            jsonP.nextToken(); // move to value, or START_OBJECT/START_ARRAY
+
+            if (jsonP.getCurrentToken() != JsonToken.START_OBJECT) {
+
+                asset.append("\"").append(propertyname).append("\":");
+
+                final String value = jsonP.getText();
+                if (!isNumeric(value))
+                    asset.append("\"");
+                asset.append(value);
+                if (!isNumeric(value))
+                    asset.append("\"");
+                asset.append(",");
+            } else if (jsonP.getCurrentToken() == JsonToken.START_OBJECT) {
+
+                asset.append("{\"").append(propertyname).append("\": {");
+
+                while (jsonP.nextToken() != JsonToken.END_OBJECT) {
+                    propertyname = jsonP.getCurrentName();
+                    jsonP.nextToken(); // move to value, or START_OBJECT/START_ARRAY
+
+                    asset.append("\"").append(propertyname).append("\":");
+
+                    final String value = jsonP.getText();
+                    if (!isNumeric(value))
+                        asset.append("\"");
+                    asset.append(value);
+                    if (!isNumeric(value))
+                        asset.append("\"");
+                    asset.append(",");
+                }
+
+                asset.deleteCharAt(asset.length() - 1);
+                asset.append("}");
+            }
+        }
+
+        asset.deleteCharAt(asset.length() - 1);
+        asset.append("}}");
+        
+        return asset;
     }
 
     private static boolean isNumeric(String value) {
@@ -1323,4 +1380,24 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
         return true;
     }
+}
+
+class WPSEncodeDelegate implements EncoderDelegate {
+
+    private Object value;
+
+    private QName qname;
+
+    public WPSEncodeDelegate(Object value, QName qname) {
+        this.value = value;
+        this.qname = qname;
+    }
+
+    @Override
+    public void encode(ContentHandler output) throws Exception {
+        WPSConfiguration config = new WPSConfiguration();
+        Encoder encoder = new Encoder(config);
+        encoder.encode(value, qname, output);
+    }
+
 }
