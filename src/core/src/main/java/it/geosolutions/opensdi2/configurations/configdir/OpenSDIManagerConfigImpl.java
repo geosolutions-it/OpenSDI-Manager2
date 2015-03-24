@@ -72,6 +72,7 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
         if (StringUtils.isBlank(configDirPath)) {
             if (!StringUtils.isBlank(baseFolderPath)) {
                 configDirPath = baseFolderPath;
+                
             } else {
                 throw new IllegalStateException(
                         "No environment variable '"
@@ -81,6 +82,7 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
         }
         try {
             this.baseFolder = new File(configDirPath);
+           
         } catch (Exception e) {
             throw new IllegalStateException(
                     "Exception occurred while loading the config dir from the path '"
@@ -88,6 +90,16 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
                             + "', the datadir cannot been loaded so the Application cannot be started. exception message is: "
                             + e.getMessage());
         }
+        if(!this.baseFolder.exists()){
+        	this.baseFolder.mkdirs();
+        	LOGGER.info("*******************************************************************************");
+        	LOGGER.info("*******************************************************************************");
+        	LOGGER.info("* CREATED CONFIGURATION DIRECTORY :" + this.baseFolder.getAbsolutePath() );
+        	LOGGER.info("*******************************************************************************");
+        	LOGGER.info("*******************************************************************************");
+
+        }
+
         if (!this.baseFolder.isDirectory() || !this.baseFolder.canRead()
                 || !this.baseFolder.canWrite()) {
             throw new IllegalStateException(
@@ -95,5 +107,11 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
                             + configDirPath
                             + "' cannot been read or write or it is not a directory... the Application cannot be started.");
         }
+    	LOGGER.info("*******************************************************************************");
+    	LOGGER.info("*******************************************************************************");
+        LOGGER.info("* Configuration directory set at:" + this.baseFolder.getAbsolutePath()  );
+    	LOGGER.info("*******************************************************************************");
+    	LOGGER.info("*******************************************************************************");
+
     }
 }

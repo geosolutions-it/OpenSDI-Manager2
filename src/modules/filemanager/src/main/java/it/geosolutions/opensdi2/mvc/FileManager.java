@@ -50,6 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileManager extends BaseFileManager {
 	
         public static final String ROOT_DIR = "rootDir";
+        public static final String DEFAULT_INSTANCE_ID = "default";
     
 	/**
 	 * Browser handler server side for ExtJS filebrowser.
@@ -151,5 +152,14 @@ public class FileManager extends BaseFileManager {
 	        throw new IllegalStateException("The module configuration provided has an empty 'runtimeDir' value");
 	    }
 	    return rootDir;
+	}
+	@Override
+	public String getInstanceID(HttpServletRequest req) {
+		String res = super.getInstanceID(req);
+		if(res == null){
+			return DEFAULT_INSTANCE_ID;
+		}else{
+			return res;
+		}
 	}
 }
