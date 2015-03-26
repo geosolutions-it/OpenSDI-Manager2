@@ -502,6 +502,11 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
         return asset;
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
     private static boolean isNumeric(String value) {
         boolean isNumber = false;
 
