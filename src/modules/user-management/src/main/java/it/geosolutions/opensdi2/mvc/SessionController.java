@@ -146,7 +146,7 @@ public class SessionController {
      * @return
      */
     @RequestMapping(value = "/{sessionId}", method = RequestMethod.DELETE)
-    //@PreAuthorize("(!hasRole('ROLE_ANONYMOUS') and @userSessionService.isOwner(#sessionId,principal)) or hasRole('ROLE_ADMIN')")
+    @ResponseBody
     public void removeSession(@PathVariable String sessionId) {
        userSessionService.removeSession(sessionId);
     }
@@ -158,6 +158,7 @@ public class SessionController {
      */
     @RequestMapping(value = "/", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ResponseBody
     public void clear() {
        userSessionService.removeAllSessions();
     }
