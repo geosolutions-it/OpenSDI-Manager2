@@ -7,11 +7,14 @@
 	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<http auto-config="true" create-session="never">
-		<http-basic />
+		<http-basic  entry-point-ref="restAuthenticationEntryPoint"/>
 		<anonymous />
 		<intercept-url pattern="/mvc/admin/**" access="ROLE_ADMIN" />
 	</http>
 	
+	<beans:bean id="restAuthenticationEntryPoint" class="it.geosolutions.opensdi2.security.RestAuthenticationEntryPoint" >
+		
+	</beans:bean>
 	
     <!-- This is used to reply authentication requests with 401  -->
  	
