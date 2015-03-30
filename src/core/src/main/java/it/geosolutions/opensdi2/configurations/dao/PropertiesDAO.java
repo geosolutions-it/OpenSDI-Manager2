@@ -20,6 +20,7 @@
 package it.geosolutions.opensdi2.configurations.dao;
 
 import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfig;
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfigImpl;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationDuplicatedIDException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationInternalErrorException;
 import it.geosolutions.opensdi2.configurations.exceptions.OSDIConfigurationNotFoundException;
@@ -35,6 +36,7 @@ import java.util.Iterator;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -45,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 public class PropertiesDAO implements ConfigDAO {
+	private static Logger LOGGER = Logger.getLogger(PropertiesDAO.class);
 
     public final static String PROPERTIES_CONFIG_DIR = "propertiesConfigurations";
     
@@ -64,8 +67,19 @@ public class PropertiesDAO implements ConfigDAO {
         }
         propertiesConfigDir = new File(baseDir, PROPERTIES_CONFIG_DIR);
         if(!basicsDirectoryChecks(propertiesConfigDir)){
-            throw new IllegalStateException("The properties configuration directory inside the DATADIR '" + propertiesConfigDir + "' doesn't exist or cannot be read or write");
-        }
+        	try{
+        		propertiesConfigDir.mkdirs();
+        		LOGGER.info("Created directory '" + propertiesConfigDir.getAbsolutePath() + "' for configurations");
+        		if(!basicsDirectoryChecks(propertiesConfigDir)){
+        			throw new IllegalStateException("The properties configuration directory '" + propertiesConfigDir.getAbsolutePath() + "' doesn't exist or cannot be read or write");
+        		}
+        		
+        	}catch(Exception e){
+        		LOGGER.error("The properties configuration directory '" + propertiesConfigDir.getAbsolutePath() + "' doesn't exist or cannot be read or write");
+        		throw new IllegalStateException("The properties configuration directory '" + propertiesConfigDir.getAbsolutePath() + "' doesn't exist or cannot be read or write");
+            }
+        	}
+            
     }
     
     public void setPropertiesConfigDir(File propertiesConfigDir) {
