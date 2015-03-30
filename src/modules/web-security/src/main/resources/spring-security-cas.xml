@@ -12,22 +12,25 @@
 		<intercept-url pattern="/mvc/admin/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/mvc/process/**" access="ROLE_ADMIN, ROLE_USER" />
 	</http>
+
+
+	<!-- This is used to reply authentication requests with 401 -->
+
+	<authentication-manager>
+		<authentication-provider ref='geoStoreAuthenticationProvider' />
+	</authentication-manager>
 	
-	
-    <!-- This is used to reply authentication requests with 401  -->
- 	
-    <authentication-manager>
-        <authentication-provider ref='geoStoreAuthenticationProvider'/>
-    </authentication-manager>
-	 <beans:bean id="geoStoreAuthenticationProvider" class="it.geosolutions.geostore.services.security.GeoStoreAuthenticationProvider">
-	 <!-- externalize using Property Override Configurer -->
-    	<beans:property name="geoStoreRestURL" value="http://localhost:8280/geostore/rest/"></beans:property>
-    	<beans:property name="allowedRoles">
-    			<beans:list>
-					<beans:value>ADMIN</beans:value>
-					<beans:value>USER</beans:value>
-				</beans:list>
-    	</beans:property>
-    </beans:bean>
+	<beans:bean id="geoStoreAuthenticationProvider"
+		class="it.geosolutions.geostore.services.security.GeoStoreAuthenticationProvider">
+		<!-- externalize using Property Override Configurer -->
+		<beans:property name="geoStoreRestURL"
+			value="http://172.21.173.30:8181/geostore/rest/"></beans:property>
+		<beans:property name="allowedRoles">
+			<beans:list>
+				<beans:value>ADMIN</beans:value>
+				<beans:value>USER</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
 
 </beans:beans>
