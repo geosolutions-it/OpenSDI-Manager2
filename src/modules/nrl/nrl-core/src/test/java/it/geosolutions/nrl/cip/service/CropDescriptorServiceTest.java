@@ -3,7 +3,6 @@
  */
 package it.geosolutions.nrl.cip.service;
 
-import it.geosolutions.nrl.cip.service.BaseTest;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
 import it.geosolutions.opensdi.service.CropDescriptorService;
 

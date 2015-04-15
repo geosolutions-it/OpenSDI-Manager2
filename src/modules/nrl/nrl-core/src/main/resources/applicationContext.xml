@@ -43,7 +43,16 @@
     <bean id="cropStatusDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropStatusDAOImpl" >
         <property name="searchProcessor" ref="searchProcessor" />
     </bean>
+    <bean id="fertilizerDao" class="it.geosolutions.opensdi.persistence.dao.impl.FertilizerDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
     <bean id="unitOfMeasureDao" class="it.geosolutions.opensdi.persistence.dao.impl.UnitOfMeasureDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="marketPriceDao" class="it.geosolutions.opensdi.persistence.dao.impl.MarketPriceDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+    <bean id="irrigationDao" class="it.geosolutions.opensdi.persistence.dao.impl.IrrigationDAOImpl" >
         <property name="searchProcessor" ref="searchProcessor" />
     </bean>
 	

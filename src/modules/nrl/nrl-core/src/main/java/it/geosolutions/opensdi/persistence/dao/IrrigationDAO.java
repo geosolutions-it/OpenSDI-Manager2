@@ -1,7 +1,5 @@
 /*
- *  nrl Crop Information Portal
- *  https://github.com/geosolutions-it/crop-information-portal
- *  Copyright (C) 2007-2013 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -21,19 +19,12 @@
  */
 package it.geosolutions.opensdi.persistence.dao;
 
-import it.geosolutions.opensdi.model.CropDescriptor;
-
-import com.googlecode.genericdao.dao.jpa.GenericDAO;
-
-
-
+import it.geosolutions.opensdi.model.Irrigation;
 
 /**
- * @author Lorenzo Natali
+ * @author DamianoG
  *
  */
-public interface CropDescriptorDAO extends GenericDAO<CropDescriptor, String>{
-        
-      
-}
+public interface IrrigationDAO extends GenericNRLDAO<Irrigation, Long> {
 
+}

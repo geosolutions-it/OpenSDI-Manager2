@@ -16,12 +16,12 @@
  */
 package it.geosolutions.nrl.cip.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.model.Season;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 /**
  * @author Admin
  *

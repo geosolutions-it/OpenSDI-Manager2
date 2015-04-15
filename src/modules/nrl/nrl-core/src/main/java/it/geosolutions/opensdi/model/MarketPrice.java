@@ -50,7 +50,7 @@ public class MarketPrice {
     private Integer year;
 
     @Column(updatable = true, nullable = false)
-    private Integer month;
+    private String month;
 
     @Column(updatable = true, nullable = false)
     private Integer decade;
@@ -71,10 +71,10 @@ public class MarketPrice {
     private String crop;
 
     @Column(name = "market_price", updatable = true, nullable = false)
-    private Integer marketPrice;
+    private Double marketPrice;
 
     @Column(name = "market_price_unit", updatable = true, nullable = false)
-    private String marketPriceUnit;
+    private Double marketPriceUnit;
 
     /**
      * @return the id
@@ -107,14 +107,14 @@ public class MarketPrice {
     /**
      * @return the month
      */
-    public Integer getMonth() {
+    public String getMonth() {
         return month;
     }
 
     /**
      * @param month the month to set
      */
-    public void setMonth(Integer month) {
+    public void setMonth(String month) {
         this.month = month;
     }
 
@@ -205,29 +205,31 @@ public class MarketPrice {
     /**
      * @return the marketPrice
      */
-    public Integer getMarketPrice() {
+    public Double getMarketPrice() {
         return marketPrice;
     }
 
     /**
      * @param marketPrice the marketPrice to set
      */
-    public void setMarketPrice(Integer marketPrice) {
+    public void setMarketPrice(Double marketPrice) {
         this.marketPrice = marketPrice;
     }
 
     /**
      * @return the marketPriceUnit
      */
-    public String getMarketPriceUnit() {
+    public Double getMarketPriceUnit() {
         return marketPriceUnit;
     }
 
     /**
      * @param marketPriceUnit the marketPriceUnit to set
      */
-    public void setMarketPriceUnit(String marketPriceUnit) {
+    public void setMarketPriceUnit(Double marketPriceUnit) {
         this.marketPriceUnit = marketPriceUnit;
     }
+
+
 
 }

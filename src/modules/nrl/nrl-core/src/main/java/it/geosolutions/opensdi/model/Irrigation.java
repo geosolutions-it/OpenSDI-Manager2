@@ -32,14 +32,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.util.StringUtils;
 
 /**
  * @author DamianoG
  *
  */
 @Entity(name = "Irrigation")
-@Table(name = "irrigation", uniqueConstraints = { @UniqueConstraint(columnNames = {  }) })
+@Table(name = "irrigation", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","province","district","river" }) })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "irrigation")
 @XmlRootElement(name = "Irrigation")
 public class Irrigation {
@@ -52,7 +51,7 @@ public class Irrigation {
     private Integer year;
     
     @Column(updatable = true, nullable = false)    
-    private Integer month;
+    private String month;
     
     @Column(updatable = true, nullable = false)    
     private Integer decade;
@@ -67,27 +66,30 @@ public class Irrigation {
     private String province;
     
     @Column(updatable = true, nullable = false)    
-    private String river;
-
-    @Column(updatable = true, nullable = false)    
-    private String withdrawal;
+    private String district;
     
     @Column(updatable = true, nullable = false)    
-    private String waterflow;
+    private String river;
+
+    @Column(updatable = true, nullable = true)    
+    private Integer withdrawal;
+    
+    @Column(updatable = true, nullable = true)    
+    private Integer waterflow;
     
     @PrePersist
     @PreUpdate
     public void checkFunctionalConstraints() {
-        if(!StringUtils.isEmpty(withdrawal) && !StringUtils.isEmpty(waterflow)){
+        if(withdrawal != null && waterflow != null){
             throw new IllegalStateException("withdrawal and waterflow fields are both valorized... this is not valid...");
         }
-        if(!StringUtils.isEmpty(withdrawal)){
-            if(StringUtils.isEmpty(province)){
+        if(withdrawal != null){
+            if(province == null || province.isEmpty()){
                 throw new IllegalStateException("withdrawal field valorized but province field not... this is not valid...");
             }
         }
         else{
-            if(StringUtils.isEmpty(river)){
+            if(river == null || river.isEmpty()){
                 throw new IllegalStateException("waterflow field valorized but river field not... this is not valid...");
             }
         }
@@ -124,14 +126,14 @@ public class Irrigation {
     /**
      * @return the month
      */
-    public Integer getMonth() {
+    public String getMonth() {
         return month;
     }
 
     /**
      * @param month the month to set
      */
-    public void setMonth(Integer month) {
+    public void setMonth(String month) {
         this.month = month;
     }
 
@@ -208,29 +210,43 @@ public class Irrigation {
     /**
      * @return the withdrawal
      */
-    public String getWithdrawal() {
+    public Integer getWithdrawal() {
         return withdrawal;
     }
 
     /**
      * @param withdrawal the withdrawal to set
      */
-    public void setWithdrawal(String withdrawal) {
+    public void setWithdrawal(Integer withdrawal) {
         this.withdrawal = withdrawal;
     }
 
     /**
      * @return the waterflow
      */
-    public String getWaterflow() {
+    public Integer getWaterflow() {
         return waterflow;
     }
 
     /**
      * @param waterflow the waterflow to set
      */
-    public void setWaterflow(String waterflow) {
+    public void setWaterflow(Integer waterflow) {
         this.waterflow = waterflow;
+    }
+
+    /**
+     * @return the district
+     */
+    public String getDistrict() {
+        return district;
+    }
+
+    /**
+     * @param district the district to set
+     */
+    public void setDistrict(String district) {
+        this.district = district;
     }
     
     

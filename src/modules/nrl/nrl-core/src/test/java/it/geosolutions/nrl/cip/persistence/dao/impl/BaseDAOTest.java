@@ -19,7 +19,9 @@
  */
 package it.geosolutions.nrl.cip.persistence.dao.impl;
 
-import it.geosolutions.nrl.cip.persistence.dao.impl.BaseTest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import it.geosolutions.opensdi.model.AgroMet;
 import it.geosolutions.opensdi.model.CropData;
 import it.geosolutions.opensdi.model.CropDescriptor;
@@ -30,13 +32,10 @@ import it.geosolutions.opensdi.persistence.dao.UnitOfMeasureDAO;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
-
-import org.junit.Before;
 
 /**
  *

@@ -28,4 +28,5 @@ import it.geosolutions.opensdi.model.CropData;
  */
 public interface CropDataDAO extends GenericNRLDAO<CropData, Long> {
 
+    public void setSrc(String src);
 }
