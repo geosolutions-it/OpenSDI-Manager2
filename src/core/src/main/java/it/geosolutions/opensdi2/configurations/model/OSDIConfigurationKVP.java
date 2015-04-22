@@ -89,6 +89,11 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
     public Object getValue(String key){
         return configParamsMap.get(key);
     }
+    
+    public Object getValue(String key, String defaultValue){
+        Object value = configParamsMap.get(key);
+        return value == null ? defaultValue : value;
+    }
 
     public int getNumberOfProperties(){
         return configParamsMap.size();

@@ -62,6 +62,12 @@
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 		</dependency>
+        <!-- OAuth 2 -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>oauth2-oidc-sdk</artifactId>
+            <version>2.10</version>
+        </dependency>
 	</dependencies>
 
 </project>

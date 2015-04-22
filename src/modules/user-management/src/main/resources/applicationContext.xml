@@ -46,6 +46,11 @@
 	
 	<!-- default UserSessionService implementation -->
 	<bean id="userSessionService" class="it.geosolutions.opensdi2.session.impl.InMemoryUserSessionService"/>
+	
+	
+	<!-- default OAuth2LoginService implementation -->
+	<bean id="oauthService" class="it.geosolutions.opensdi2.oauth2.impl.OpenIdConnectLoginService">
+	</bean>
 	 
 	
 	<import resource="classpath*:/mailConfigurationContext.xml" />
