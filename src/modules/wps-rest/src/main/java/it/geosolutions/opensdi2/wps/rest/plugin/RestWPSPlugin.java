@@ -22,7 +22,7 @@ public class RestWPSPlugin implements RestPlugin {
 
     Set<RestService> wpsProcesses = Collections
             .newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
-    
+
     OSDIConfigurationKVP configuration;
 
     /*
@@ -63,17 +63,30 @@ public class RestWPSPlugin implements RestPlugin {
     @Override
     public Set<RestService> getServices() throws Exception {
 
-        synchronized (wpsProcesses) {
-            if (wpsProcesses.isEmpty()) {
-                List<RestWPSProcess> wpsAvailableProcesses = OpenSDIManagerConfigExtensions
-                        .extensions(RestWPSProcess.class);
+        if (wpsProcesses.isEmpty()) {
+            List<RestWPSProcess> wpsAvailableProcesses = OpenSDIManagerConfigExtensions
+                    .extensions(RestWPSProcess.class);
 
-                if (wpsAvailableProcesses != null) {
-                    wpsProcesses.addAll(wpsAvailableProcesses);
+            if (wpsAvailableProcesses != null) {
+                for (RestWPSProcess process : wpsAvailableProcesses) {
+                    if ("ENABLED".equals(process.getActiveStatus())) {
+                        wpsProcesses.add(process);
+                    }
                 }
             }
         }
 
+        return wpsProcesses;
+    }
+
+    @Override
+    public Set<RestService> getAllServices() throws Exception {
+        List<RestWPSProcess> wpsAvailableProcesses = OpenSDIManagerConfigExtensions
+                .extensions(RestWPSProcess.class);
+
+        Set<RestService> wpsProcesses = Collections
+                .newSetFromMap(new ConcurrentHashMap<RestService, Boolean>());
+        wpsProcesses.addAll(wpsAvailableProcesses);
         return wpsProcesses;
     }
 

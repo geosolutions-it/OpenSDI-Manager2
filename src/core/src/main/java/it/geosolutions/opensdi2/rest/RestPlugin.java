@@ -26,6 +26,8 @@ public interface RestPlugin {
     String getVersion();
 
     Set<RestService> getServices() throws Exception;
+    
+    Set<RestService> getAllServices() throws Exception;
 
     boolean supportsQueries();
 
@@ -39,4 +41,5 @@ public interface RestPlugin {
     void setConfiguration(OSDIConfigurationKVP config);
 
     OSDIConfigurationKVP getConfiguration();
+
 }

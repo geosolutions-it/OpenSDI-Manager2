@@ -13,6 +13,19 @@
     <bean id="wpsRestAPIPlugin" class="it.geosolutions.opensdi2.wps.rest.plugin.RestWPSPlugin" />
 
     <!-- REST WPS Processes -->
+    <bean id="wpsRestAPIGUIDProcess" class="it.geosolutions.opensdi2.wps.rest.plugin.guid.RestWPSGuidResourceLoaderProcess">
+        <!-- serviceId -->
+        <constructor-arg index="0" value="guid-wps-process" />
+        <!-- name -->
+        <constructor-arg index="1" value="GUID Resource Loader" />
+        <!-- description -->
+        <constructor-arg index="2" value="GUID Resource Loader Process" />
+        <!-- version -->
+        <constructor-arg index="3" value="1.0" />
+        <!-- activeStatus -->
+        <constructor-arg index="4" value="HIDDEN" />
+	</bean>
+    
     <bean id="wpsRestAPIOAAProcess" class="it.geosolutions.opensdi2.wps.rest.plugin.oaa.RestWPSAssetAllocatorProcess">
         <!-- serviceId -->
         <constructor-arg index="0" value="oaa-wps-process" />

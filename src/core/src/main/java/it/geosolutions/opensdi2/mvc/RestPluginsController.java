@@ -192,7 +192,7 @@ public class RestPluginsController extends RestAPIBaseController {
     }
 
     @RequestMapping(value = "/{pluginName}/services/{serviceId}", method = { RequestMethod.GET,
-            RequestMethod.POST })
+            RequestMethod.POST, RequestMethod.PUT })
     public @ResponseBody
     Object serviceDetails(@PathVariable String pluginName, @PathVariable String serviceId,
             @RequestParam(required = false) Map<String, String> params, HttpServletRequest request,
@@ -220,16 +220,16 @@ public class RestPluginsController extends RestAPIBaseController {
                     }
 
                     // Checking that the Service is available and correctly initialized
-                    if (service != null && !service.getActiveStatus().equals("ENABLED"))
+                    if (service != null && !(service.getActiveStatus().equals("ENABLED") || service.getActiveStatus().equals("HIDDEN")))
                         return null;
                 }
 
                 // Sequential scan otherwise
                 if (service == null) {
-                    _S: for (RestService srv : plugin.getServices()) {
+                    _S: for (RestService srv : plugin.getAllServices()) {
 
                         // Checking that the Service is available and correctly initialized
-                        if (!srv.getActiveStatus().equals("ENABLED"))
+                        if (!(srv.getActiveStatus().equals("ENABLED") || srv.getActiveStatus().equals("HIDDEN")))
                             continue _S;
 
                         // Filtering on plugin name
@@ -250,7 +250,7 @@ public class RestPluginsController extends RestAPIBaseController {
                     
                     if (request.getMethod().equals("GET")) {
                         return service;
-                    } else if (request.getMethod().equals("POST")) {
+                    } else if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
                         final String requestBody = extractParameters(params, request);
                         return service.execute(auth, requestBody, params);
                     }
