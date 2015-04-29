@@ -64,6 +64,9 @@ public class Fertilizer {
     @Column(name = "offtake_tons", updatable = true, nullable = false)
     private Double offtakeTons;
 
+    @Column(name = "month_num", updatable = true, nullable = false)
+    private Integer monthNum;
+    
     /**
      * @return the id
      */
@@ -160,6 +163,20 @@ public class Fertilizer {
      */
     public void setOfftakeTons(Double offtakeTons) {
         this.offtakeTons = offtakeTons;
+    }
+
+    /**
+     * @return the monthNum
+     */
+    public Integer getMonthNum() {
+        return monthNum;
+    }
+
+    /**
+     * @param monthNum the monthNum to set
+     */
+    public void setMonthNum(Integer monthNum) {
+        this.monthNum = monthNum;
     }
 
 }

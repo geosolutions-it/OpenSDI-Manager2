@@ -27,5 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <class>it.geosolutions.opensdi.model.AgroMet</class>
     <class>it.geosolutions.opensdi.model.CropStatus</class>
     <class>it.geosolutions.opensdi.model.UnitOfMeasure</class>
+    <class>it.geosolutions.opensdi.model.Fertilizer</class>
+    <class>it.geosolutions.opensdi.model.Irrigation</class>
+    <class>it.geosolutions.opensdi.model.MarketPrice</class>
   </persistence-unit>
 </persistence>
