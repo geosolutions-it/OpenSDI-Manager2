@@ -35,10 +35,17 @@
 			        <groupId>it.geosolutions.mariss</groupId>
     				<artifactId>gb-mariss-action-e-geos-metocs</artifactId>
 			    </exclusion>
-
+			    <exclusion>
+                                <groupId>it.geosolutions.geobatch</groupId>
+                                <artifactId>gb-action-geoserver</artifactId>
+                            </exclusion>
 			    <exclusion>
 			        <groupId>it.geosolutions.geobatch</groupId>
     				<artifactId>gb-core-model</artifactId>
+			    </exclusion>
+			    <exclusion>
+			    	<groupId>it.geosolutions.geobatch</groupId>
+			 	<artifactId>gb-core-impl</artifactId>
 			    </exclusion>
 			    <exclusion>
 			        <groupId>it.geosolutions.geobatch</groupId>
