@@ -36,12 +36,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -340,12 +345,40 @@ public class BaseFileManager extends AbstractFileController {
             LOGGER.debug("Creating new folder in " + newFolderPath);
         }
         try {
-            new File(getFilePath(newFolderPath, null)).mkdir();
-            return true;
+            File newFolder = new File(getFilePath(newFolderPath, null));
+            if (newFolder.mkdir() ) {
+                setFilePermissions(newFolder);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             LOGGER.error("Error creating '" + newFolderPath + "' folder");
             return false;
         }
+    }
+
+    /**
+     * 
+     * @param newFolder
+     * @throws IOException 
+     */
+    protected void setFilePermissions(File newFolder) throws IOException {
+      //using PosixFilePermission to set file permissions 777
+        Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+        //add owners permission
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        //add group permissions
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+        //add others permissions
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
+   
+        Files.setPosixFilePermissions(Paths.get(newFolder.getAbsolutePath()), perms);
     }
 
     /**

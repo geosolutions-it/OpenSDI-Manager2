@@ -84,7 +84,7 @@ public class ServiceManager extends BaseFileManager {
      * Base configuration for the service manager
      */
     private FileManagerConfig fileManagerConfig;
-    
+
     /**
      * Spring JDBC DAOs
      */
@@ -112,7 +112,7 @@ public class ServiceManager extends BaseFileManager {
     private final String ACQ_LIST_FOLDER = "ACQ_LIST";
 
     private final String PRODUCTS_FOLDER = "PRODUCTS";
-    
+
     /**
      * Known operation: Extjs integration services list
      */
@@ -127,12 +127,12 @@ public class ServiceManager extends BaseFileManager {
      * Known operation: Extjs integration sensorModes list
      */
     public static final String EXTJS_SENSOR_MODES_LIST = "get_sensorModeslist";
-    
+
     /**
      * Known operation: Extjs integration serviceSensors list
      */
     public static final String EXTJS_SERVICE_SENSORS_LIST = "get_servicesensorslist";
-    
+
     private ProxyService proxyService;
 
     /**
@@ -333,18 +333,17 @@ public class ServiceManager extends BaseFileManager {
 
         String finalFolder = folder != null && !folder.equals("root") ? folder : null;
         Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1 : 0;
-        
+
         if (EXTJS_FOLDER_NEW.equals(action)) {
             if (finalFolder != null && level == 2) {
                 String serviceId = FilenameUtils.getName(finalFolder);
                 String parent = FilenameUtils.getFullPathNoEndSeparator(finalFolder);
                 String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1] : null;
-                if(serviceDAO.findByServiceId(serviceId) == null) {
+                if (serviceDAO.findByServiceId(serviceId) == null) {
                     serviceDAO.insert(new Service(serviceId, parent, user, "NEW"));
                 }
             }
-        }
-        else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
+        } else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
             if (finalFolder != null) {
                 if (finalFolder.startsWith(fileManagerConfig.getRootText())) {
                     finalFolder = finalFolder.replace(fileManagerConfig.getRootText(), "");
@@ -358,21 +357,17 @@ public class ServiceManager extends BaseFileManager {
             }
             download(response, finalFile, getFilePath(finalFile, finalFolder));
             return null;
-        }
-        else if (EXTJS_SERVICES_LIST.equals(action)) {
+        } else if (EXTJS_SERVICES_LIST.equals(action)) {
             return getServicesList(folder);
-        }
-        else if (EXTJS_SENSORS_LIST.equals(action)) {
+        } else if (EXTJS_SENSORS_LIST.equals(action)) {
             return getSensorsList();
-        }
-        else if (EXTJS_SENSOR_MODES_LIST.equals(action)) {
+        } else if (EXTJS_SENSOR_MODES_LIST.equals(action)) {
             return getSensorModesList();
-        }
-        else if (EXTJS_SERVICE_SENSORS_LIST.equals(action)) {
+        } else if (EXTJS_SERVICE_SENSORS_LIST.equals(action)) {
             return getServiceSensorsList(folder, name);
         }
-        
-        //----
+
+        // ----
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
     }
 
@@ -397,9 +392,10 @@ public class ServiceManager extends BaseFileManager {
                 downloadMethod = METHOD_CONFIRMED_AOI;
                 proxyService.execute(request, new MockHttpServletResponse());
                 response.put(ResponseConstants.SUCCESS, true);
-                
+
                 Service dbService = this.serviceDAO.findByServiceId(service);
-                if (dbService != null) this.serviceDAO.updateServiceStatus(dbService, "AOI");
+                if (dbService != null)
+                    this.serviceDAO.updateServiceStatus(dbService, "AOI");
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
                 response.put(ResponseConstants.ROOT, "Wrong user or service");
@@ -434,7 +430,8 @@ public class ServiceManager extends BaseFileManager {
                 proxyService.execute(request, new MockHttpServletResponse());
 
                 Service dbService = this.serviceDAO.findByServiceId(service);
-                if (dbService != null) this.serviceDAO.updateServiceStatus(dbService, "ACQUISITIONPLAN");
+                if (dbService != null)
+                    this.serviceDAO.updateServiceStatus(dbService, "ACQUISITIONPLAN");
                 response.put(ResponseConstants.SUCCESS, true);
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
@@ -462,51 +459,50 @@ public class ServiceManager extends BaseFileManager {
     Object putServiceSensorsList(@RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "service", required = true) String service,
             HttpServletRequest request, HttpServletResponse httpServletResponse) {
-        
+
         Map<String, Object> response = new HashMap<String, Object>();
-        
+
         StringBuffer jb = new StringBuffer();
         String line = null;
         try {
-          BufferedReader reader = request.getReader();
-          while ((line = reader.readLine()) != null)
-            jb.append(line);
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null)
+                jb.append(line);
         } catch (Exception e) {
-            /*report an error*/ 
+            /* report an error */
             LOGGER.error("Error reading JSON data from the request", e);
             response.put(ResponseConstants.SUCCESS, false);
         }
 
         try {
             List<Sensor> sensors = new ArrayList<Sensor>();
-            
+
             JSONArray jsonArray = new JSONArray(jb.toString());
-            
-                
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
+
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
-                sensors.add(new Sensor(item.getString("sensor_type"), new SensorMode(item.getString("sensor_mode"))));
+                sensors.add(new Sensor(item.getString("sensor_type"), new SensorMode(item
+                        .getString("sensor_mode"))));
             }
-            
+
             this.serviceDAO.insertOrUpdate(service, sensors);
-            
+
             response.put(ResponseConstants.SUCCESS, true);
         } catch (JSONException e) {
             // crash and burn
             LOGGER.error("Error parsing JSON request string", e);
             response.put(ResponseConstants.SUCCESS, false);
         }
-        
+
         return response;
     }
-    
+
     /**
      * Check if the user is the logged one and exists the service
      * 
      * @param user
      * @param service
-     * @param method 
+     * @param method
      * 
      * @return true if the logged user is the user and exists the service for the user
      */
@@ -518,14 +514,15 @@ public class ServiceManager extends BaseFileManager {
             if (user != null && username != null && user.equals(username) && service != null) {
                 checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
                         + File.separator + service)).exists();
-                
+
                 if (METHOD_CONFIRMED_AOI.equals(method)) {
-                    checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + ACQ_LIST_FOLDER)).mkdirs();
-                }
-                else if (METHOD_CONFIRMED_ACQ_PLAN.equals(method)) {
-                    checked =  (new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + PRODUCTS_FOLDER)).mkdirs();
+                    checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + ACQ_LIST_FOLDER))
+                            .mkdirs();
+                } else if (METHOD_CONFIRMED_ACQ_PLAN.equals(method)) {
+                    checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + PRODUCTS_FOLDER))
+                            .mkdirs();
                 }
             }
         } catch (Exception e) {
@@ -597,8 +594,8 @@ public class ServiceManager extends BaseFileManager {
      */
     @Override
     protected List<Map<String, Object>> getFolderList(String folder) {
-        List<Map<String, Object>> currentFolderList = super.getFolderList(folder);        
-        
+        List<Map<String, Object>> currentFolderList = super.getFolderList(folder);
+
         FolderPermission permission = fileManagerConfig.getPermission(folder);
 
         // write operations available
@@ -611,7 +608,7 @@ public class ServiceManager extends BaseFileManager {
 
         return currentFolderList;
     }
-    
+
     /**
      * 
      * @param userid
@@ -619,9 +616,9 @@ public class ServiceManager extends BaseFileManager {
      */
     protected List<Map<String, Object>> getServicesList(String userid) {
         List<Service> services = this.serviceDAO.findByUser(userid);
-        List<Map<String, Object>> currentFolderList = super.getFolderList(userid);        
-        List<Map<String, Object>> servicesList = new LinkedList<Map<String, Object>>();        
-        
+        List<Map<String, Object>> currentFolderList = super.getFolderList(userid);
+        List<Map<String, Object>> servicesList = new LinkedList<Map<String, Object>>();
+
         FolderPermission permission = fileManagerConfig.getPermission(userid);
 
         // write operations available
@@ -630,15 +627,15 @@ public class ServiceManager extends BaseFileManager {
             rootElement.put("canDelete", permission.canDelete());
             rootElement.put("canCreateFolder", permission.canCreateFolder());
             rootElement.put("canUpload", permission.canUpload());
-            
+
             for (Service service : services) {
                 if (rootElement.get("text").equals(service.getServiceId())) {
                     rootElement.put("isService", true);
                     rootElement.put("userId", service.getUser());
                     rootElement.put("status", service.getStatus());
                     rootElement.put("parent", service.getParent());
-                    
-                    if(service.getAoi() != null) {
+
+                    if (service.getAoi() != null) {
                         AreaOfInterest aoi = service.getAoi();
                         rootElement.put("aoiStartTime", aoi.getStartTime());
                         rootElement.put("aoiEndTime", aoi.getEndTime());
@@ -646,7 +643,7 @@ public class ServiceManager extends BaseFileManager {
                         rootElement.put("aoiStatus", aoi.getStatus());
                         rootElement.put("aoiDescription", aoi.getDescription());
                     }
-                    
+
                     servicesList.add(rootElement);
                 }
             }
@@ -661,14 +658,14 @@ public class ServiceManager extends BaseFileManager {
      */
     private List<Map<String, Object>> getSensorModesList() {
         List<SensorMode> sensorModes = this.serviceDAO.getSensorModes();
-        List<Map<String, Object>> modes = new ArrayList<Map<String,Object>>();
-        
+        List<Map<String, Object>> modes = new ArrayList<Map<String, Object>>();
+
         for (SensorMode sensorMode : sensorModes) {
             Map<String, Object> rootElement = new HashMap<String, Object>();
             rootElement.put("text", sensorMode.getSensorMode());
             modes.add(rootElement);
         }
-        
+
         return modes;
     }
 
@@ -678,14 +675,14 @@ public class ServiceManager extends BaseFileManager {
      */
     private List<Map<String, Object>> getSensorsList() {
         List<Sensor> sensors = this.serviceDAO.getSensors();
-        List<Map<String, Object>> sensorTypes = new ArrayList<Map<String,Object>>();
-        
+        List<Map<String, Object>> sensorTypes = new ArrayList<Map<String, Object>>();
+
         for (Sensor sensor : sensors) {
             Map<String, Object> rootElement = new HashMap<String, Object>();
             rootElement.put("text", sensor.getSensor());
             sensorTypes.add(rootElement);
         }
-        
+
         return sensorTypes;
     }
 
@@ -696,18 +693,18 @@ public class ServiceManager extends BaseFileManager {
      * @return
      */
     private List<Map<String, Object>> getServiceSensorsList(String userId, String serviceId) {
-        List<Map<String, Object>> store = new ArrayList<Map<String,Object>>();
+        List<Map<String, Object>> store = new ArrayList<Map<String, Object>>();
         List<Service> services = this.serviceDAO.findByUser(userId);
-        
+
         if (services != null) {
             Service service = null;
-            
+
             for (Service ss : services) {
                 if (serviceId.equals(ss.getServiceId())) {
                     service = ss;
                 }
             }
-            
+
             if (service != null) {
                 List<Sensor> sensors = service.getSensors();
 
@@ -716,11 +713,11 @@ public class ServiceManager extends BaseFileManager {
                     Map<String, Object> rootElement = new HashMap<String, Object>();
                     rootElement.put("sensor_type", sensor.getSensor());
                     rootElement.put("sensor_mode", sensor.getSensorMode().getSensorMode());
-                    store.add(rootElement);                    
+                    store.add(rootElement);
                 }
             }
         }
-        
+
         return store;
     }
 
