@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	xmlns:integration-file="http://www.springframework.org/schema/integration/file"
+	xmlns:integration-ftp="http://www.springframework.org/schema/integration/ftp"
+	xmlns:ftpserver="http://mina.apache.org/ftpserver/spring/v1"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://mina.apache.org/ftpserver/spring/v1             http://mina.apache.org/ftpserver/ftpserver-1.0.xsd
+       http://activemq.apache.org/schema/core                 http://activemq.apache.org/schema/core/activemq-core.xsd
+       ">
+
+	<!-- 
+	**************************************************************************
+	Beans for FTP Server. 
+	The default implementation uses GeoStore Users (so you have to set up the 
+	administratorGeoStoreClient bean properly. See User Management Module).
+	**************************************************************************	
+ 	-->
+  	<bean id="ftpServerFactory" class="org.apache.ftpserver.FtpServerFactory"></bean>
+    
+    <bean id="ftpFileSystemFactory" class="org.apache.ftpserver.filesystem.nativefs.NativeFileSystemFactory"></bean>
+    
+    <!-- 
+    	Static settings valid for every user
+     -->
+    <bean id="ftpAuthoritiesProvider" class="it.geosolutions.opensdi2.ftp.user.BaseAuthoritiesProvider">
+   		<property name="homeDirectory" value="."></property>
+	<property name="authorities">
+		<list>
+			<bean
+				class="org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission">
+				<constructor-arg index="0" value="0" />
+				<constructor-arg index="1" value="0" />
+			</bean>
+			<bean
+				class="org.apache.ftpserver.usermanager.impl.TransferRatePermission">
+				<constructor-arg index="0" value="0" />
+				<constructor-arg index="1" value="0" />
+			</bean>
+			<!-- 
+			<bean
+				class="org.apache.ftpserver.usermanager.impl.WritePermission.WritePermission">
+				<constructor-arg index="0" value="writable_folder_root" />
+			</bean>
+			 -->
+		</list>
+	</property>
+		</bean>
+ 		
+    <!-- User manager gets users from GeoStore and authorities for the user from he configured ftpAuthoritiesProvider -->
+    <bean id="ftpUserManager" class="it.geosolutions.opensdi2.ftp.user.geostore.GeoStoreFTPUserManager">
+    	<property name="client" ref="administratorGeoStoreClient" /> <!-- needs the defined administratorGeoStoreClient -->
+    	<property name="authoritiesProvider" ref="ftpAuthoritiesProvider">
+    	
+    		
+    	</property>
+    </bean>
+    
+    <!-- This bean start the server on bean initialization, with the proper objects connected -->
+    <bean class="it.geosolutions.opensdi2.ftp.FtpServerStarter" id="ftpWrapper">
+		<property name="userManager" ref="ftpUserManager"></property>
+		<property name="fileSystemFactory" ref="ftpFileSystemFactory"></property>
+		<property name="serverFactory" ref="ftpServerFactory"></property>
+	</bean>
+	
+</beans>

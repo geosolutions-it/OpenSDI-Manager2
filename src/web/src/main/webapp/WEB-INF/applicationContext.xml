@@ -14,8 +14,8 @@
 	
 	<import resource="classpath*:/applicationContext.xml" />
 
-
-
+<!-- Import if you want to eneble the ftp server -->
+<!-- 	<import resource="classpath*:/ftp-server.xml"></import> -->
 
 
 </beans>

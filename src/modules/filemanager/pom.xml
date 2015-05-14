@@ -80,6 +80,23 @@
             <artifactId>gt-sample-data</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- FTP server support -->
+        <dependency>
+            <groupId>org.apache.ftpserver</groupId>
+            <artifactId>ftpserver-core</artifactId>
+            <version>1.0.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+         <!-- GeoStore Model -->
+        <dependency>
+            <groupId>it.geosolutions.geostore</groupId>
+            <artifactId>geostore-rest-client</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
