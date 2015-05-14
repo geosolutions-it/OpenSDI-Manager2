@@ -38,7 +38,7 @@
         <mockito.version>1.9.5</mockito.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jetty.port>9191</jetty.port>
-        <gt.version>12.0</gt.version>
+        <gt.version>12-SNAPSHOT</gt.version>
     </properties>
 
     <issueManagement>
@@ -96,7 +96,7 @@
         <repository>
           <id>boundless</id>
           <name>Boundless Maven Repository</name>
-          <url>http://repo.boundlessgeo.com</url>
+          <url>http://repo.boundlessgeo.com/main</url>
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
