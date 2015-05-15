@@ -102,9 +102,17 @@
     <util:map id="writerMappings">
         <entry key="GEOMETRY" value="geometry" />
     </util:map>
-	
-	<util:map id="segWriterMappings">
+    
+    <util:map id="segWriterMappings">
         <entry key="GEOMETRY" value="geometry" />
+    </util:map>
+
+    <util:map id="sportGeomMappings">
+        <entry key="geom" value="geometry" />
+    </util:map>
+    
+    <util:map id="muriGeomMappings">
+        <entry key="geom" value="geometry" />
     </util:map>
 
     <bean id="action3" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
@@ -112,20 +120,45 @@
         <property name="attributeMappings" ref="writerMappings"/>
         <property name="id" value="writer"></property>
     </bean>
-	
+    
     <bean id="action4" class="it.geosolutions.opensdi2.workflow.action.EmailAction">
         <property name="configuration" ref="action4Config"></property>
         <property name="id" value="mailer"></property>
     </bean>
+ 
+ 
+    <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
+    <util:map id="updateRules" map-class="java.util.HashMap">
+        <entry key="TIPOLOGIA_RIFIUTO" value="RISCHIO" />
+    </util:map>
+
+ 
+    <bean id="fUpdaterDiscaricheConfig" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdaterConfiguration">
+        <property name="inputObjectId" value="feature"></property> <!-- Source of the data -->
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="punti_abbandono" /> <!-- Target typeName that will be updated -->
+        <property name="surveyLinkingField" value="MY_ORIG_ID" /> <!-- Source property holding the ID to look for in the items table -->
+        <property name="itemLinkingField" value="GCID" /> <!-- ID property of the items table -->
+        <property name="rules" ref="updateRules"></property>
+    </bean>
+ 
+    <bean id="updateOriginItemDiscariche" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
+        <property name="configuration" ref="fUpdaterDiscaricheConfig"></property>
+        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="id" value="discaricheFeatureUpdater"></property>
+    </bean>
+    
     <!-- list of actions for the action sequence -->
     <util:list id="storeSopActions">
             <ref bean="action1"></ref>
-            <!-- <ref bean="action2"></ref> -->
+            <!-- <ref bean="action2"></ref> -->   <!-- This is the transform -->
             <ref bean="action3"></ref>
             <!-- ref bean="action4"></ref-->
+            <ref bean="updateOriginItemDiscariche"></ref>
+            
     </util:list>
     
-	<!-- list of actions for the action sequence -->
+    <!-- list of actions for the action sequence -->
     <util:list id="storeSegActions">
             <ref bean="action1"></ref>
             <!-- <ref bean="action2"></ref> -->
@@ -134,13 +167,13 @@
     </util:list>
     
     <!-- Beans for the new point insertion -->
-	<bean id="storeSegnalazioneConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+    <bean id="storeSegnalazioneConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
         <property name="inputObjectId" value="feature"></property>
         <property name="connectionProperties" ref="connectionProperties"/>
         <property name="typeName" value="punti_abbandono" />
     </bean>
 
-	<bean id="createSegFeatureConfig" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
+    <bean id="createSegFeatureConfig" class="it.geosolutions.opensdi2.workflow.action.TransformConfiguration">
         <property name="inputObjectId" value="feature"></property>
         <property name="outputObjectId" value="transformed"></property>
         <property name="inputPropertyAccessor" >
@@ -153,12 +186,12 @@
         <property name="preBuilder" ref="segFeaturePreBuilder"></property>
     </bean>
 
-	<bean id="segFeaturePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
+    <bean id="segFeaturePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
         <constructor-arg ref="storeSegnalazioneConfig"/>
         <constructor-arg value="feature"/>
     </bean>
     
-	<bean id="storeSegnalazione" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+    <bean id="storeSegnalazione" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="storeSegnalazioneConfig"></property>
         <property name="attributeMappings" ref="segWriterMappings"/>
         <property name="id" value="writer"></property>
@@ -173,11 +206,160 @@
         <property name="actions" ref="storeSegActions" />
         <property name="id" value="storeSegSequence"></property>
     </bean>
+    
+    <!-- Impianti Sportivi Bolzano -->
+    
+    <bean id="impiantiSopSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="impiantiSopActions" />
+        <property name="id" value="impiantiSopSequence"></property>
+    </bean>
 
+    <bean id="impiantiSegSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="impiantiSegActions" />
+        <property name="id" value="impiantiSegSequence"></property>
+    </bean>
+    
+    <!-- Sopralluoghi Impianti Sportivi Bolzano -->
+    
+    <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
+    <util:map id="impiantiUpdateRules" map-class="java.util.HashMap">
+        <entry key="numero_civ" value="numero_civ" />
+        <entry key="cviadesc" value="cviadesc" />
+    </util:map>
+
+    <bean id="fUpdaterImpiantiConfig" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdaterConfiguration">
+        <property name="inputObjectId" value="feature"></property> <!-- Source of the data -->
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="sport" /> <!-- Target typeName that will be updated -->
+        <property name="surveyLinkingField" value="my_orig_id" /> <!-- Source property holding the ID to look for in the items table -->
+        <property name="itemLinkingField" value="gcid" /> <!-- ID property of the items table -->
+        <property name="rules" ref="impiantiUpdateRules"></property>
+    </bean>
+ 
+    <bean id="updateOriginItemImpianti" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
+        <property name="configuration" ref="fUpdaterImpiantiConfig"></property>
+        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="id" value="impiantiFeatureUpdater"></property>
+    </bean>
+    
+    <util:list id="impiantiSopActions">
+        <ref bean="action1"></ref>
+        <ref bean="impiantiSopStoreAction"></ref>
+        <ref bean="updateOriginItemImpianti"></ref>
+    </util:list>
+    
+    <bean id="impiantiSopStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="impiantiSopStoreActionConfig"></property>
+        <property name="attributeMappings" ref="sportGeomMappings"/>
+        <property name="id" value="writer"></property>
+    </bean>
+    
+    <bean id="impiantiSopStoreActionConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="sport_sop" />
+    </bean>
+    
+    <!-- Segnalazioni Impianti Sportivi Bolzano -->
+    <util:list id="impiantiSegActions">
+            <ref bean="action1"></ref>
+            <ref bean="impiantiSegStoreAction"></ref>
+    </util:list>
+    
+    <bean id="impiantiSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="impiantiSegStoreActionConfig"></property>
+        <property name="attributeMappings" ref="sportGeomMappings"/>
+        <property name="id" value="writer"></property>
+    </bean>
+    
+    <bean id="impiantiSegStoreActionConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="sport" />
+    </bean>
+
+    
+    <!-- Muri Genova -->
+    
+    <bean id="muriSopSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="muriSopActions" />
+        <property name="id" value="muriSopSequence"></property>
+    </bean>
+
+    <bean id="muriSegSequence" class="it.geosolutions.opensdi2.workflow.ActionSequence">
+        <property name="actions" ref="muriSegActions" />
+        <property name="id" value="muriSegSequence"></property>
+    </bean>
+
+    <!-- Sopralluoghi Muri Genova -->
+    <util:list id="muriSopActions">
+        <ref bean="action1"></ref>
+        <ref bean="muriSopStoreAction"></ref>
+        <ref bean="updateOriginItemMuri"></ref>
+    </util:list>
+    
+    <bean id="muriSopStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="muriSopStoreActionConfig"></property>
+        <property name="attributeMappings" ref="muriGeomMappings"/>
+        <property name="id" value="writer"></property>
+    </bean>
+    
+    <bean id="muriSopStoreActionConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="cens_muri_sop" />
+    </bean>
+    
+    <!-- Segnalazioni Muri Genova -->
+    <util:list id="muriSegActions">
+            <ref bean="action1"></ref>
+            <ref bean="muriSegStoreAction"></ref>
+    </util:list>
+    
+    <bean id="muriSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="muriSegStoreActionConfig"></property>
+        <property name="attributeMappings" ref="muriGeomMappings"/>
+        <property name="id" value="writer"></property>
+    </bean>
+    
+    <bean id="muriSegStoreActionConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+        <property name="inputObjectId" value="feature"></property>
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="cens_muri" />
+    </bean>
+    
+    <util:map id="muriUpdateRules" map-class="java.util.HashMap">
+        <entry key="civico" value="civico" />
+    </util:map>
+
+    <bean id="fUpdaterMuriConfig" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdaterConfiguration">
+        <property name="inputObjectId" value="feature"></property> <!-- Source of the data -->
+        <property name="connectionProperties" ref="connectionProperties"/>
+        <property name="typeName" value="cens_muri" /> <!-- Target typeName that will be updated -->
+        <property name="surveyLinkingField" value="my_orig_id" /> <!-- Source property holding the ID to look for in the items table -->
+        <property name="itemLinkingField" value="gcid" /> <!-- ID property of the items table -->
+        <property name="rules" ref="muriUpdateRules"></property>
+    </bean>
+ 
+    <bean id="updateOriginItemMuri" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
+        <property name="configuration" ref="fUpdaterMuriConfig"></property>
+        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="id" value="muriFeatureUpdater"></property>
+    </bean>
+    
+    
     <!-- Mapping of the various available actions -->
     <util:map id="actionsMapping">
         <entry key="storesop" value="storeSopSequence" />
         <entry key="storeseg" value="storeSegSequence" />
+        <entry key="impiantisop" value="impiantiSopSequence" />
+        <entry key="impiantiseg" value="impiantiSegSequence" />
+        <entry key="murisop" value="muriSopSequence" />
+        <entry key="muriseg" value="muriSegSequence" />
     </util:map>
-
+    <!--  
+	<util:map id="configurableAction">
+	    <entry key="transform" value="action2" />
+	</util:map>
+    -->
 </beans>

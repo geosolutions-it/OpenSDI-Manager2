@@ -57,8 +57,8 @@ public class MockEventsManagerConfigDepot extends PublisherConfigDepot{
     }
 
     @Override
-    protected void addNewConfigurationLogic(OSDIConfiguration config) {
-        LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Saved!");
+    protected void addNewConfigurationLogic(OSDIConfiguration config, boolean replace) {
+        LOGGER.info("config: '" + config.getScopeID() + "-" + config.getInstanceID() + "' Saved! (replace = "+replace+")");
     }
 
     @Override

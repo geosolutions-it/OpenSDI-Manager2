@@ -166,9 +166,9 @@ public abstract class OSDIModuleController{
             throw new IllegalArgumentException("The path found in the request is null... this should never happen...");
         }
         LOGGER.debug("Extracting part of the following path '" + path + "' in order to get the module name...");
-        if(path.startsWith("/")) {
-        	path = path.substring(1);
-        }
+        path = StringUtils.removeStart(path, "/");
+        path = StringUtils.removeEnd(path, "/");
+        
         String [] parts = path.split("/");
         if(parts == null || parts.length <= index || parts[index] == null){
             throw new IllegalArgumentException("no fragment is found... this should never happen...");
@@ -183,5 +183,5 @@ public abstract class OSDIModuleController{
         }
         return null;
     }
-
+    
 }

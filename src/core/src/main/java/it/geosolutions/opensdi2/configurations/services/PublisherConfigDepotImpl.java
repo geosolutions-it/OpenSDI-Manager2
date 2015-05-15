@@ -66,7 +66,11 @@ public class PublisherConfigDepotImpl extends PublisherConfigDepot{
     }
 
     @Override
-    protected void addNewConfigurationLogic(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
+    protected void addNewConfigurationLogic(OSDIConfiguration config, boolean replace) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException {
+        
+        if(replace){
+            dao.delete(config.getScopeID(), config.getInstanceID());
+        }
         dao.save(config);
     }
 

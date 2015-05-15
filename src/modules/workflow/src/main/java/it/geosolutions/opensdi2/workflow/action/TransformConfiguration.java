@@ -1,6 +1,6 @@
 /*
  *  OpenSDI Manager 2
- *  Copyright (C) 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2014 - 2015 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -25,8 +25,10 @@ import java.util.Map;
 
 import org.springframework.expression.PropertyAccessor;
 
-import it.geosolutions.opensdi2.workflow.BlockConfiguration;
 import it.geosolutions.opensdi2.workflow.transform.PreBuilder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Utility container to configure the Transform Action
  * @author lorenzo
@@ -37,6 +39,7 @@ public class TransformConfiguration extends InputOutputConfiguration{
 	private List<PropertyAccessor> inputPropertyAccessor;
 	private List<PropertyAccessor> outputPropertyAccessor;
 	private Map<String,String> rules;
+	@JsonIgnore
 	@SuppressWarnings("rawtypes")
 	private PreBuilder preBuilder;
 	

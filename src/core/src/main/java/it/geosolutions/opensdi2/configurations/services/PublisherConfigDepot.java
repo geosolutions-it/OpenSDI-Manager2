@@ -53,7 +53,12 @@ public abstract class PublisherConfigDepot implements ConfigDepot, EventPublishe
     }
 
     @Override
-    public void addNewConfiguration(OSDIConfiguration config)
+    public void addNewConfiguration(OSDIConfiguration config) throws OSDIConfigurationException{
+        addNewConfiguration(config, false);
+    }
+
+    @Override
+    public void addNewConfiguration(OSDIConfiguration config, boolean replace)
             throws OSDIConfigurationException {
         
         if(!config.validateIDs()){
@@ -61,7 +66,7 @@ public abstract class PublisherConfigDepot implements ConfigDepot, EventPublishe
         }
         
         try {
-            addNewConfigurationLogic(config);
+            addNewConfigurationLogic(config, replace);
         } catch (OSDIConfigurationNotFoundException e) {
             LOGGER.error(e.getMessage(), e);
             throw new OSDIConfigurationException(e);
@@ -113,7 +118,7 @@ public abstract class PublisherConfigDepot implements ConfigDepot, EventPublishe
         return true;
     }
     
-    protected abstract void addNewConfigurationLogic(OSDIConfiguration config) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
+    protected abstract void addNewConfigurationLogic(OSDIConfiguration config, boolean replace) throws OSDIConfigurationDuplicatedIDException, OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
     
     protected abstract void updateExistingConfigurationLogic(OSDIConfiguration config) throws OSDIConfigurationNotFoundException, OSDIConfigurationInternalErrorException;
 }

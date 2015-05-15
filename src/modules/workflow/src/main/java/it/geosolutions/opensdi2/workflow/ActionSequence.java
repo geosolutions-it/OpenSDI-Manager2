@@ -35,7 +35,6 @@ public class ActionSequence extends BaseAction {
 				a.execute(ctx);
 			}
 		}
-		
 	}
 	public List<ActionBlock> getActions() {
 		return actions;

@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
     ">
-    <import resource="geocollect_mailconfig.xml"/>
+    <!-- import resource="geocollect_mailconfig.xml"/ -->
 
     <!-- Set the input from the "input" object in the context and sets the output to the "output" object in the context -->
     <bean id="action1Config" class="it.geosolutions.opensdi2.workflow.action.InputOutputConfiguration">

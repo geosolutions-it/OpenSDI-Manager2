@@ -26,6 +26,10 @@ import java.util.Map;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 public class DataStoreConfiguration extends InputOutputConfiguration {
 	private Map<String, String> connectionProperties;
 	private String typeName;

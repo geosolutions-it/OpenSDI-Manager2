@@ -62,6 +62,14 @@ public interface ConfigDepot {
      */
     public void addNewConfiguration(OSDIConfiguration conf) throws OSDIConfigurationException;
 
+    /**
+     * Add a new a configuration into the depot, removing the existing one.
+     * 
+     * @param conf an OpenSDI2 module configuration to add. The scopeID and instanceID fields must not be null.
+     * @throws OSDIConfigurationException a wrapper exception that holds the underlying exception has been thrown 
+     */
+    public void addNewConfiguration(OSDIConfiguration conf, boolean replace) throws OSDIConfigurationException;
+
     /** 
      * Update an existing configuration Throws an exception if the config isn't found or if the effective type of the configuration retrieved from the depot is different from the provided one
      * 
