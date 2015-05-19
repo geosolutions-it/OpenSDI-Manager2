@@ -32,6 +32,7 @@ public class GeoStoreFTPUser extends BaseUser implements User {
 	private void setAuthoritiesProvider(AuthoritiesProvider authoritiesProvider) {
 		this.authoritiesProvider = authoritiesProvider;
 		if(authoritiesProvider instanceof GeoStoreUserAuthoritiesProvider){
+			//TODO actually it gets the gsUser directly, in future we can pass the GeoStoreFTP user
 			setAuthorities(   ((GeoStoreUserAuthoritiesProvider)authoritiesProvider).getAuthorities(this.gsUser)    );
 			setHomeDirectory( ((GeoStoreUserAuthoritiesProvider)authoritiesProvider).getHomeDirectory(this.gsUser)  );
 		}else{

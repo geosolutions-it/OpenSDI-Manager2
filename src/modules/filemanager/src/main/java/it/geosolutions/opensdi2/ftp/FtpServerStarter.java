@@ -40,23 +40,26 @@ public class FtpServerStarter implements DisposableBean,
 	private FtpServerFactory serverFactory;
 
 	/**
-	 * The user manager 
+	 * The user manager
 	 */
 	private UserManager userManager;
-	
-	
-	/** 
+
+	/**
 	 * The fileSystem Factory
 	 */
 	private FileSystemFactory fileSystemFactory;
-	
+
+	/**
+	 * Data Connection Configuration
+	 */
+	private DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
+
 	/**
 	 * The port to use for this server
 	 * 
 	 */
 	int listenPort = 2121;
 
-	
 	/** Default constructor */
 	private FtpServerStarter() {
 		super();
@@ -92,22 +95,24 @@ public class FtpServerStarter implements DisposableBean,
 		if (server == null && serverFactory != null) {
 			try {
 				// factory.setPort(listenPort);
-				
+
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Starting FTP Server on port " + listenPort);
 				}
 
 				Listener listener = new NioListener(null, listenPort, false,
 						null,
-						new DataConnectionConfigurationFactory()
+
+						dataConnectionConfigurationFactory
 								.createDataConnectionConfiguration(), 300, null);
-				
+
 				serverFactory.addListener("default", listener);
-				
+
 				// sets the custom user manager to authenticate users
 				serverFactory.setUserManager(getUserManager());
-				
-				// sets the custom file system manager to list and download files
+
+				// sets the custom file system manager to list and download
+				// files
 				serverFactory.setFileSystem(getFileSystemFactory());
 				server = serverFactory.createServer();
 				server.start();
@@ -131,18 +136,19 @@ public class FtpServerStarter implements DisposableBean,
 		try {
 			start();
 			LOGGER.info("********************************************************");
-			LOGGER.info("*** FTP Server Created and running on port:"+ listenPort +" ***");
+			LOGGER.info("*** FTP Server Created and running on port:"
+					+ listenPort + " ***");
 			LOGGER.info("********************************************************");
 		} catch (FtpException e) {
-			
+
 			LOGGER.error("*** ERROR *** Unable to Start server FTP SERVER ", e);
-			
+
 		}
 
 	}
-	
+
 	//
-	//GETTERS AND SETTERS
+	// GETTERS AND SETTERS
 	//
 	public int getListenPort() {
 		return listenPort;
@@ -182,6 +188,15 @@ public class FtpServerStarter implements DisposableBean,
 
 	public void setServerFactory(FtpServerFactory serverFactory) {
 		this.serverFactory = serverFactory;
+	}
+
+	public DataConnectionConfigurationFactory getDataConnectionConfigurationFactory() {
+		return dataConnectionConfigurationFactory;
+	}
+
+	public void setDataConnectionConfigurationFactory(
+			DataConnectionConfigurationFactory dataConnectionConfigurationFactory) {
+		this.dataConnectionConfigurationFactory = dataConnectionConfigurationFactory;
 	}
 
 }

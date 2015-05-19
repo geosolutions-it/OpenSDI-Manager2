@@ -35,12 +35,12 @@ public class BaseAuthoritiesProvider implements AuthoritiesProvider {
 	
 	
 	@Override
-	public List<Authority> getAuthorities(String userName) {
+	public List<Authority> getAuthorities(Object userName) {
 		return authorities;
 	}
 
 	@Override
-	public String getHomeDirectory(String userName) {
+	public String getHomeDirectory(Object userName) {
 		
 		return homeDirectory;
 	}
