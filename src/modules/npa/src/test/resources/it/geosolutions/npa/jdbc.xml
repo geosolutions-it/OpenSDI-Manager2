@@ -1,0 +1,22 @@
+<jdbcservice>
+  <name>npa-test</name>
+  <propertyFileNameDDL>test-ddl.xml</propertyFileNameDDL>
+  <propertyFileNameDML>test-dml.xml</propertyFileNameDML>
+  <jndi>false</jndi>
+  <driverClassName>org.h2.Driver</driverClassName>
+  <connectURL>jdbc:h2:mem:npa-test</connectURL>
+  <userName>sa</userName>
+  <password></password>
+  <maxActive>21</maxActive>
+  <maxIdle>11</maxIdle>
+  <minIdle>1</minIdle>
+  <maxWait>11000</maxWait>
+  <minEvictableIdleTimeMillis>400000</minEvictableIdleTimeMillis>
+  <timeBetweenEvictionRunsMillis>400000</timeBetweenEvictionRunsMillis>
+  <numTestsPerEvictionRun>21</numTestsPerEvictionRun>
+  <poolPreparedStatements>false</poolPreparedStatements>
+  <maxOpenPreparedStatements>101</maxOpenPreparedStatements>
+  <testOnBorrow>false</testOnBorrow>
+  <validationQuery>SELECT 2</validationQuery>
+  <creatingTables>true</creatingTables>
+</jdbcservice>

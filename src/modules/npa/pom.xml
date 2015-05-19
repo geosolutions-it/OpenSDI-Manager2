@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi2-modules</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+  
+    <groupId>it.geosolutions.opensdi2</groupId>
+    <artifactId>opensdi2-npa</artifactId>
+    <packaging>jar</packaging>
+
+
+    <name>OpenSDI Manager 2 - Modules - NPA</name>
+    <properties>
+        <gs-custom-version>2.6.2-NPA-SNAPSHOT</gs-custom-version>
+        <aspectj.version>1.7.4</aspectj.version>
+        <h2.version>1.1.119</h2.version>
+        <postgresql.jdbc.version>8.4-701.jdbc3</postgresql.jdbc.version>
+    </properties>
+    
+	<dependencies>
+        <!-- Internal -->
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-crud-rest-api</artifactId>
+        </dependency>
+        <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-model</artifactId>
+        </dependency>
+        <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-rest-facade</artifactId>
+        </dependency>
+        <dependency>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi2-user-management</artifactId>
+      </dependency>
+      
+      <dependency>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi2-filemanager</artifactId>
+      </dependency>
+      
+      <!-- AspectJ -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <!-- NPA -->
+        <dependency>
+            <groupId>it.geosolutions.npa</groupId>
+            <artifactId>npa-dao</artifactId>
+            <version>${gs-custom-version}</version>
+            
+        </dependency>
+        <!-- postgresql -->
+        <dependency>
+		  <groupId>postgresql</groupId>
+		  <artifactId>postgresql</artifactId>
+		  <version>${postgresql.jdbc.version}</version>
+		</dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Jackson JSON Mapper -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+        </dependency>
+        
+		<!-- Mockito -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- H2 -->
+		<dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <scope>test</scope>
+          <version>${h2.version}</version>
+        </dependency>
+        
+		<!-- Servlet -->
+	   <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+	</dependencies>
+
+</project>

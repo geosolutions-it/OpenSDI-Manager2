@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        ">
+	<!-- FTP test -->
+	<bean id="ftpServerFactory" class="org.apache.ftpserver.FtpServerFactory"></bean>
+
+	<bean id="ftpFileSystemFactory" class="it.geosolutions.npa.ftp.NPAFileSystemFactory">
+		<property name="usidService" ref="usidService"></property>
+		<property name="downloadService" ref="downloadService"></property>
+	</bean>
+
+	<!-- Static settings valid for every user -->
+	<bean id="ftpAuthoritiesProvider"
+		class="it.geosolutions.opensdi2.ftp.user.BaseAuthoritiesProvider">
+		<property name="homeDirectory" value="."></property>
+		<property name="authorities">
+			<list>
+				<bean
+					class="org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission">
+					<constructor-arg index="0" value="0" />
+					<constructor-arg index="1" value="0" />
+				</bean>
+				<bean class="org.apache.ftpserver.usermanager.impl.TransferRatePermission">
+					<constructor-arg index="0" value="0" />
+					<constructor-arg index="1" value="0" />
+				</bean>
+				<!-- <bean class="org.apache.ftpserver.usermanager.impl.WritePermission.WritePermission"> 
+					<constructor-arg index="0" value="writable_folder_root" /> </bean> -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- User for tests -->
+	<bean id="dummyUser" class="it.geosolutions.opensdi2.ftp.user.geostore.GeoStoreFTPUser">
+		<constructor-arg>
+		<bean class="it.geosolutions.geostore.core.model.User">
+			<property name="name" value="dummyUser"></property>
+			<property name="role" value="USER"></property>
+			<property name="groups">
+				<set>
+					<bean class="it.geosolutions.geostore.core.model.UserGroup">
+						<property name="groupName" value="everyone" />
+						
+					</bean>
+
+					<bean class="it.geosolutions.geostore.core.model.UserGroup">
+						<property name="groupName" value="testGroup" />
+						
+					</bean>
+				</set>
+			</property>
+		</bean>
+		</constructor-arg>
+		<constructor-arg ref="ftpAuthoritiesProvider"></constructor-arg>
+	</bean>
+</beans>

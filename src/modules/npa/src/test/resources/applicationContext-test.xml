@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        ">
+	<bean id="usidService" class="it.geosolutions.npa.DummyUsidService">
+        <property name="configFolderPath" value="npa"></property>
+        <property name="baseDirectory" value="npa"></property>
+    </bean>
+	<bean id="downloadService" class="it.geosolutions.npa.download.NPADownloadService">
+		<property name="usidService" ref="usidService"></property>
+	</bean>
+	
+	 
+	<import resource="classpath:ftp-test.xml"/>
+	
+</beans>

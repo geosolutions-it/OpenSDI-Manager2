@@ -113,6 +113,22 @@
 			</dependencies>
 			
 		</profile>
+		<profile>
+			<id>npa</id>
+			<dependencies>
+				<dependency>
+					<groupId>it.geosolutions.opensdi2</groupId>
+					<artifactId>opensdi2-user-management</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>it.geosolutions.opensdi2</groupId>
+    				<artifactId>opensdi2-npa</artifactId>
+    				<version>1.1-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+			
+		</profile>
+		 
 		
 	</profiles>
 	

@@ -38,6 +38,13 @@
                 <module>user-management</module>
             </modules>
         </profile>
+        <profile>
+             <id>npa</id>
+            <modules>
+                <module>user-management</module>
+                <module>npa</module>
+            </modules>
+        </profile>
   </profiles>
 
 		
