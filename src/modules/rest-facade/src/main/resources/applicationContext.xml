@@ -12,7 +12,7 @@
     	<property name="urlsWrapped">
 	    	<map>
 		        <!-- entry key="geostore" value="http://localhost:8181/geostore" / -->
-		        <entry key="geostore" value="http://172.21.173.30:8181/geostore" />
+		        <entry key="geostore" value="http://172.21.160.30:8181/geostore" />
 		    </map> 
 	    </property>
     	<!-- Customized proxied -->
