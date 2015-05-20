@@ -202,8 +202,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                     // based on the DescribeProcess, setup the execute
                     ProcessDescriptionsType processDesc = descResponse.getProcessDesc();
-                    ProcessDescriptionType pdt = (ProcessDescriptionType) processDesc
-                            .getProcessDescription().get(0);
+                    ProcessDescriptionType pdt = (ProcessDescriptionType) processDesc.getProcessDescription().get(0);
                     iterator = pdt.getDataInputs().getInput().iterator();
 
                     Map<String, InputDescriptionType> processInputs = new HashMap<String, InputDescriptionType>();
@@ -217,11 +216,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     resultsCodeType.setValue("result");
 
                     // reference to the Cascaded Process
-                    EObject oAAWpsCascadeReference = Wps10Factory.eINSTANCE
-                            .createInputReferenceType();
+                    EObject oAAWpsCascadeReference = Wps10Factory.eINSTANCE.createInputReferenceType();
                     ((InputReferenceType) oAAWpsCascadeReference).setMimeType("application/xml");
-                    ((InputReferenceType) oAAWpsCascadeReference)
-                            .setMethod(MethodType.POST_LITERAL);
+                    ((InputReferenceType) oAAWpsCascadeReference).setMethod(MethodType.POST_LITERAL);
                     ((InputReferenceType) oAAWpsCascadeReference).setHref("http://geoserver/wps");
 
                     ExecuteType oAAExecType = Wps10Factory.eINSTANCE.createExecuteType();
@@ -235,10 +232,8 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     DataInputsType1 inputtypes = Wps10Factory.eINSTANCE.createDataInputsType1();
                     oAAExecType.setDataInputs(inputtypes);
 
-                    ResponseFormType oAAResponseForm = Wps10Factory.eINSTANCE
-                            .createResponseFormType();
-                    OutputDefinitionType oAARawDataOutput = Wps10Factory.eINSTANCE
-                            .createOutputDefinitionType();
+                    ResponseFormType oAAResponseForm = Wps10Factory.eINSTANCE.createResponseFormType();
+                    OutputDefinitionType oAARawDataOutput = Wps10Factory.eINSTANCE.createOutputDefinitionType();
                     oAARawDataOutput.setIdentifier(resultsCodeType);
                     oAAResponseForm.setRawDataOutput(oAARawDataOutput);
 
@@ -278,14 +273,12 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                         sdf.applyPattern("yyyyMMdd");
                                         value = sdf.format(date);
                                     } catch (Exception e) {
-                                        LOGGER.log(Level.WARN, "Was not possible to convert the ["
-                                                + fieldname + "] in a suitable date forma!", e);
+                                        LOGGER.log(Level.WARN, "Was not possible to convert the [" + fieldname + "] in a suitable date forma!", e);
                                     }
                                 }
 
                                 if (fieldname.equalsIgnoreCase("timeHorizon")) {
-                                    value = String.valueOf(Integer.parseInt(value)
-                                            * HOURS_TO_SECONDS);
+                                    value = String.valueOf(Integer.parseInt(value) * HOURS_TO_SECONDS);
                                 }
 
                                 // exeRequest.addInput(fieldname, Arrays.asList(wps.createLiteralInputValue(value)));
@@ -294,8 +287,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 inputIdent.setValue(fieldname);
                                 input.setIdentifier(inputIdent);
 
-                                input.setData((net.opengis.wps10.DataType) wps
-                                        .createLiteralInputValue(value));
+                                input.setData((net.opengis.wps10.DataType) wps.createLiteralInputValue(value));
 
                                 oAAExecType.getDataInputs().getInput().add(input);
                             }
@@ -319,12 +311,10 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                             if (assets != null && assets.size() > 0) {
                                 List<EObject> assetInputData = new ArrayList<EObject>();
                                 for (String asset : assets) {
-                                    ComplexDataType cdt = Wps10Factory.eINSTANCE
-                                            .createComplexDataType();
+                                    ComplexDataType cdt = Wps10Factory.eINSTANCE.createComplexDataType();
                                     cdt.getData().add(0, new CDATAEncoder(asset));
                                     cdt.setMimeType("application/json");
-                                    net.opengis.wps10.DataType data = Wps10Factory.eINSTANCE
-                                            .createDataType();
+                                    net.opengis.wps10.DataType data = Wps10Factory.eINSTANCE.createDataType();
                                     data.setComplexData(cdt);
                                     assetInputData.add(data);
                                 }
@@ -332,8 +322,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                     // exeRequest.addInput("asset", assetInputData);
                                     for (EObject aa : assetInputData) {
                                         InputType input = Wps10Factory.eINSTANCE.createInputType();
-                                        CodeType inputIdent = Ows11Factory.eINSTANCE
-                                                .createCodeType();
+                                        CodeType inputIdent = Ows11Factory.eINSTANCE.createCodeType();
                                         inputIdent.setValue("asset");
                                         input.setIdentifier(inputIdent);
                                         input.setData((net.opengis.wps10.DataType) aa);
@@ -348,18 +337,14 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     jsonP.close();
 
                     // set the Cascade WPS process Body
-                    ((InputReferenceType) oAAWpsCascadeReference).setBody(new WPSEncodeDelegate(
-                            oAAExecType, WPS.Execute));
+                    ((InputReferenceType) oAAWpsCascadeReference).setBody(new WPSEncodeDelegate(oAAExecType, WPS.Execute));
 
                     // reference to the Resource Loader Cascaded Process
-                    EObject resLoaderWpsCascadeReference = Wps10Factory.eINSTANCE
-                            .createInputReferenceType();
-                    ((InputReferenceType) resLoaderWpsCascadeReference)
-                            .setMimeType("application/xml");
-                    ((InputReferenceType) resLoaderWpsCascadeReference)
-                            .setMethod(MethodType.POST_LITERAL);
-                    ((InputReferenceType) resLoaderWpsCascadeReference)
-                            .setHref("http://geoserver/wps");
+                    EObject resLoaderWpsCascadeReference = Wps10Factory.eINSTANCE.createInputReferenceType();
+                    //((InputReferenceType) resLoaderWpsCascadeReference).setMimeType("application/xml");
+                    ((InputReferenceType) resLoaderWpsCascadeReference).setMimeType("application/octet-stream");
+                    ((InputReferenceType) resLoaderWpsCascadeReference).setMethod(MethodType.POST_LITERAL);
+                    ((InputReferenceType) resLoaderWpsCascadeReference).setHref("http://geoserver/wps");
 
                     // create the Resource Loader Execute Request chaining the OAA one
                     ExecuteType resLoaderExecType = Wps10Factory.eINSTANCE.createExecuteType();
@@ -370,14 +355,11 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                     resLoaderExecType.setIdentifier(resLoaderCodeType);
 
-                    DataInputsType1 resLoaderInputtypes = Wps10Factory.eINSTANCE
-                            .createDataInputsType1();
+                    DataInputsType1 resLoaderInputtypes = Wps10Factory.eINSTANCE.createDataInputsType1();
                     resLoaderExecType.setDataInputs(resLoaderInputtypes);
 
-                    ResponseFormType resLoaderResponseForm = Wps10Factory.eINSTANCE
-                            .createResponseFormType();
-                    OutputDefinitionType resLoaderRawDataOutput = Wps10Factory.eINSTANCE
-                            .createOutputDefinitionType();
+                    ResponseFormType resLoaderResponseForm = Wps10Factory.eINSTANCE.createResponseFormType();
+                    OutputDefinitionType resLoaderRawDataOutput = Wps10Factory.eINSTANCE.createOutputDefinitionType();
                     resLoaderRawDataOutput.setIdentifier(resultsCodeType);
                     resLoaderResponseForm.setRawDataOutput(resLoaderRawDataOutput);
 
@@ -394,16 +376,13 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     resLoaderExecType.getDataInputs().getInput().add(input);
 
                     // set the Cascade WPS process Body
-                    ((InputReferenceType) resLoaderWpsCascadeReference)
-                            .setBody(new WPSEncodeDelegate(resLoaderExecType, WPS.Execute));
+                    ((InputReferenceType) resLoaderWpsCascadeReference).setBody(new WPSEncodeDelegate(resLoaderExecType, WPS.Execute));
 
                     // Finally create the MapStore Config Execute Request chaining the Resource Loader one
                     // and send an async exec request to the WPS
-                    ExecuteProcessRequest mapStoreConfigExecRequest = wps
-                            .createExecuteProcessRequest();
+                    ExecuteProcessRequest mapStoreConfigExecRequest = wps.createExecuteProcessRequest();
                     mapStoreConfigExecRequest.setIdentifier(mapStoreConfigProcessIdent);
-                    mapStoreConfigExecRequest.addInput("layerDescriptor",
-                            Arrays.asList(resLoaderWpsCascadeReference));
+                    mapStoreConfigExecRequest.addInput("layerDescriptor", Arrays.asList(resLoaderWpsCascadeReference));
 
                     if (metocs != null && metocs.size() > 0) {
                         List<EObject> metocInputData = new ArrayList<EObject>();
@@ -454,11 +433,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                     while (executeResponse == null) {
                         executeResponse = response.getExecuteResponse();
 
-                        final ExceptionReportType exceptionResponse = response
-                                .getExceptionResponse();
+                        final ExceptionReportType exceptionResponse = response.getExceptionResponse();
                         if (exceptionResponse != null) {
-                            ExceptionType exception = (ExceptionType) exceptionResponse
-                                    .getException().get(0);
+                            ExceptionType exception = (ExceptionType) exceptionResponse.getException().get(0);
                             String errorMessage = exception.getExceptionText().get(0).toString();
                             throw new ProcessException(errorMessage);
                         }
@@ -472,8 +449,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                      * Persist Resources on GeoStore
                      */
                     // persist the process input parameters into GeoStore
-                    Long resourceId = persistToGeoStore(auth, requestBody, name, description,
-                            executeResponse);
+                    Long resourceId = persistToGeoStore(auth, requestBody, name, description, executeResponse);
                 }
             }
         }
@@ -501,20 +477,16 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                     // sync runtimes stored on GeoStore
                     AndFilter searchFilter = new AndFilter();
-                    searchFilter
-                            .add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
-                    searchFilter.add(new FieldFilter(BaseField.NAME, process.getExecutionId(),
-                            SearchOperator.EQUAL_TO));
-                    ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(
-                            searchFilter, -1, -1, true, true);
+                    searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
+                    searchFilter.add(new FieldFilter(BaseField.NAME, process.getExecutionId(), SearchOperator.EQUAL_TO));
+                    ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
 
                     if (resources != null && !resources.isEmpty()) {
                         for (Resource r : resources.getList()) {
 
                             // Security check
                             // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
-                            SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient
-                                    .getSecurityRules(r.getId());
+                            SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
                             boolean allowed = false;
                             if (secRules != null && !secRules.getList().isEmpty()) {
                                 allowed = isAllowed(auth, secRules);
@@ -531,13 +503,11 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                      */
                                     try {
                                         if (this.wps != null && process.getStatusLocation() != null) {
-                                            String dismissUrl = process.getStatusLocation()
-                                                    .replace("GetExecutionStatus", "Dismiss");
+                                            String dismissUrl = process.getStatusLocation().replace("GetExecutionStatus", "Dismiss");
                                             this.wps.getHTTPClient().get(new URL(dismissUrl));
                                         }
                                     } catch (Exception e) {
-                                        LOGGER.log(Level.ERROR,
-                                                "Could not Dismiss the WPS Execution Request.", e);
+                                        LOGGER.log(Level.ERROR, "Could not Dismiss the WPS Execution Request.", e);
                                     }
                                 }
 
@@ -547,20 +517,14 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                         /**
                                          * 1. Cleanup resources from GeoServer
                                          */
-                                        if (process.getResults() != null
-                                                && process.getResults().get("mapId") != null) {
+                                        if (process.getResults() != null && process.getResults().get("mapId") != null) {
 
-                                            final Long mapId = (Long) process.getResults().get(
-                                                    "mapId");
+                                            final Long mapId = (Long) process.getResults().get("mapId");
 
                                             searchFilter = new AndFilter();
-                                            searchFilter.add(new CategoryFilter("MAPSTORECONFIG",
-                                                    SearchOperator.EQUAL_TO));
-                                            searchFilter.add(new FieldFilter(BaseField.ID, String
-                                                    .valueOf(mapId), SearchOperator.EQUAL_TO));
-                                            ResourceList mapResources = wpsRestAPIGeoStoreAdminClient
-                                                    .searchResources(searchFilter, -1, -1, true,
-                                                            true);
+                                            searchFilter.add(new CategoryFilter("MAPSTORECONFIG", SearchOperator.EQUAL_TO));
+                                            searchFilter.add(new FieldFilter(BaseField.ID, String.valueOf(mapId), SearchOperator.EQUAL_TO));
+                                            ResourceList mapResources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
 
                                             if (mapResources != null && !mapResources.isEmpty()) {
                                                 for (Resource m : mapResources.getList()) {
@@ -571,48 +535,32 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                                      * "customData": { "optimizationToolLayers": [ "remotewps_oaa:oaa_tracks_0b46bd0ffd7a87b",
                                                      * "remotewps_oaa:oaa_waypoints_0b46bd0ffd7a87b" ] }
                                                      */
-                                                    if (mapStoreConfiguratrion != null
-                                                            && mapStoreConfiguratrion.getData() != null) {
+                                                    if (mapStoreConfiguratrion != null && mapStoreConfiguratrion.getData() != null) {
 
                                                         final String RESTURL = this.geoServerUrl;
                                                         final String RESTUSER = this.geoServerUser;
                                                         final String RESTPW = this.geoServerPwd;
 
-                                                        GeoServerRESTManager manager = new GeoServerRESTManager(
-                                                                new URL(RESTURL), RESTUSER, RESTPW);
+                                                        GeoServerRESTManager manager = new GeoServerRESTManager(new URL(RESTURL), RESTUSER, RESTPW);
 
-                                                        JSONObject mapStoreConfigJSON = new JSONObject(
-                                                                mapStoreConfiguratrion.getData());
-                                                        JSONObject customData = (JSONObject) mapStoreConfigJSON
-                                                                .get("customData");
-                                                        JSONArray optimizationToolLayers = (JSONArray) customData
-                                                                .get("optimizationToolLayers");
+                                                        JSONObject mapStoreConfigJSON = new JSONObject(mapStoreConfiguratrion.getData());
+                                                        JSONObject customData = (JSONObject) mapStoreConfigJSON.get("customData");
+                                                        JSONArray optimizationToolLayers = (JSONArray) customData.get("optimizationToolLayers");
 
-                                                        for (int ol = 0; ol < optimizationToolLayers
-                                                                .length(); ol++) {
-                                                            final String lyr = optimizationToolLayers
-                                                                    .getString(ol);
+                                                        for (int ol = 0; ol < optimizationToolLayers.length(); ol++) {
+                                                            final String lyr = optimizationToolLayers.getString(ol);
                                                             try {
-                                                                final String[] qlfLayerName = lyr
-                                                                        .split(":");
+                                                                final String[] qlfLayerName = lyr.split(":");
                                                                 final String workspace = qlfLayerName[0];
                                                                 final String layer = qlfLayerName[1];
-                                                                if (!manager.getPublisher()
-                                                                        .removeLayer(workspace,
-                                                                                layer)) {
-                                                                    LOGGER.warn("Unable to load GeoServer Layer ["
-                                                                            + lyr + "]");
+                                                                if (!manager.getPublisher().removeLayer(workspace, layer)) {
+                                                                    LOGGER.warn("Unable to load GeoServer Layer [" + lyr + "]");
                                                                 }
-                                                                if (!manager.getPublisher()
-                                                                        .removeDatastore(workspace,
-                                                                                layer, true)) {
-                                                                    LOGGER.warn("Unable to load GeoServer Store ["
-                                                                            + layer + "]");
+                                                                if (!manager.getPublisher().removeDatastore(workspace, layer, true)) {
+                                                                    LOGGER.warn("Unable to load GeoServer Store [" + layer + "]");
                                                                 }
                                                             } catch (Exception e) {
-                                                                LOGGER.log(Level.WARN,
-                                                                        "Could not remove Layer ["
-                                                                                + lyr + "]", e);
+                                                                LOGGER.log(Level.WARN, "Could not remove Layer [" + lyr + "]", e);
                                                             }
                                                         }
                                                     }
@@ -620,8 +568,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                                     /**
                                                      * Finally cleanup the GeoStore Resources
                                                      */
-                                                    wpsRestAPIGeoStoreAdminClient.deleteResource(m
-                                                            .getId());
+                                                    wpsRestAPIGeoStoreAdminClient.deleteResource(m.getId());
                                                 }
                                             }
                                         }
@@ -734,13 +681,10 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
             AndFilter searchFilter = new AndFilter();
             searchFilter.add(new CategoryFilter("WPS_RUN_CONFIGS", SearchOperator.EQUAL_TO));
             if (restServiceRuntime != null) {
-                searchFilter.add(new FieldFilter(BaseField.NAME, restServiceRuntime.getName(),
-                        SearchOperator.EQUAL_TO));
+                searchFilter.add(new FieldFilter(BaseField.NAME, restServiceRuntime.getName(), SearchOperator.EQUAL_TO));
             }
-            searchFilter.add(new FieldFilter(BaseField.METADATA, getServiceId(),
-                    SearchOperator.EQUAL_TO));
-            ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter,
-                    -1, -1, true, true);
+            searchFilter.add(new FieldFilter(BaseField.METADATA, getServiceId(), SearchOperator.EQUAL_TO));
+            ResourceList resources = wpsRestAPIGeoStoreAdminClient.searchResources(searchFilter, -1, -1, true, true);
 
             /**
              * TIMING
@@ -765,8 +709,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
 
                     // Security check
                     // r = wpsRestAPIGeoStoreAdminClient.getResource(r.getId(), true);
-                    SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r
-                            .getId());
+                    SecurityRuleList secRules = wpsRestAPIGeoStoreAdminClient.getSecurityRules(r.getId());
                     boolean allowed = false;
                     if (secRules != null && !secRules.getList().isEmpty()) {
                         allowed = isAllowed(auth, secRules);
@@ -819,8 +762,7 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                             message = (String) runtime.getDetails().get("message");
 
                             try {
-                                if (runtime.getStatus() != null
-                                        && "RUNNING".equalsIgnoreCase(runtime.getStatus())) {
+                                if (runtime.getStatus() != null && "RUNNING".equalsIgnoreCase(runtime.getStatus())) {
                                     Object outputs = runtime.updateRuntimeStatus();
 
                                     /**
@@ -845,18 +787,15 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                         String results = "";
 
                                         if (outputs instanceof ExceptionTypeImpl) {
-                                            results = (String) ((ExceptionTypeImpl) outputs)
-                                                    .getExceptionText().get(0);
+                                            results = (String) ((ExceptionTypeImpl) outputs).getExceptionText().get(0);
                                             message = results;
                                             if (message != null && !message.isEmpty()) {
-                                                runtime.getDetails().put("message",
-                                                        sanitizeMessage(message));
+                                                runtime.getDetails().put("message", sanitizeMessage(message));
                                             }
                                         } else {
                                             OutputDataTypeImpl rawData = (OutputDataTypeImpl) outputs;
                                             results = rawData.getData().getLiteralData().getValue();
-                                            mapId = persistMapOnGeoStore(runtime.getExecutionId(),
-                                                    results);
+                                            mapId = persistMapOnGeoStore(runtime.getExecutionId(), results);
                                             if (mapId != null) {
                                                 runtime.getResults().put("mapId", mapId);
                                             }
@@ -878,11 +817,9 @@ public class RestWPSAssetAllocatorProcess extends RestWPSProcess {
                                 }
 
                                 runtime.getDetails().put("resourceId", r.getId());
-                                runtime.getDetails().put("resourceVisibility",
-                                        extractVisibility(secRules));
+                                runtime.getDetails().put("resourceVisibility", extractVisibility(secRules));
                             } catch (Exception e) {
-                                LOGGER.log(Level.ERROR, "[" + executionId
-                                        + "] Could not update Runtime Status", e);
+                                LOGGER.log(Level.ERROR, "[" + executionId + "] Could not update Runtime Status", e);
                             }
 
                             // Update The Resource on GeoStore
