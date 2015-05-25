@@ -1,7 +1,12 @@
 package it.geosolutions.npa.download;
 
+import it.geosolutions.npa.service.impl.JDBCUSIDService;
+import it.geosolutions.opensdi2.download.Order;
+import it.geosolutions.opensdi2.download.order.ListOrder;
+import it.geosolutions.opensdi2.download.register.OrderStatus;
+import it.geosolutions.opensdi2.download.services.ZipService;
+
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -16,12 +21,9 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.expression.EvaluationContext;
@@ -29,12 +31,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import it.geosolutions.npa.service.impl.JDBCUSIDService;
-import it.geosolutions.opensdi2.download.Order;
-import it.geosolutions.opensdi2.download.order.ListOrder;
-import it.geosolutions.opensdi2.download.register.OrderStatus;
-import it.geosolutions.opensdi2.download.services.ZipService;
 
 /**
  * NPA Portal Implementation of download service.
@@ -60,7 +56,7 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 		// TODO Auto-generated method stub
 		return getOrderRegister().registrer(order, OrderStatus.READY);
 	}
-	
+
 	@Override
 	public List<String> getFiles(String order) {
 		Properties config = null;
@@ -91,13 +87,13 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 			EvaluationContext context = new StandardEvaluationContext(order);
 			String name = (String) exp.getValue(context);
 			String dir = null;
-			if(fileDirRule.length >1){
+			if (fileDirRule.length > 1) {
 				Expression expDir = parser.parseExpression(fileDirRule[1]);
 				dir = (String) expDir.getValue(context);
 			}
-			//Get the list of accessible files for the rule
+			// Get the list of accessible files for the rule
 			List<File> f = this.getFiles(
-					config.getProperty(DOWNLOAD_BASE_ENTRY), name,dir);
+					config.getProperty(DOWNLOAD_BASE_ENTRY), name, dir);
 			for (File file : f) {
 				files.add(convertToString(
 						config.getProperty(DOWNLOAD_BASE_ENTRY), file));
@@ -140,23 +136,25 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 	 *            base directory
 	 * @param rule
 	 *            the regex for file
-	 * @param dirRule optional rule for directories
+	 * @param dirRule
+	 *            optional rule for directories
 	 * @return the list of files that match the regex in the directory
 	 */
-	private List<File> getFiles(String downloadBase, String rule,String dirRule) {
+	private List<File> getFiles(String downloadBase, String rule, String dirRule) {
 		File dir = new File(downloadBase);
 		List<File> files = new ArrayList<File>();
-		
+
 		files.addAll(FileUtils.listFiles(dir, new RegexFileFilter(rule),
-				dirRule != null ? new RegexFileFilter(dirRule) :DirectoryFileFilter.DIRECTORY ));
+				dirRule != null ? new RegexFileFilter(dirRule)
+						: DirectoryFileFilter.DIRECTORY));
 
 		return files;
 	}
-	
-	public List<String> getFiles(Collection<String> orders){
+
+	public List<String> getFiles(Collection<String> orders) {
 		List<String> ret = new ArrayList<String>();
 		for (String s : orders) {
-			
+
 			// add some files to the zip
 			ret.addAll(getFiles(s));
 
@@ -190,7 +188,8 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 	 * @param zipOut
 	 * @throws IOException
 	 */
-	private void downloadOrder(ListOrder order, final ZipOutputStream zipOut) throws IOException{
+	private void downloadOrder(ListOrder order, final ZipOutputStream zipOut)
+			throws IOException {
 		List<String> orderList = order.getOrder();
 		LOGGER.info("generating zip file for order:" + order);
 		LOGGER.debug("******* File List *******");
@@ -203,13 +202,14 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 					fileSet.add(file);
 				}
 
-			}for(String sfile : fileSet){
+			}
+			for (String sfile : fileSet) {
 				addFileToZip(zipOut, sfile);
 			}
 		} catch (IOException e1) {
 			LOGGER.error("Error during download creation", e1);
 			throw e1;
-		}catch (Exception e){
+		} catch (Exception e) {
 			LOGGER.error("Error during download creation", e);
 		} finally {
 			zipOut.close();
@@ -218,14 +218,20 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 
 	private void addFileToZip(final ZipOutputStream zipOut, String file)
 			throws IOException {
-		FileInputStream fis = new FileInputStream(new File(getDownloadBase(),file));
-		LOGGER.debug("file:" + file);
-		ZipEntry e = new ZipEntry(file);
-		zipOut.putNextEntry(e);
-		byte[] bytes = new byte[1024];
-		int length;
-		while ((length = fis.read(bytes)) >= 0) {
-			zipOut.write(bytes, 0, length);
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(new File(getDownloadBase(), file));
+
+			LOGGER.debug("file:" + file);
+			ZipEntry e = new ZipEntry(file);
+			zipOut.putNextEntry(e);
+			byte[] bytes = new byte[1024];
+			int length;
+			while ((length = fis.read(bytes)) >= 0) {
+				zipOut.write(bytes, 0, length);
+			}
+		} finally {
+			fis.close();
 		}
 		zipOut.closeEntry();
 	}
@@ -278,7 +284,8 @@ public class NPADownloadService extends ZipService implements InitializingBean {
 		return file;
 
 	}
-	public String getDownloadBase(){
+
+	public String getDownloadBase() {
 		Properties config = null;
 		try {
 			File configDir = usidService.getConfigRoot();
