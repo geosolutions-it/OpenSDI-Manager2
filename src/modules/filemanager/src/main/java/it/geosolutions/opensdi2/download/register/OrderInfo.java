@@ -12,7 +12,7 @@ import java.util.Date;
  * @author Lorenzo Natali, GeoSolutions
  *
  */
-public class OrderRegisterEntry {
+public class OrderInfo {
 	
 	/**
 	 * Identifier
@@ -42,7 +42,7 @@ public class OrderRegisterEntry {
 	 * Create for the order
 	 * @param order
 	 */
-	public OrderRegisterEntry(Order order){
+	public OrderInfo(Order order){
 		this.order = order;
 		this.registrationDate = new Date();
 		this.status = OrderStatus.WAIT;
@@ -54,7 +54,7 @@ public class OrderRegisterEntry {
 	 * @param order
 	 * @param status the status
 	 */
-	public OrderRegisterEntry(Order order, OrderStatus status){
+	public OrderInfo(Order order, OrderStatus status){
 		this(order);
 		this.status =  status;
 		this.progress = getProgress();

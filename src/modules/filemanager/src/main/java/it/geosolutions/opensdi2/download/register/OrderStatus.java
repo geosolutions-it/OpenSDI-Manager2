@@ -17,5 +17,13 @@ public enum OrderStatus {
 	/**
 	 * The order is ready, finished
 	 */
-	READY
+	READY,
+	/**
+	 * The order is cancelled
+	 */
+	CANCELLED,
+	/**
+	 * The order generated an error
+	 */
+	ERROR
 }

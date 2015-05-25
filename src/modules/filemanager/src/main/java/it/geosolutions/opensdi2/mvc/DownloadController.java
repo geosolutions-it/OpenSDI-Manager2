@@ -24,7 +24,7 @@ import it.geosolutions.opensdi2.configurations.services.ConfigDepot;
 import it.geosolutions.opensdi2.download.DownloadService;
 import it.geosolutions.opensdi2.download.Order;
 import it.geosolutions.opensdi2.download.order.ListOrder;
-import it.geosolutions.opensdi2.download.register.OrderRegisterEntry;
+import it.geosolutions.opensdi2.download.register.OrderInfo;
 import it.geosolutions.opensdi2.download.register.OrderStatus;
 
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class DownloadController {
 	 * @return
 	 */
 	@RequestMapping(value = "listorder", method = { RequestMethod.POST })
-	public @ResponseBody OrderRegisterEntry download(
+	public @ResponseBody OrderInfo download(
 			@RequestBody ListOrder order, HttpServletRequest request) {
 
 		if (downloadService == null) {
@@ -86,7 +86,7 @@ public class DownloadController {
 							+ "' cannot be loaded...");
 		}
 		String id = downloadService.registerOrder(order);
-		return downloadService.getOrderRegister().getEntry(id);
+		return downloadService.getOrderInfo(id);
 
 	}
 
@@ -102,8 +102,7 @@ public class DownloadController {
 		}
 
 		// check the order in the register
-		OrderRegisterEntry entry = downloadService.getOrderRegister().getEntry(
-				id);
+		OrderInfo entry = downloadService.getOrderInfo(id);
 
 		if (entry == null || entry.getStatus() != OrderStatus.READY) {
 			throw new IllegalStateException("The order is not completed yet");
@@ -124,7 +123,7 @@ public class DownloadController {
 			servletResponse.setHeader("Content-Disposition",
 					"attachment; filename=\"" + "order-" + id + ".zip\"");
 			downloadService.getDownload(order, servletResponse.getOutputStream());
-			downloadService.getOrderRegister().removeEntry(id);
+			downloadService.getOrderInfo(id);
 		} catch (IOException e) {
 			LOGGER.error("error during ZIP file creation in the module "
 					+ DownloadController.class, e);
