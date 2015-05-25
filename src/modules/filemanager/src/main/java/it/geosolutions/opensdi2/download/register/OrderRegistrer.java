@@ -30,25 +30,25 @@ public interface OrderRegistrer {
 	 * @param id the Id
 	 * @return the entry of the registry
 	 */
-	public OrderRegisterEntry getEntry(String id);
+	public OrderInfo getEntry(String id);
 	
 	/**
 	 * Delete an entry from the register
 	 * @param id the Identifier of the Entry
 	 * @return the entry removed
 	 */
-	public OrderRegisterEntry removeEntry(String id);
+	public OrderInfo removeEntry(String id);
 	
 	/**
 	 * Updates an entry
 	 * @param id the id in the registry
 	 * @param entry
 	 */
-	public void updateEntry(String id, OrderRegisterEntry entry);
+	public void updateEntry(String id, OrderInfo entry);
 	
 	/**
 	 * Get all current orders
 	 * @return
 	 */
-	public List<OrderRegisterEntry> getOrders();
+	public List<OrderInfo> getOrders();
 }

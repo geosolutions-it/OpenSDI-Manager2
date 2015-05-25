@@ -15,9 +15,9 @@ public class RegisterEvictor {
 	private int maxSeconds;
 	public void purge(){
 		LOGGER.info("** order eviction started **");
-		List<OrderRegisterEntry> entries = register.getOrders();
+		List<OrderInfo> entries = register.getOrders();
 		long purgeTime = System.currentTimeMillis() - (this.maxSeconds * 1000);
-		for(OrderRegisterEntry entry : entries){
+		for(OrderInfo entry : entries){
 			if(entry.getRegistrationDate().getTime() < purgeTime){
 				LOGGER.info("remove entry" + entry.getId());
 				register.removeEntry(entry.getId());

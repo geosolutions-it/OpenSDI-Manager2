@@ -16,31 +16,31 @@ import java.util.UUID;
  */
 public class MemoryRegister implements OrderRegistrer {
 
-	Map<String,OrderRegisterEntry> orders = new HashMap<String,OrderRegisterEntry>();
+	Map<String,OrderInfo> orders = new HashMap<String,OrderInfo>();
 	@Override
 	public String registrer(Order order) {
-		OrderRegisterEntry entry = new OrderRegisterEntry(order);
+		OrderInfo entry = new OrderInfo(order);
 		return register(entry);
 	}
 
 	@Override
-	public OrderRegisterEntry getEntry(String id) {
+	public OrderInfo getEntry(String id) {
 		return orders.get(id);
 	}
 
 	@Override
-	public OrderRegisterEntry removeEntry(String id) {
+	public OrderInfo removeEntry(String id) {
 		return orders.remove(id);
 	}
 
 	@Override
 	public String registrer(Order order, OrderStatus status) {
 		
-		OrderRegisterEntry entry = new OrderRegisterEntry(order, status);
+		OrderInfo entry = new OrderInfo(order, status);
 		return register(entry);
 	}
 
-	private String register(OrderRegisterEntry entry) {
+	private String register(OrderInfo entry) {
 		String uniqueID = UUID.randomUUID().toString();
 		entry.setId(uniqueID);
 		orders.put(uniqueID,entry);
@@ -48,15 +48,15 @@ public class MemoryRegister implements OrderRegistrer {
 	}
 
 	@Override
-	public void updateEntry(String id, OrderRegisterEntry entry) {
+	public void updateEntry(String id, OrderInfo entry) {
 		orders.put(id, entry);
 		
 	}
 
 	@Override
-	public List<OrderRegisterEntry> getOrders() {
+	public List<OrderInfo> getOrders() {
 		Set<String> keys = orders.keySet();
-		List<OrderRegisterEntry> ret = new ArrayList<OrderRegisterEntry>();
+		List<OrderInfo> ret = new ArrayList<OrderInfo>();
 		for(String s : keys){
 			ret.add(orders.get(s));
 		}

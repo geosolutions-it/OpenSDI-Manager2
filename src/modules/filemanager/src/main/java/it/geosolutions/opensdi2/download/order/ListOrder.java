@@ -5,7 +5,7 @@ import it.geosolutions.opensdi2.download.Order;
 import java.util.List;
 /**
  * Basic implementation of the order with List of Strings
- * @author nali
+ * @author Lorenzo Natali, GeoSolutions
  *
  */
 public class ListOrder implements Order {

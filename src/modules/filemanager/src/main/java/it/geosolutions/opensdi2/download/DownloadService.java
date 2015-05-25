@@ -1,6 +1,6 @@
 package it.geosolutions.opensdi2.download;
 
-import it.geosolutions.opensdi2.download.register.OrderRegistrer;
+import it.geosolutions.opensdi2.download.register.OrderInfo;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,14 +29,9 @@ public interface DownloadService<ORDER extends Order> {
 	public OutputStream getDownload(ORDER order, OutputStream out) throws IOException;
 	
 	/**
-	 * Set the register
-	 * @param register
+	 * Provides the informations for an order for the id provided
+	 * @param id the Id or the Order 
+	 * @return Information about the order status
 	 */
-	void setOrderRegister(OrderRegistrer register);
-	
-	/**
-	 * get the register
-	 * @return the register
-	 */
-	OrderRegistrer getOrderRegister();
+	public OrderInfo getOrderInfo(String id);
 }
