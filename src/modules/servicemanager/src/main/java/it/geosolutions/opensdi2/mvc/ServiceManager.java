@@ -175,9 +175,9 @@ public class ServiceManager extends BaseFileManager {
      */
     @Resource(name = "serviceManagerProxy")
     public void setProxyService(ProxyService proxyService) {
+        
         callback = new ProxyCallback() {
             String user;
-
             String service;
 
             @Override
@@ -197,6 +197,7 @@ public class ServiceManager extends BaseFileManager {
              * On remote response we download the files and manipulate it
              */
             public void onRemoteResponse(HttpMethod method) throws IOException {
+                LOGGER.debug(" [serviceManagerProxy] --------------- onRemoteResponse --------------- (downloadMethod): ("+downloadMethod+")");
                 if (METHOD_CONFIRMED_ACQ_PLAN.endsWith(downloadMethod)) {
                     downloadConfirmedAcqPLan(method);
                 } else {
@@ -264,7 +265,6 @@ public class ServiceManager extends BaseFileManager {
              * @throws IOException
              */
             private String createCommittedFile(String filePath, byte[] bytes) throws IOException {
-
                 try {
 
                     // write bytes
