@@ -99,7 +99,6 @@ public class UploadCanvas extends ServiceBoxActionServlet {
         }
         FileOutputStream fos = new FileOutputStream(f);
         PrintWriter out = response.getWriter();
-        // System.out.println(f.getAbsoluteFile());
 
         char c = 'd';
         // read initials data, tipically "data:image/png;base64,"
@@ -183,7 +182,6 @@ public class UploadCanvas extends ServiceBoxActionServlet {
 
         try {
             f = new File(path + "/" + filename);
-            // System.out.println(f.getAbsoluteFile());
             in = new FileInputStream(f);
 
             bin = new BufferedInputStream(in);

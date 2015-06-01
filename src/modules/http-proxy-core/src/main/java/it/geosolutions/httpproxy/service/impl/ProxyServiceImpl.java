@@ -199,9 +199,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      */
     public void execute(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
-        System.out.println(" --------------------------->>>> " + "proxyService.execute");
         try {
-            System.out.println(" --------------------------->>>> " + "proxyService.doMethod");
             this.doMethod(httpServletRequest, httpServletResponse);
         } catch (HttpErrorException ex) {
             httpServletResponse.sendError(ex.getCode(), ex.getMessage());
@@ -234,7 +232,6 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
     public void onRemoteResponse(HttpMethod method) throws IOException {
         LOGGER.info(" [ProxyService] --- invoke callbacks... ");
         for (ProxyCallback callback : callbacks) {
-            System.out.println(" [callback] " + callback.getClass().getCanonicalName());
             callback.onRemoteResponse(method);
         }
     }
@@ -270,7 +267,6 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
         }
         // call on beforeExecuteProxyRequest calbacks. It could stop the request, change some headers...
         for (ProxyCallback callback : callbacks) {
-            System.out.println(" [callback - beforeExecuteProxyRequest] " + callback.getClass().getCanonicalName());
             continueWithRequest = callback.beforeExecuteProxyRequest(httpMethodProxyRequest,
                     httpServletRequest, httpServletResponse, user, password, proxyInfo);
             if (!continueWithRequest) {
@@ -295,7 +291,6 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
         ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(requestWrapper,
                 httpServletResponse, this);
 
-        System.out.println(" --------------------------->>>> " + "[ProxyService] doMethod (methodConfig): " + methodConfig);
         LOGGER.fine("[ProxyService] doMethod (methodConfig): " + methodConfig);
         if (methodConfig != null) {
 

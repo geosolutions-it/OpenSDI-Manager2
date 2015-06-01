@@ -176,8 +176,6 @@ public class ServiceManager extends BaseFileManager {
     @Resource(name = "serviceManagerProxy")
     public void setProxyService(ProxyService proxyService) {
         
-        System.out.println(" ******************************** serviceManagerProxy.setProxyService callbacks");
-        
         callback = new ProxyCallback() {
             String user;
             String service;

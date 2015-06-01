@@ -258,7 +258,6 @@ public class FileUploader extends ServiceBoxActionServlet {
                                 out = new FileOutputStream(fileToMove);
                                 IOUtil.copy(in, out);
                             } catch (IOException exc) {
-                                System.out.println(exc.getLocalizedMessage());
                                 if (LOGGER.isLoggable(Level.SEVERE))
                                     LOGGER.log(Level.SEVERE,
                                             "Error encountered while moving the file");
