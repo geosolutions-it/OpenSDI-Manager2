@@ -16,5 +16,5 @@
       <property name="maxSimultaneousUpload" value="100"></property>
       <property name="temporaryFolder" value="/opt/opensdi2-manager/tmp/"></property>
     </bean>  
-    
+    <import resource="downloadService.xml"/>
 </beans>

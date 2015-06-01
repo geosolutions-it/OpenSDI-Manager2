@@ -1,0 +1,33 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+        ">
+	<!-- The service for download in NPA -->
+	<!-- NOTE USE THE USID SERVICE BASE DIRECTORY TO GET IT'S CONFIGURATION -->
+	<bean id="downloadService" class="it.geosolutions.mariss.download.MarissDownloadService">
+		
+		<property name="orderRegister" ref="downloadRegister"></property>
+	</bean>
+
+    <bean id="downloadRegister" class="it.geosolutions.opensdi2.download.register.MemoryRegister"></bean>
+    
+    <!-- Evictor for downloads -->
+	<bean id="downloadEvictor" class="it.geosolutions.opensdi2.download.register.RegisterEvictor">
+		<property name="register" ref="downloadRegister"></property>
+		<!-- orders older than a day -->
+		<property name="maxSeconds" value="86400"></property>
+	</bean>
+	
+	
+	<task:scheduled-tasks>
+		<!-- every day @ midnight -->
+		<task:scheduled ref="downloadEvictor" method="purge"
+			cron="0 0 0 * * ?"></task:scheduled>
+	</task:scheduled-tasks>
+	<import resource="classpath*:ftp-server-npa.xml"/>
+	
+</beans>
