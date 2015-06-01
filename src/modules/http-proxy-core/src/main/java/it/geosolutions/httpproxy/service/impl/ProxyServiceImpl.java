@@ -232,7 +232,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
     public void onRemoteResponse(HttpMethod method) throws IOException {
         LOGGER.info(" [ProxyService] --- invoke callbacks... ");
         for (ProxyCallback callback : callbacks) {
-            LOGGER.fine(" [callback] " + callback.getClass().getCanonicalName());
+            System.out.println(" [callback] " + callback.getClass().getCanonicalName());
             callback.onRemoteResponse(method);
         }
     }
@@ -268,6 +268,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
         }
         // call on beforeExecuteProxyRequest calbacks. It could stop the request, change some headers...
         for (ProxyCallback callback : callbacks) {
+            System.out.println(" [callback - beforeExecuteProxyRequest] " + callback.getClass().getCanonicalName());
             continueWithRequest = callback.beforeExecuteProxyRequest(httpMethodProxyRequest,
                     httpServletRequest, httpServletResponse, user, password, proxyInfo);
             if (!continueWithRequest) {
