@@ -176,6 +176,8 @@ public class ServiceManager extends BaseFileManager {
     @Resource(name = "serviceManagerProxy")
     public void setProxyService(ProxyService proxyService) {
         
+        System.out.println(" ******************************** serviceManagerProxy.setProxyService callbacks");
+        
         callback = new ProxyCallback() {
             String user;
             String service;
@@ -394,11 +396,10 @@ public class ServiceManager extends BaseFileManager {
         Map<String, Object> response = new HashMap<String, Object>();
         try {
             if (checkUserAndService(user, service, METHOD_CONFIRMED_AOI)) {
-                System.out.println(" --------------------------->>>> " + downloadMethod);
                 downloadMethod = METHOD_CONFIRMED_AOI;
                 System.out.println(" --------------------------->>>> " + downloadMethod);
                 proxyService.execute(request, new MockHttpServletResponse());
-                System.out.println(" --------------------------->>>> " + "proxyService.execute");
+                System.out.println(" --------------------------->>>> " + "proxyService.execute " + proxyService.getClass().getCanonicalName());
                 response.put(ResponseConstants.SUCCESS, true);
 
                 Service dbService = this.serviceDAO.findByServiceId(service);
