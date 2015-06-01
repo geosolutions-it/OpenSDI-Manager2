@@ -199,7 +199,9 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      */
     public void execute(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
+        System.out.println(" --------------------------->>>> " + "proxyService.execute");
         try {
+            System.out.println(" --------------------------->>>> " + "proxyService.doMethod");
             this.doMethod(httpServletRequest, httpServletResponse);
         } catch (HttpErrorException ex) {
             httpServletResponse.sendError(ex.getCode(), ex.getMessage());
@@ -293,6 +295,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
         ProxyMethodConfig methodConfig = proxyHelper.prepareProxyMethod(requestWrapper,
                 httpServletResponse, this);
 
+        System.out.println(" --------------------------->>>> " + "[ProxyService] doMethod (methodConfig): " + methodConfig);
         LOGGER.fine("[ProxyService] doMethod (methodConfig): " + methodConfig);
         if (methodConfig != null) {
 
