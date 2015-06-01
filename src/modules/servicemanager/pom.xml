@@ -1,103 +1,103 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>it.geosolutions.opensdi2</groupId>
-        <artifactId>opensdi2-modules</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-  
-    <groupId>it.geosolutions.opensdi2</groupId>
-    <artifactId>opensdi2-servicemanager</artifactId>
-    <packaging>jar</packaging>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>it.geosolutions.opensdi2</groupId>
+		<artifactId>opensdi2-modules</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <name>OpenSDI Manager 2 - Modules - Service Manager</name>
+	<groupId>it.geosolutions.opensdi2</groupId>
+	<artifactId>opensdi2-servicemanager</artifactId>
+	<packaging>jar</packaging>
 
-    <properties>
-    </properties>
+	<name>OpenSDI Manager 2 - Modules - Service Manager</name>
 
-    <dependencies>
-        <!-- Internal  -->
-        <dependency>
-            <groupId>it.geosolutions.opensdi2</groupId>
-            <artifactId>opensdi2-filemanager</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>it.geosolutions.mariss</groupId>
+	<properties>
+	</properties>
+
+	<dependencies>
+		<!-- Internal -->
+		<dependency>
+			<groupId>it.geosolutions.opensdi2</groupId>
+			<artifactId>opensdi2-filemanager</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>it.geosolutions.mariss</groupId>
 			<artifactId>gb-mariss-ingestion</artifactId>
 			<exclusions>
-			    <exclusion>
-			        <groupId>it.geosolutions.mariss</groupId>
-    				<artifactId>gb-mariss-schemas</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.mariss</groupId>
-    				<artifactId>gb-mariss-action-e-geos-metocs</artifactId>
-			    </exclusion>
-			    <exclusion>
-                                <groupId>it.geosolutions.geobatch</groupId>
-                                <artifactId>gb-action-geoserver</artifactId>
-                            </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-core-model</artifactId>
-			    </exclusion>
-			    <exclusion>
-			    	<groupId>it.geosolutions.geobatch</groupId>
-			 	<artifactId>gb-core-impl</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-fsm-core</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-action-taskexecutor</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-action-ftp</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-action-ds2ds</artifactId>
-			    </exclusion>
-			    <exclusion>
-			        <groupId>it.geosolutions.geobatch</groupId>
-    				<artifactId>gb-action-imagemosaic</artifactId>
-			    </exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.mariss</groupId>
+					<artifactId>gb-mariss-schemas</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.mariss</groupId>
+					<artifactId>gb-mariss-action-e-geos-metocs</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-action-geoserver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-core-model</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-core-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-fsm-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-action-taskexecutor</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-action-ftp</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-action-ds2ds</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>it.geosolutions.geobatch</groupId>
+					<artifactId>gb-action-imagemosaic</artifactId>
+				</exclusion>
 			</exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
+		</dependency>
 
-      	<dependency>
-          <groupId>org.codehaus.jettison</groupId>
-          <artifactId>jettison</artifactId>
-          <version>1.3.3</version>
-      	</dependency>
-      	        
-        <!-- Spring mock -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-mock</artifactId>
-            <version>2.0.8</version>
-        </dependency> 
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.3.3</version>
+		</dependency>
+
+		<!-- Spring mock -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-mock</artifactId>
+			<version>2.0.8</version>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 </project>

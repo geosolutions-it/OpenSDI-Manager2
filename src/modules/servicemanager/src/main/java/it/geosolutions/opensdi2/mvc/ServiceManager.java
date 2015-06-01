@@ -42,11 +42,16 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -516,19 +521,55 @@ public class ServiceManager extends BaseFileManager {
                         + File.separator + service)).exists();
 
                 if (METHOD_CONFIRMED_AOI.equals(method)) {
-                    checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + ACQ_LIST_FOLDER))
-                            .mkdirs();
+                    final File ftp_folder = new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + ACQ_LIST_FOLDER);
+                    checked = ftp_folder.mkdirs();
+                    try {
+                        chkmod_all(ftp_folder);                            
+                    } catch (IOException e) {
+                        LOGGER.warn("Could not set folder permissions properly for folder: " + ftp_folder.getAbsolutePath(), e);
+                    }
                 } else if (METHOD_CONFIRMED_ACQ_PLAN.equals(method)) {
-                    checked = (new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + PRODUCTS_FOLDER))
-                            .mkdirs();
+                    final File ftp_folder = new File(fileManagerConfig.getBaseFolder() + File.separator + user
+                            + File.separator + service + File.separator + PRODUCTS_FOLDER);
+                    checked = ftp_folder.mkdirs();
+                    if (checked) {
+                        try {
+                            chkmod_all(ftp_folder);                            
+                        } catch (IOException e) {
+                            LOGGER.warn("Could not set folder permissions properly for folder: " + ftp_folder.getAbsolutePath(), e);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
             LOGGER.error("Ungranted access", e);
         }
         return checked;
+    }
+
+    /**
+     * 
+     * @param ftp_folder
+     * @throws IOException 
+     */
+    private void chkmod_all(File ftp_folder) throws IOException {
+        // using PosixFilePermission to set file permissions 777
+        Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+        // add owners permission
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        // add group permissions
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+        // add others permissions
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+        Files.setPosixFilePermissions(Paths.get(ftp_folder.getAbsolutePath()), perms);
     }
 
     /**
