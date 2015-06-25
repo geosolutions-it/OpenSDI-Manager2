@@ -72,7 +72,12 @@ public class FtpServerStarter implements DisposableBean,
          */
         private String jksPass;
 
-    /**
+        /**
+         * set implicit/explicit mode
+         */
+        private boolean implicitSsl;
+        
+        /**
 	 * The port to use for this server
 	 * 
 	 */
@@ -136,7 +141,7 @@ public class FtpServerStarter implements DisposableBean,
 
 			        // server will operate on standard FTP by default, it is 
 			        // up to the client to start the encrypted session
-			        factory.setImplicitSsl(false);
+			        factory.setImplicitSsl(isImplicitSsl());
 			        
 			        // replace the default listener
 			        serverFactory.addListener("default", factory.createListener());
@@ -242,6 +247,14 @@ public class FtpServerStarter implements DisposableBean,
 	    this.jksPass = jksPass;
 	}
 	
+        public boolean isImplicitSsl() {
+            return implicitSsl;
+        }
+
+        public void setImplicitSsl(boolean implicitSsl) {
+            this.implicitSsl = implicitSsl;
+        }
+
 	public DataConnectionConfigurationFactory getDataConnectionConfigurationFactory() {
 		return dataConnectionConfigurationFactory;
 	}
