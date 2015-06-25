@@ -1,13 +1,21 @@
 package it.geosolutions.opensdi2.ftp;
 
+import java.io.File;
+
 import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServer;
+import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FileSystemFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.Listener;
+import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.listener.nio.NioListener;
+import org.apache.ftpserver.ssl.SslConfigurationFactory;
+import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
+import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
+import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -53,8 +61,23 @@ public class FtpServerStarter implements DisposableBean,
 	 * Data Connection Configuration
 	 */
 	private DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
-
+	
 	/**
+	 * Path to the Key Store File 
+	 */
+	private String jksPath;
+
+       /**
+         * Password for the Key Store File 
+         */
+        private String jksPass;
+
+        /**
+         * set implicit/explicit mode
+         */
+        private boolean implicitSsl;
+        
+        /**
 	 * The port to use for this server
 	 * 
 	 */
@@ -94,28 +117,46 @@ public class FtpServerStarter implements DisposableBean,
 
 		if (server == null && serverFactory != null) {
 			try {
-				// factory.setPort(listenPort);
+			        FtpServerFactory serverFactory = new FtpServerFactory();
+			        ListenerFactory factory = new ListenerFactory();
+			        
+			        if (LOGGER.isInfoEnabled()) {
+                                        LOGGER.info("Starting FTP Server on port " + listenPort);
+                                }
+			        
+			        // set the port of the listener
+			        factory.setPort(listenPort);
+			        
+			        // replace the default listener
+			        serverFactory.addListener("default", factory.createListener());
+			        
+			        // SSL coniguration
+			        SslConfigurationFactory ssl = new SslConfigurationFactory();
+			        // Replace with proper jks
+			        ssl.setKeystoreFile(new File(getJksPath()));
+			        ssl.setKeystorePassword(getJksPass());
+			        
+			        // set SSL configuration for the listener
+			        factory.setSslConfiguration(ssl.createSslConfiguration());
 
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Starting FTP Server on port " + listenPort);
-				}
+			        // server will operate on standard FTP by default, it is 
+			        // up to the client to start the encrypted session
+			        factory.setImplicitSsl(isImplicitSsl());
+			        
+			        // replace the default listener
+			        serverFactory.addListener("default", factory.createListener());
+	                        serverFactory.setUserManager(getUserManager());
+	                        serverFactory.setFileSystem(getFileSystemFactory());
 
-				Listener listener = new NioListener(null, listenPort, false,
-						null,
-
-						dataConnectionConfigurationFactory
-								.createDataConnectionConfiguration(), 300, null);
-
-				serverFactory.addListener("default", listener);
-
-				// sets the custom user manager to authenticate users
-				serverFactory.setUserManager(getUserManager());
-
-				// sets the custom file system manager to list and download
-				// files
-				serverFactory.setFileSystem(getFileSystemFactory());
-				server = serverFactory.createServer();
-				server.start();
+	                        // start the server         
+			        FtpServer server = serverFactory.createServer();
+			        try{
+			                server.start();
+			        } catch(FtpException e){
+			            if (LOGGER.isDebugEnabled()){
+			                e.printStackTrace();
+			            }
+			        } 
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info("Started FTP Server on port " + listenPort);
 				}
@@ -189,6 +230,30 @@ public class FtpServerStarter implements DisposableBean,
 	public void setServerFactory(FtpServerFactory serverFactory) {
 		this.serverFactory = serverFactory;
 	}
+
+	public String getJksPath() {
+	    return jksPath;
+	}
+
+	public void setJksPath(String jksPath) {
+	    this.jksPath = jksPath;
+	}
+
+	public String getJksPass() {
+	    return jksPass;
+	}
+
+	public void setJksPass(String jksPass) {
+	    this.jksPass = jksPass;
+	}
+	
+        public boolean isImplicitSsl() {
+            return implicitSsl;
+        }
+
+        public void setImplicitSsl(boolean implicitSsl) {
+            this.implicitSsl = implicitSsl;
+        }
 
 	public DataConnectionConfigurationFactory getDataConnectionConfigurationFactory() {
 		return dataConnectionConfigurationFactory;

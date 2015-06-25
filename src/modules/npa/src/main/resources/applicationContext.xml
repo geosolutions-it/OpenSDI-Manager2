@@ -16,7 +16,7 @@
 	<!-- The usid service, used for security -->
 	 <bean id="usidService" class="it.geosolutions.npa.service.impl.JDBCUSIDService">
         <property name="configFolderPath" value="npa"></property>
-        <property name="baseDirectory" value="file:///${OSDI_CONFIG_DIR:}"></property>
+        <property name="baseDirectory" value="file://${OSDI_CONFIG_DIR:}"></property>
         
     </bean>
     
