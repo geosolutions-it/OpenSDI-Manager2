@@ -9,9 +9,9 @@
 	<!-- GeoStore REST Client -->
 	<bean id="administratorGeoStoreClient"
 		class="it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient">
-		<property name="geostoreRestUrl" value="http://localhost:8080/geostore/rest/"></property>
+		<property name="geostoreRestUrl" value="http://npa.geo-solutions.it/geostore/rest/"></property>
 		<property name="username" value="admin"></property>
-		<property name="password" value="admin"></property>
+		<property name="password" value="123npa321"></property>
 	</bean>
 	<!-- Scheduled Tasks configuration -->
 	

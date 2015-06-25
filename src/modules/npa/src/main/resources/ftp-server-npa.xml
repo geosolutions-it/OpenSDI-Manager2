@@ -74,6 +74,8 @@
 		<property name="fileSystemFactory" ref="ftpFileSystemFactory"></property>
 		<property name="serverFactory" ref="ftpServerFactory"></property>
 		<property name="dataConnectionConfigurationFactory" ref="connectionFactory"></property>
+		<property name="jksPath" value="${OSDI_CONFIG_DIR:}/ftpserver.jks"></property>
+		<property name="jksPass" value="UyUVSBK3cm"></property>
 	</bean>
 	
 </beans>
