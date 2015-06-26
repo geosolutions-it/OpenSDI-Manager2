@@ -237,8 +237,10 @@ public class FtpServerStarter implements DisposableBean,
 	public String getJksPath() {
 	    // use the tesing jks we provided by default
             java.net.URL location = this.getClass().getResource("/ftpserver.jks");
-            if (location != null)
+            if (location != null){
                 jksPath = location.getPath();
+                LOGGER.warn("*** OpenSDI is using the default keystore for the FTP server ***");
+            }
             // otherwise look for a jks file in the config folder
             else{
                 if(jksPath == null && applicationContext != null){
