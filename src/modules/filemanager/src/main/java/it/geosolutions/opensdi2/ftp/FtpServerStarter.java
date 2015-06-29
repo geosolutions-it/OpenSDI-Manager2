@@ -1,13 +1,19 @@
 package it.geosolutions.opensdi2.ftp;
 
+import it.geosolutions.opensdi2.configurations.configdir.OpenSDIManagerConfig;
+
+import java.io.File;
+
+import javax.print.DocFlavor.URL;
+
 import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FileSystemFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
-import org.apache.ftpserver.listener.Listener;
-import org.apache.ftpserver.listener.nio.NioListener;
+import org.apache.ftpserver.listener.ListenerFactory;
+import org.apache.ftpserver.ssl.SslConfigurationFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -55,10 +61,27 @@ public class FtpServerStarter implements DisposableBean,
 	private DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
 
 	/**
+         * Path to the Key Store File 
+         */
+        private String jksPath;
+
+       /**
+         * Password for the Key Store File 
+         */
+        private String jksPass = "password";
+
+        /**
+         * set implicit/explicit mode
+         */
+        private boolean implicitSsl = false;
+        
+	/**
 	 * The port to use for this server
 	 * 
 	 */
 	int listenPort = 2121;
+
+    private ApplicationContext applicationContext;
 
 	/** Default constructor */
 	private FtpServerStarter() {
@@ -94,31 +117,51 @@ public class FtpServerStarter implements DisposableBean,
 
 		if (server == null && serverFactory != null) {
 			try {
-				// factory.setPort(listenPort);
+			    FtpServerFactory serverFactory = new FtpServerFactory();
+			    ListenerFactory factory = new ListenerFactory();
 
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Starting FTP Server on port " + listenPort);
-				}
+			    if (LOGGER.isInfoEnabled()) {
+			        LOGGER.info("Starting FTP Server on port " + listenPort);
+			    }
 
-				Listener listener = new NioListener(null, listenPort, false,
-						null,
+			    // set the port of the listener
+			    factory.setPort(listenPort);
 
-						dataConnectionConfigurationFactory
-								.createDataConnectionConfiguration(), 300, null);
+			    // replace the default listener
+			    serverFactory.addListener("default", factory.createListener());
 
-				serverFactory.addListener("default", listener);
+			    // SSL coniguration
+			    SslConfigurationFactory ssl = new SslConfigurationFactory();
 
-				// sets the custom user manager to authenticate users
-				serverFactory.setUserManager(getUserManager());
+			    // A test jks has been provided, replace with your own
+			    ssl.setKeystoreFile(new File(getJksPath()));
+			    ssl.setKeystorePassword(getJksPass());
 
-				// sets the custom file system manager to list and download
-				// files
-				serverFactory.setFileSystem(getFileSystemFactory());
-				server = serverFactory.createServer();
-				server.start();
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Started FTP Server on port " + listenPort);
-				}
+			    // set SSL configuration for the listener
+			    factory.setSslConfiguration(ssl.createSslConfiguration());
+
+			    // server will operate on standard FTP by default, it is 
+			    // up to the client to start the encrypted session
+			    factory.setImplicitSsl(isImplicitSsl());
+
+			    // replace the default listener
+			    serverFactory.addListener("default", factory.createListener());
+			    serverFactory.setUserManager(getUserManager());
+			    serverFactory.setFileSystem(getFileSystemFactory());
+
+			    // start the server         
+			    FtpServer server = serverFactory.createServer();
+			    try{
+			        server.start();
+			    } catch(FtpException e){
+			        if (LOGGER.isDebugEnabled()){
+			            e.printStackTrace();
+			        }
+			    } 
+			    if (LOGGER.isInfoEnabled()) {
+			        LOGGER.info("Started FTP Server on port " + listenPort);
+			    }
+
 
 			} catch (Throwable t) {
 				LOGGER.error("Error starting Starting FTP", t);
@@ -131,8 +174,9 @@ public class FtpServerStarter implements DisposableBean,
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext arg0)
+	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
+	        this.applicationContext = applicationContext;
 		try {
 			start();
 			LOGGER.info("********************************************************");
@@ -188,6 +232,47 @@ public class FtpServerStarter implements DisposableBean,
 
 	public void setServerFactory(FtpServerFactory serverFactory) {
 		this.serverFactory = serverFactory;
+	}
+
+	public String getJksPath() {
+	    // use the tesing jks we provided by default
+            java.net.URL location = this.getClass().getResource("/ftpserver.jks");
+            if (location != null){
+                jksPath = location.getPath();
+                LOGGER.warn("*** OpenSDI is using the default keystore for the FTP server ***");
+            }
+            // otherwise look for a jks file in the config folder
+            else{
+                if(jksPath == null && applicationContext != null){
+                    OpenSDIManagerConfig cf = (OpenSDIManagerConfig)applicationContext.getBean("baseConfig");
+                    if(cf != null){
+                        File confDir = cf.getConfigDir();
+                        jksPath = new File(confDir,"ftpserver.jks").getAbsolutePath();
+                    }
+                }
+            }
+
+	    return jksPath;
+	}
+
+	public void setJksPath(String jksPath) {
+	    this.jksPath = jksPath;
+	}
+
+	public String getJksPass() {
+	    return jksPass;
+	}
+
+	public void setJksPass(String jksPass) {
+	    this.jksPass = jksPass;
+	}
+
+	public boolean isImplicitSsl() {
+	    return implicitSsl;
+	}
+
+	public void setImplicitSsl(boolean implicitSsl) {
+	    this.implicitSsl = implicitSsl;
 	}
 
 	public DataConnectionConfigurationFactory getDataConnectionConfigurationFactory() {
