@@ -36,7 +36,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  *
  */
 @Entity(name = "waterflow")
-@Table(name = "waterflow", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","river" }) })
+@Table(name = "waterflow", uniqueConstraints = { @UniqueConstraint(columnNames = { "river","year","month","decade" }) })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "waterflow")
 @XmlRootElement(name = "waterflow")
 public class Waterflow {

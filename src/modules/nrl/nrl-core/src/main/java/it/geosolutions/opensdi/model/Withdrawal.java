@@ -36,7 +36,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  *
  */
 @Entity(name = "Withdrawal")
-@Table(name = "withdrawal", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","province","district" }) })
+@Table(name = "withdrawal", uniqueConstraints = { @UniqueConstraint(columnNames = { "province","district","year","month","decade" }) })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "withdrawal")
 @XmlRootElement(name = "Withdrawal")
 public class Withdrawal {
@@ -63,7 +63,7 @@ public class Withdrawal {
     @Column(updatable = true, nullable = false)    
     private String province;
     
-    @Column(updatable = true, nullable = false)    
+    @Column(updatable = true, nullable = true)    
     private String district;
 
     @Column(updatable = true, nullable = true)    
