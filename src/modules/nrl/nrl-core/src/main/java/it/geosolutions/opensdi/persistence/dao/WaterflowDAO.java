@@ -19,12 +19,12 @@
  */
 package it.geosolutions.opensdi.persistence.dao;
 
-import it.geosolutions.opensdi.model.Irrigation;
+import it.geosolutions.opensdi.model.Waterflow;
 
 /**
  * @author DamianoG
  *
  */
-public interface IrrigationDAO extends GenericNRLDAO<Irrigation, Long> {
+public interface WaterflowDAO extends GenericNRLDAO<Waterflow, Long> {
 
 }

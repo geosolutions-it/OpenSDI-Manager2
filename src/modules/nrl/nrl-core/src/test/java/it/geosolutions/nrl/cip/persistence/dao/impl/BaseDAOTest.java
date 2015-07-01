@@ -25,10 +25,15 @@ import static org.junit.Assert.assertTrue;
 import it.geosolutions.opensdi.model.AgroMet;
 import it.geosolutions.opensdi.model.CropData;
 import it.geosolutions.opensdi.model.CropDescriptor;
+import it.geosolutions.opensdi.model.UnitOfMeasure;
+import it.geosolutions.opensdi.model.Waterflow;
+import it.geosolutions.opensdi.model.Withdrawal;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
 import it.geosolutions.opensdi.persistence.dao.UnitOfMeasureDAO;
+import it.geosolutions.opensdi.persistence.dao.WaterflowDAO;
+import it.geosolutions.opensdi.persistence.dao.WithdrawalDAO;
 
 import java.util.List;
 
@@ -49,6 +54,8 @@ public abstract class BaseDAOTest extends BaseTest {
     protected static CropDataDAO cropDataDAO;
     protected static AgrometDAO agrometDAO;
     protected static UnitOfMeasureDAO unitDAO;
+    protected static WithdrawalDAO withdrawalDAO;
+    protected static WaterflowDAO waterflowDAO;
 
     public BaseDAOTest() {
 
@@ -56,6 +63,8 @@ public abstract class BaseDAOTest extends BaseTest {
         cropDataDAO = ctx.getBean("cropDataDao", CropDataDAO.class);
         agrometDAO = ctx.getBean("agrometDao", AgrometDAO.class);
         unitDAO = ctx.getBean("unitOfMeasureDao",UnitOfMeasureDAO.class);
+        withdrawalDAO = ctx.getBean("withdrawalDao", WithdrawalDAO.class);
+        waterflowDAO = ctx.getBean("waterflowDao", WaterflowDAO.class);
     }
     
 
@@ -103,6 +112,39 @@ public abstract class BaseDAOTest extends BaseTest {
 
         assertEquals("CropDescriptor has not been properly deleted", 0, cropDescriptorDAO.count(null));
     }
+    
+    protected void removeAllUnitDAO(){
+        List<UnitOfMeasure> list = unitDAO.findAll();
+        for (UnitOfMeasure item : list) {
+            LOGGER.info("Removing " + item);
+            boolean ret = unitDAO.remove(item);
+            assertTrue("UnitOfMeasure not removed", ret);
+        }
+
+        assertEquals("UnitOfMeasure has not been properly deleted", 0, unitDAO.count(null));
+    }
+    
+    protected void removeAllWithdrawalDAO(){
+        List<Withdrawal> list = withdrawalDAO.findAll();
+        for (Withdrawal item : list) {
+            LOGGER.info("Removing " + item);
+            boolean ret = withdrawalDAO.remove(item);
+            assertTrue("UnitOfMeasure not removed", ret);
+        }
+
+        assertEquals("Withdrawal has not been properly deleted", 0, withdrawalDAO.count(null));        
+    }
+    
+    protected void removeAllWaterflowDAO(){
+        List<Waterflow> list = waterflowDAO.findAll();
+        for (Waterflow item : list) {
+            LOGGER.info("Removing " + item);
+            boolean ret = waterflowDAO.remove(item);
+            assertTrue("UnitOfMeasure not removed", ret);
+        }
+
+        assertEquals("Withdrawal has not been properly deleted", 0, waterflowDAO.count(null));        
+    }
 
     @Test
     public void testCheckDAOs() {
@@ -110,6 +152,9 @@ public abstract class BaseDAOTest extends BaseTest {
         assertNotNull(cropDescriptorDAO);
         assertNotNull(cropDataDAO);
         assertNotNull(agrometDAO);
+        assertNotNull(unitDAO);
+        assertNotNull(withdrawalDAO);
+        assertNotNull(waterflowDAO);
     }
 
 //    protected final static String MULTIPOLYGONWKT = "MULTIPOLYGON(((48.6894038 62.33877482, 48.7014874 62.33877482, 48.7014874 62.33968662, 48.6894038 62.33968662, 48.6894038 62.33877482)))";

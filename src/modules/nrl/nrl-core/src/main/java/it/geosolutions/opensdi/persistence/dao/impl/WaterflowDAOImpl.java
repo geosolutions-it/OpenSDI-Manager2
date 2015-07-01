@@ -19,8 +19,8 @@
  */
 package it.geosolutions.opensdi.persistence.dao.impl;
 
-import it.geosolutions.opensdi.model.Irrigation;
-import it.geosolutions.opensdi.persistence.dao.IrrigationDAO;
+import it.geosolutions.opensdi.model.Waterflow;
+import it.geosolutions.opensdi.persistence.dao.WaterflowDAO;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,20 +29,20 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Transactional(value = "opensdiTransactionManager")
-public class IrrigationDAOImpl extends BaseDAO<Irrigation, Long> implements IrrigationDAO {
+public class WaterflowDAOImpl extends BaseDAO<Waterflow, Long> implements WaterflowDAO {
 
     @Override
-    public void persist(Irrigation... entities) {
+    public void persist(Waterflow... entities) {
         super.persist(entities);
     }
 
     @Override
-    public Irrigation merge(Irrigation entity) {
+    public Waterflow merge(Waterflow entity) {
         return super.merge(entity);
     }
 
     @Override
-    public boolean remove(Irrigation entity) {
+    public boolean remove(Waterflow entity) {
         return super.remove(entity);
     }
 
@@ -57,8 +57,8 @@ public class IrrigationDAOImpl extends BaseDAO<Irrigation, Long> implements Irri
     }
 
     @Override
-    protected Class<Irrigation> getEntityType() {
-        return Irrigation.class;
+    protected Class<Waterflow> getEntityType() {
+        return Waterflow.class;
     }
 
 }

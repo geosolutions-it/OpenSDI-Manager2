@@ -52,9 +52,13 @@
     <bean id="marketPriceDao" class="it.geosolutions.opensdi.persistence.dao.impl.MarketPriceDAOImpl" >
         <property name="searchProcessor" ref="searchProcessor" />
     </bean>
-    <bean id="irrigationDao" class="it.geosolutions.opensdi.persistence.dao.impl.IrrigationDAOImpl" >
+    <bean id="waterflowDao" class="it.geosolutions.opensdi.persistence.dao.impl.WaterflowDAOImpl" >
         <property name="searchProcessor" ref="searchProcessor" />
     </bean>
+	<bean id="withdrawalDao" class="it.geosolutions.opensdi.persistence.dao.impl.WithdrawalDAOImpl" >
+        <property name="searchProcessor" ref="searchProcessor" />
+    </bean>
+	
 	
       <!--  SERVICES  -->
       <bean id="cropDescriptorService" class="it.geosolutions.opensdi.service.CropDescriptorService"></bean>

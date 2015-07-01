@@ -33,60 +33,53 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author DamianoG
- * 
+ *
  */
-@Entity(name = "MarketPrice")
-@Table(name = "market_price", uniqueConstraints = { @UniqueConstraint(columnNames = { "year",
-        "month", "decade", "province", "district", "crop" }) })
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "market_price")
-@XmlRootElement(name = "MarketPrice")
-public class MarketPrice {
+@Entity(name = "Withdrawal")
+@Table(name = "withdrawal", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","province","district" }) })
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "withdrawal")
+@XmlRootElement(name = "Withdrawal")
+public class Withdrawal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(updatable = true, nullable = false)
+    private Long id;
+    
+    @Column(updatable = true, nullable = false)    
     private Integer year;
-
-    @Column(updatable = true, nullable = false)
+    
+    @Column(updatable = true, nullable = false)    
     private String month;
-
-    @Column(updatable = true, nullable = false)
+    
+    @Column(updatable = true, nullable = false)    
     private Integer decade;
-
-    @Column(name = "decade_year", updatable = true, nullable = false)
+    
+    @Column(name="decade_year", updatable = true, nullable = false)    
     private Integer decadeYear;
 
-    @Column(name = "decade_absolute", updatable = true, nullable = false)
+    @Column(name="decade_absolute", updatable = true, nullable = false)    
     private Integer decadeAbsolute;
-
-    @Column(updatable = true, nullable = false)
+    
+    @Column(updatable = true, nullable = false)    
     private String province;
-
-    @Column(updatable = true, nullable = false)
+    
+    @Column(updatable = true, nullable = false)    
     private String district;
 
-    @Column(updatable = true, nullable = false)
-    private String crop;
-
-    @Column(name = "market_price_usd", updatable = true, nullable = false)
-    private Double marketPriceUSD;
-
-    @Column(name = "market_price_kpr", updatable = true, nullable = false)
-    private Double marketPriceKPR;
-
+    @Column(updatable = true, nullable = true)    
+    private Double withdrawal;
+    
     /**
      * @return the id
      */
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -189,46 +182,16 @@ public class MarketPrice {
     }
 
     /**
-     * @return the crop
+     * @return the withdrawal
      */
-    public String getCrop() {
-        return crop;
+    public Double getWithdrawal() {
+        return withdrawal;
     }
 
     /**
-     * @param crop the crop to set
+     * @param withdrawal the withdrawal to set
      */
-    public void setCrop(String crop) {
-        this.crop = crop;
+    public void setWithdrawal(Double withdrawal) {
+        this.withdrawal = withdrawal;
     }
-
-    /**
-     * @return the marketPriceUSD
-     */
-    public Double getMarketPriceUSD() {
-        return marketPriceUSD;
-    }
-
-    /**
-     * @param marketPriceUSD the marketPriceUSD to set
-     */
-    public void setMarketPriceUSD(Double marketPriceUSD) {
-        this.marketPriceUSD = marketPriceUSD;
-    }
-
-    /**
-     * @return the marketPriceKPR
-     */
-    public Double getMarketPriceKPR() {
-        return marketPriceKPR;
-    }
-
-    /**
-     * @param marketPriceKPR the marketPriceKPR to set
-     */
-    public void setMarketPriceKPR(Double marketPriceKPR) {
-        this.marketPriceKPR = marketPriceKPR;
-    }
-
-
 }

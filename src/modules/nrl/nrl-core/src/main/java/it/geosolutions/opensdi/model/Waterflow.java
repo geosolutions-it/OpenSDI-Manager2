@@ -24,8 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -37,15 +35,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @author DamianoG
  *
  */
-@Entity(name = "Irrigation")
-@Table(name = "irrigation", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","province","district","river" }) })
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "irrigation")
-@XmlRootElement(name = "Irrigation")
-public class Irrigation {
+@Entity(name = "waterflow")
+@Table(name = "waterflow", uniqueConstraints = { @UniqueConstraint(columnNames = { "year","month","decade","river" }) })
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "waterflow")
+@XmlRootElement(name = "waterflow")
+public class Waterflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     
     @Column(updatable = true, nullable = false)    
     private Integer year;
@@ -58,54 +56,27 @@ public class Irrigation {
     
     @Column(name="decade_year", updatable = true, nullable = false)    
     private Integer decadeYear;
-    
+
     @Column(name="decade_absolute", updatable = true, nullable = false)    
     private Integer decadeAbsolute;
     
     @Column(updatable = true, nullable = false)    
-    private String province;
-    
-    @Column(updatable = true, nullable = false)    
-    private String district;
-    
-    @Column(updatable = true, nullable = false)    
     private String river;
-
-    @Column(updatable = true, nullable = true)    
-    private Integer withdrawal;
     
     @Column(updatable = true, nullable = true)    
-    private Integer waterflow;
-    
-    @PrePersist
-    @PreUpdate
-    public void checkFunctionalConstraints() {
-        if(withdrawal != null && waterflow != null){
-            throw new IllegalStateException("withdrawal and waterflow fields are both valorized... this is not valid...");
-        }
-        if(withdrawal != null){
-            if(province == null || province.isEmpty()){
-                throw new IllegalStateException("withdrawal field valorized but province field not... this is not valid...");
-            }
-        }
-        else{
-            if(river == null || river.isEmpty()){
-                throw new IllegalStateException("waterflow field valorized but river field not... this is not valid...");
-            }
-        }
-    }
+    private Double waterflow;
     
     /**
      * @return the id
      */
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -180,20 +151,6 @@ public class Irrigation {
     }
 
     /**
-     * @return the province
-     */
-    public String getProvince() {
-        return province;
-    }
-
-    /**
-     * @param province the province to set
-     */
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    /**
      * @return the river
      */
     public String getRiver() {
@@ -208,46 +165,16 @@ public class Irrigation {
     }
 
     /**
-     * @return the withdrawal
-     */
-    public Integer getWithdrawal() {
-        return withdrawal;
-    }
-
-    /**
-     * @param withdrawal the withdrawal to set
-     */
-    public void setWithdrawal(Integer withdrawal) {
-        this.withdrawal = withdrawal;
-    }
-
-    /**
      * @return the waterflow
      */
-    public Integer getWaterflow() {
+    public Double getWaterflow() {
         return waterflow;
     }
 
     /**
      * @param waterflow the waterflow to set
      */
-    public void setWaterflow(Integer waterflow) {
+    public void setWaterflow(Double waterflow) {
         this.waterflow = waterflow;
     }
-
-    /**
-     * @return the district
-     */
-    public String getDistrict() {
-        return district;
-    }
-
-    /**
-     * @param district the district to set
-     */
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-    
-    
 }
