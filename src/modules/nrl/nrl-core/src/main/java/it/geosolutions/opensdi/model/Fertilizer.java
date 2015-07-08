@@ -46,10 +46,10 @@ public class Fertilizer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(updatable = true, nullable = true)
+    @Column(updatable = true, nullable = false)
     private String province;
 
-    @Column(updatable = true, nullable = true)
+    @Column(updatable = true, nullable = false)
     private String district;
 
     @Column(updatable = true, nullable = false)
