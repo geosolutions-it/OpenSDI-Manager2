@@ -86,10 +86,6 @@
 			<artifactId>jetty</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>it.geosolutions.opensdi2</groupId>
-			<artifactId>opensdi2-workflow</artifactId>
-		</dependency>
 		
 	</dependencies>
 	<profiles>
