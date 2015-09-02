@@ -39,7 +39,7 @@
         <servlet-api.version>2.5</servlet-api.version>
         <jstl.version>1.2</jstl.version>
         <jetty.port>9191</jetty.port>
-        <gt.version>12-SNAPSHOT</gt.version>
+        <gt.version>12.4</gt.version>
     </properties>
 
     <issueManagement>
