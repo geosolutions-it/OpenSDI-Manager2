@@ -51,9 +51,15 @@ public class GeoCollectUtils {
 		return builder.buildFeature(null);
 	}
 
+	/**
+	 * Returns the mapped attribute or the original one if no mapping is found
+	 * @param attributeMappings
+	 * @param sourceAttributeName
+	 * @return
+	 */
 	private static String mapAttributeName(
 			Map<String, String> attributeMappings, String sourceAttributeName) {
-		if(attributeMappings.containsKey(sourceAttributeName)) {
+		if(attributeMappings != null && attributeMappings.containsKey(sourceAttributeName)) {
 			sourceAttributeName = attributeMappings.get(sourceAttributeName);
 		}
 		return sourceAttributeName;

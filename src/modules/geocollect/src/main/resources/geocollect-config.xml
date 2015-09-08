@@ -39,11 +39,11 @@
     <!-- Prebuilders -->
     <bean id="mapPreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.MapPreBuilder"></bean>
     <bean id="featurePreBuilder" class="it.geosolutions.opensdi2.workflow.transform.spel.prebuilders.SimpleFeaturePreBuilder">
-        <constructor-arg ref="action3Config"/>
+        <constructor-arg ref="rifiutiSopDatastoreConfig"/>
         <constructor-arg value="feature"/>
     </bean>
 
-    <bean id="action3Config" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
+    <bean id="rifiutiSopDatastoreConfig" class="it.geosolutions.opensdi2.workflow.action.DataStoreConfiguration">
         <property name="inputObjectId" value="feature"></property>
         <property name="connectionProperties" ref="connectionProperties"/>
         <property name="typeName" value="rilevamenti_effettuati" />
@@ -76,11 +76,11 @@
 
     </bean>
 
-    <!-- GeoTools DataStore conntection properties -->
+    <!-- GeoTools DataStore connection properties -->
     <util:map id="connectionProperties">
         <entry key="dbtype" value="postgis"/>
-        <entry key="database" value="genova"/>
-        <entry key="host" value="localhost"/>
+        <entry key="database" value="geocollect"/>
+        <entry key="host" value="192.168.1.69"/>
         <entry key="port" value="5432"/>
         <entry key="schema" value="public"/>
         <entry key="user" value="postgres"/>
@@ -99,26 +99,28 @@
     </bean>
 
     <!-- Rules defines the keys in the output object to be assigned with the computed "value" from the input object -->
-    <util:map id="writerMappings">
+    <util:map id="to_GEOMETRY_mapping">
         <entry key="GEOMETRY" value="geometry" />
     </util:map>
     
-    <util:map id="segWriterMappings">
-        <entry key="GEOMETRY" value="geometry" />
+     <util:map id="identityMapping">
+        <entry key="GEOMETRY" value="GEOMETRY" />
     </util:map>
 
-    <util:map id="sportGeomMappings">
-        <entry key="geom" value="geometry" />
-    </util:map>
-    
-    <util:map id="muriGeomMappings">
+    <util:map id="to_geom_mapping">
         <entry key="geom" value="geometry" />
     </util:map>
 
-    <bean id="action3" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
-        <property name="configuration" ref="action3Config"></property>
-        <property name="attributeMappings" ref="writerMappings"/>
+    <bean id="rifiutiSopStore" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
+        <property name="configuration" ref="rifiutiSopDatastoreConfig"></property>
+        <property name="attributeMappings" ref="identityMapping"/>
         <property name="id" value="writer"></property>
+    </bean>
+    
+    <bean id="rifiutiMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="rifiutiSopDatastoreConfig"></property>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
+        <property name="id" value="metadata"></property>
     </bean>
     
     <bean id="action4" class="it.geosolutions.opensdi2.workflow.action.EmailAction">
@@ -144,7 +146,7 @@
  
     <bean id="updateOriginItemDiscariche" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
         <property name="configuration" ref="fUpdaterDiscaricheConfig"></property>
-        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
         <property name="id" value="discaricheFeatureUpdater"></property>
     </bean>
     
@@ -152,7 +154,8 @@
     <util:list id="storeSopActions">
             <ref bean="action1"></ref>
             <!-- <ref bean="action2"></ref> -->   <!-- This is the transform -->
-            <ref bean="action3"></ref>
+            <ref bean="rifiutiMetadataUpdater"></ref>
+            <ref bean="rifiutiSopStore"></ref>
             <!-- ref bean="action4"></ref-->
             <ref bean="updateOriginItemDiscariche"></ref>
             
@@ -193,7 +196,7 @@
     
     <bean id="storeSegnalazione" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="storeSegnalazioneConfig"></property>
-        <property name="attributeMappings" ref="segWriterMappings"/>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
 
@@ -238,7 +241,7 @@
  
     <bean id="updateOriginItemImpianti" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
         <property name="configuration" ref="fUpdaterImpiantiConfig"></property>
-        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
         <property name="id" value="impiantiFeatureUpdater"></property>
     </bean>
     
@@ -250,7 +253,7 @@
     
     <bean id="impiantiSopStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="impiantiSopStoreActionConfig"></property>
-        <property name="attributeMappings" ref="sportGeomMappings"/>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -268,7 +271,7 @@
     
     <bean id="impiantiSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="impiantiSegStoreActionConfig"></property>
-        <property name="attributeMappings" ref="sportGeomMappings"/>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -300,7 +303,7 @@
     
     <bean id="muriSopStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="muriSopStoreActionConfig"></property>
-        <property name="attributeMappings" ref="muriGeomMappings"/>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -318,7 +321,7 @@
     
     <bean id="muriSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="muriSegStoreActionConfig"></property>
-        <property name="attributeMappings" ref="muriGeomMappings"/>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -343,7 +346,7 @@
  
     <bean id="updateOriginItemMuri" class="it.geosolutions.opensdi2.workflow.action.FeatureUpdater">
         <property name="configuration" ref="fUpdaterMuriConfig"></property>
-        <property name="attributeMappings" ref="writerMappings"/>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
         <property name="id" value="muriFeatureUpdater"></property>
     </bean>
     
