@@ -20,7 +20,6 @@
 package it.geosolutions.nrl.cip.model;
 
 import static org.junit.Assert.assertEquals;
-import it.geosolutions.nrl.cip.model.BaseTest;
 import it.geosolutions.opensdi.model.Season;
 
 import org.junit.Test;

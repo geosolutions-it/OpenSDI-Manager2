@@ -1,5 +1,6 @@
 package it.geosolutions.opensdi.persistence.dao.impl;
 
+import it.geosolutions.opensdi.model.Fertilizer;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.io.Serializable;
@@ -7,6 +8,8 @@ import java.io.Serializable;
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +98,39 @@ public T searchByPK(String[] names, Serializable... pkObjects){
     }
     // Return found object
     return found;
+}
+
+/**
+ * 
+ * @return the actual type of the entity managed by the concrete DAO 
+ */
+protected abstract Class getEntityType();
+
+/**
+ * Returns the field identified as unique, that represent the composite primary key in the Relational model.
+ * 
+ * This method should replace the hardcoded list in the old DAO objects.
+ * 
+ * @return
+ */
+protected String[] getUniqueFields(){
+    
+    Class clazz = getEntityType();
+    
+    Table tableAnnotation = (Table) getEntityType().getAnnotation(Table.class);
+    if(tableAnnotation == null){
+        // No Table annotation on this class, return an 0 length array
+        return new String[0];
+    }
+    UniqueConstraint[] uc =  tableAnnotation.uniqueConstraints();
+    if(uc.length == 0){
+        // No unique constraints on this entity, return an 0 length array
+        return new String[0];
+    }
+    else if(uc.length != 1){
+        throw new IllegalStateException("Annotation 'Table' for entity '" + Fertilizer.class.getName()  + "' has more than 1 unique constraint definition... this should never happen...");
+    }
+    return uc[0].columnNames().clone();
 }
 
 }

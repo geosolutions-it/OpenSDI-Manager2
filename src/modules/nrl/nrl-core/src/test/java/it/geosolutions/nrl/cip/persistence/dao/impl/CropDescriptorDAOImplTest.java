@@ -19,6 +19,8 @@
  */
 package it.geosolutions.nrl.cip.persistence.dao.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.model.Season;
 
@@ -27,8 +29,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  *

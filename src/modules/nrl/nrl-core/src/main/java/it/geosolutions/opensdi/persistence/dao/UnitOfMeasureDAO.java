@@ -21,9 +21,9 @@
  */
 package it.geosolutions.opensdi.persistence.dao;
 
-import java.util.List;
-
 import it.geosolutions.opensdi.model.UnitOfMeasure;
+
+import java.util.List;
 
 /**
  *

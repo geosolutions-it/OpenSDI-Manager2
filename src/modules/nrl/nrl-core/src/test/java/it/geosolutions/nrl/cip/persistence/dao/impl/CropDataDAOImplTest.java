@@ -83,6 +83,81 @@ public class CropDataDAOImplTest extends BaseDAOTest {
         }
 
     }
+    
+    @Test
+    public void testSearchByPK() {
+
+        Long id;
+        String cropDId;
+        {
+            CropData cd = new CropData();
+            CropDescriptor cropd = createCropDescriptor();
+            cropDId = cropd.getId();
+            cd.setCropDescriptor(cropd);
+            cd.setDistrict("distr");
+            cd.setProvince("prov");
+            cd.setYear(2013);
+            
+            cd.setArea(100d);
+            cd.setProduction(200d);
+            cd.setYears("2000-2013");
+            cd.setYield(300d);
+            cd.setSrc("source");
+            cropDataDAO.persist(cd);
+            id = cd.getId();
+        }
+
+        assertNotNull(id);
+        LOGGER.info("Saved CropData " + id);
+
+        {
+            // test searchByPk
+            cropDataDAO.setSrc("source");
+            CropData loaded = cropDataDAO.searchByPK(cropDId,"distr","prov",2013,null);
+            assertNotNull(loaded);
+            assertEquals(CROPNAME, loaded.getCropDescriptor().getId());
+            assertEquals(Double.valueOf(100d), loaded.getArea());
+
+        }
+    }
+    
+    @Test
+    public void testRemoveByPK() {
+
+        Long id;
+        String cropDId;
+        {
+            CropData cd = new CropData();
+            CropDescriptor cropd = createCropDescriptor();
+            cropDId = cropd.getId();
+            cd.setCropDescriptor(cropd);
+            cd.setDistrict("distr");
+            cd.setProvince("prov");
+            cd.setYear(2013);
+            
+            cd.setArea(100d);
+            cd.setProduction(200d);
+            cd.setYears("2000-2013");
+            cd.setYield(300d);
+            cd.setSrc("source");
+            cropDataDAO.persist(cd);
+            id = cd.getId();
+        }
+
+        assertNotNull(id);
+        LOGGER.info("Saved CropData " + id);
+
+        {
+            // test searchByPk
+            cropDataDAO.setSrc("source");
+            boolean removed = cropDataDAO.removeByPK(cropDId,"distr","prov",2013,null);
+            assertEquals(true, removed);
+            CropData loaded = cropDataDAO.searchByPK(cropDId,"distr","prov",2013,null);
+            if(loaded!=null){
+                fail();
+            }
+        }
+    }
 
     @Test
     public void testUpdatability() {
@@ -150,7 +225,8 @@ public class CropDataDAOImplTest extends BaseDAOTest {
             cd.setProduction(200d);
             cd.setYears("2000-2013");
             cd.setYield(300d);
-
+            cd.setSrc("testSrc");
+            
             cropDataDAO.persist(cd);
             id = cd.getId();
         }
@@ -175,9 +251,11 @@ public class CropDataDAOImplTest extends BaseDAOTest {
                 cd.setProduction(0d);
                 cd.setYears("-");
                 cd.setYield(0d);
-
+                cd.setSrc(null);
+                cd.setSrc("testSrc");
+                
                 cropDataDAO.persist(cd);
-
+                
                 fail("Persist() should not allow PK duplicates");
             } catch (Exception e) {
                 LOGGER.info("Expected exception thrown : " + e.getMessage());

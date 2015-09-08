@@ -1,7 +1,5 @@
 /*
- *  nrl Crop Information Portal
- *  https://github.com/geosolutions-it/crop-information-portal
- *  Copyright (C) 2013 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -19,59 +17,47 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package it.geosolutions.opensdi.persistence.dao.impl;
 
-import it.geosolutions.opensdi.model.AgroMet;
-import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
-
-import java.io.Serializable;
+import it.geosolutions.opensdi.model.Withdrawal;
+import it.geosolutions.opensdi.persistence.dao.WithdrawalDAO;
 
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author ETj
+ * @author DamianoG
+ * 
  */
 @Transactional(value = "opensdiTransactionManager")
-public class AgrometDAOImpl extends BaseDAO<AgroMet, Long> implements AgrometDAO {
+public class WithdrawalDAOImpl extends BaseDAO<Withdrawal, Long> implements WithdrawalDAO {
 
     @Override
-    public void persist(AgroMet... entities) {
+    public void persist(Withdrawal... entities) {
         super.persist(entities);
     }
 
     @Override
-    public AgroMet merge(AgroMet entity) {
+    public Withdrawal merge(Withdrawal entity) {
         return super.merge(entity);
     }
 
     @Override
-    public boolean remove(AgroMet entity) {
+    public boolean remove(Withdrawal entity) {
         return super.remove(entity);
     }
 
     @Override
     public boolean removeById(Long id) {
-        return super.removeById(id); 
+        return super.removeById(id);
     }
 
-private static String[] PKNames = { "factor", "district", "province", "year", "month", "dec" };
+    @Override
+    public String[] getPKNames() {
+        return super.getUniqueFields();
+    }
 
-/**
- * Obtain array for the pknames ordered to be used in
- * {@link BaseDAO#removeByPK(Serializable...)}
- * 
- * @return array with names of the pk aggregated
- */
-public String[] getPKNames() {
-    return PKNames;
-}
-
-
-@Override
-protected Class<AgroMet> getEntityType() {
-    return AgroMet.class;
-}
-
-
+    @Override
+    protected Class<Withdrawal> getEntityType() {
+        return Withdrawal.class;
+    }
 }

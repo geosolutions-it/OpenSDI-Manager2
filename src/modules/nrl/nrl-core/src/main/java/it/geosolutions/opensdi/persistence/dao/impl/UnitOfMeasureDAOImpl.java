@@ -82,5 +82,10 @@ public List<UnitOfMeasure> getByClass(String valueLike) {
 	return search(search);
 }
 
+@Override
+protected Class<UnitOfMeasure> getEntityType() {
+    return UnitOfMeasure.class;
+}
+
 
 }

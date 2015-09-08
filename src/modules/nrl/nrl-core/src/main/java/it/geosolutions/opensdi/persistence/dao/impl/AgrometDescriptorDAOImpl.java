@@ -69,4 +69,9 @@ private static String[] PKNames = { "id" };
 public String[] getPKNames() {
     return PKNames;
 }
+
+@Override
+protected Class<AgrometDescriptor> getEntityType() {
+    return AgrometDescriptor.class;
+}
 }
