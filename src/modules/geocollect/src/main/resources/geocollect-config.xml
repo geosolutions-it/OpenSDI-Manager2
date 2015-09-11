@@ -111,14 +111,24 @@
         <entry key="geom" value="geometry" />
     </util:map>
 
+    <util:map id="geom_geom_mapping">
+        <entry key="geom" value="geom" />
+    </util:map>
+    
     <bean id="rifiutiSopStore" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="rifiutiSopDatastoreConfig"></property>
         <property name="attributeMappings" ref="identityMapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
-    <bean id="rifiutiMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+    <bean id="rifiutiSopMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
         <property name="configuration" ref="rifiutiSopDatastoreConfig"></property>
+        <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
+        <property name="id" value="metadata"></property>
+    </bean>
+    
+    <bean id="rifiutiSegMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="storeSegnalazioneConfig"></property>
         <property name="attributeMappings" ref="to_GEOMETRY_mapping"/>
         <property name="id" value="metadata"></property>
     </bean>
@@ -154,7 +164,7 @@
     <util:list id="storeSopActions">
             <ref bean="action1"></ref>
             <!-- <ref bean="action2"></ref> -->   <!-- This is the transform -->
-            <ref bean="rifiutiMetadataUpdater"></ref>
+            <ref bean="rifiutiSopMetadataUpdater"></ref>
             <ref bean="rifiutiSopStore"></ref>
             <!-- ref bean="action4"></ref-->
             <ref bean="updateOriginItemDiscariche"></ref>
@@ -165,6 +175,7 @@
     <util:list id="storeSegActions">
             <ref bean="action1"></ref>
             <!-- <ref bean="action2"></ref> -->
+            <ref bean="rifiutiSegMetadataUpdater"></ref>
             <ref bean="storeSegnalazione"></ref>
             <!-- ref bean="action4"></ref-->
     </util:list>
@@ -245,8 +256,21 @@
         <property name="id" value="impiantiFeatureUpdater"></property>
     </bean>
     
+    <bean id="impiantiSopMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="impiantiSopStoreActionConfig"></property>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="id" value="metadata"></property>
+    </bean>
+    
+    <bean id="impiantiSegMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="impiantiSegStoreActionConfig"></property>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="id" value="metadata"></property>
+    </bean>
+    
     <util:list id="impiantiSopActions">
         <ref bean="action1"></ref>
+        <ref bean="impiantiSopMetadataUpdater"></ref>
         <ref bean="impiantiSopStoreAction"></ref>
         <ref bean="updateOriginItemImpianti"></ref>
     </util:list>
@@ -265,8 +289,9 @@
     
     <!-- Segnalazioni Impianti Sportivi Bolzano -->
     <util:list id="impiantiSegActions">
-            <ref bean="action1"></ref>
-            <ref bean="impiantiSegStoreAction"></ref>
+		<ref bean="action1"></ref>
+		<ref bean="impiantiSegMetadataUpdater"></ref>
+        <ref bean="impiantiSegStoreAction"></ref>
     </util:list>
     
     <bean id="impiantiSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
@@ -280,7 +305,6 @@
         <property name="connectionProperties" ref="connectionProperties"/>
         <property name="typeName" value="sport" />
     </bean>
-
     
     <!-- Muri Genova -->
     
@@ -297,13 +321,14 @@
     <!-- Sopralluoghi Muri Genova -->
     <util:list id="muriSopActions">
         <ref bean="action1"></ref>
+        <ref bean="muriSopMetadataUpdater"></ref>
         <ref bean="muriSopStoreAction"></ref>
         <ref bean="updateOriginItemMuri"></ref>
     </util:list>
     
     <bean id="muriSopStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="muriSopStoreActionConfig"></property>
-        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="attributeMappings" ref="geom_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -313,15 +338,22 @@
         <property name="typeName" value="cens_muri_sop" />
     </bean>
     
+    <bean id="muriSopMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="muriSopStoreActionConfig"></property>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="id" value="metadata"></property>
+    </bean>
+    
     <!-- Segnalazioni Muri Genova -->
     <util:list id="muriSegActions">
-            <ref bean="action1"></ref>
-            <ref bean="muriSegStoreAction"></ref>
+		<ref bean="action1"></ref>
+		<ref bean="muriSegMetadataUpdater"></ref>
+		<ref bean="muriSegStoreAction"></ref>
     </util:list>
     
     <bean id="muriSegStoreAction" class="it.geosolutions.opensdi2.workflow.action.DataStoreWriter">
         <property name="configuration" ref="muriSegStoreActionConfig"></property>
-        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="attributeMappings" ref="geom_geom_mapping"/>
         <property name="id" value="writer"></property>
     </bean>
     
@@ -329,6 +361,12 @@
         <property name="inputObjectId" value="feature"></property>
         <property name="connectionProperties" ref="connectionProperties"/>
         <property name="typeName" value="cens_muri" />
+    </bean>
+
+    <bean id="muriSegMetadataUpdater" class="it.geosolutions.opensdi2.workflow.action.MetadataUpdater">
+        <property name="configuration" ref="muriSegStoreActionConfig"></property>
+        <property name="attributeMappings" ref="to_geom_mapping"/>
+        <property name="id" value="metadata"></property>
     </bean>
     
     <util:map id="muriUpdateRules" map-class="java.util.HashMap">
