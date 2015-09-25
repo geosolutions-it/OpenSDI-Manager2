@@ -147,7 +147,7 @@ public abstract class RestWPSProcess extends RestService {
 
     @Override
     public String getActiveStatus() {
-        if ("DISABLED".equals(super.getActiveStatus()) || this.wps == null) {
+        if ("DISABLED".equals(super.getActiveStatus())) {
             try {
                 // testing connections
                 this.wps = new WebProcessingService(this.url);

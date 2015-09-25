@@ -125,7 +125,7 @@ public class RestWPSGuidResourceLoaderProcess extends RestWPSProcess {
 
                 // exit if my process doesn't exist on server
                 if (!found) {
-                    wps = null;
+                    setActiveStatus("DISABLED");
                     LOGGER.log(Level.ERROR, "WPS Process [" + processIden + "] not found!");
                     throw new ProcessException("WPS Process [" + processIden + "] not found!");
                 }
