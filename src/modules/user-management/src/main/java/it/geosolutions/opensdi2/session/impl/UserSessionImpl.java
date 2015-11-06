@@ -23,10 +23,7 @@ package it.geosolutions.opensdi2.session.impl;
 import it.geosolutions.opensdi2.session.UserSession;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.scheduling.config.IntervalTask;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**

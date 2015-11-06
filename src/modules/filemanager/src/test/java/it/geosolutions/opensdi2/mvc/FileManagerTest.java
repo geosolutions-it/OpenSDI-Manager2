@@ -52,7 +52,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Test class for FileManager
@@ -63,7 +62,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:/applicationContext.xml")
-@WebAppConfiguration
 public class FileManagerTest {
 	
 	private static Logger LOGGER = Logger.getLogger(FileManagerTest.class);
