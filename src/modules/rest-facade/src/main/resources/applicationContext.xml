@@ -18,6 +18,7 @@
     	<property name="customizedProxies">
 	    	<map>
 		        <entry key="geostore" value-ref="geostoreProxyService" />
+		        <entry key="geobatch" value-ref="geobatchProxyService" />
 		    </map>
     	</property>
     </bean>
@@ -37,5 +38,21 @@
             </list>
     	</property>
     </bean>
-    
+
+    <!-- GeoBatch proxy config. No callbacks configured.  -->
+    <bean id="geobatchProxyService" class="it.geosolutions.httpproxy.service.impl.ProxyServiceImpl">
+    	<property name="proxyConfig" ref="proxyConfig"></property>
+    	<property name="proxyHelper" ref="proxyHelper"></property>
+    	<property name="callbacks">
+            <list> 
+                <!-- TODO: Configure GeoBatch callbacks 
+                <bean class="it.geosolutions.httpproxy.callback.MimeTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostNameChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.RequestTypeChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.MethodsChecker" />
+                <bean class="it.geosolutions.httpproxy.callback.HostChecker" /> -->
+            </list>
+    	</property>
+    </bean>
+
 </beans>
