@@ -6,7 +6,7 @@
 			http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd"
        default-autowire="byName">
     <context:annotation-config/>
-    <import resource="applicationContext-datasource.xml"/>
+    <import resource="datasource.xml"/>
     <bean id="searchProcessor" class="com.googlecode.genericdao.search.jpa.JPASearchProcessor">
         <constructor-arg ref="metadataUtil"/>
     </bean>
@@ -17,5 +17,5 @@
     <bean id="plotDao" class="it.geosolutions.opensdi2.persistence.PlotDaoImpl">
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="plotService" class="it.geosolutions.opensdi2.service.PlotService"></bean>
+    <bean id="plotService" class="it.geosolutions.opensdi2.service.PlotService"/>
 </beans>

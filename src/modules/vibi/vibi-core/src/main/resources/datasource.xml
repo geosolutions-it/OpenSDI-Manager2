@@ -3,48 +3,33 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
-
     <bean id="opensdiDataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:nrl"/>
-        <property name="username" value="h2"/>
-        <property name="password" value="h2"/>
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="${VIBI_DB_URL:jdbc:postgresql://localhost:5432/postgres}"/>
+        <property name="username" value="${VIBI_DB_USER:postgres}"/>
+        <property name="password" value="${VIBI_DB_PASS:postgres}"/>
     </bean>
-
     <bean id="opensdiVendorAdapter"
           class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
         <property name="showSql" value="false"/>
         <property name="generateDdl" value="true"/>
-        <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect"/>
+        <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect"/>
     </bean>
-
     <bean id="opensdiEntityManagerFactory"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="opensdiDataSource"/>
         <property name="persistenceXmlLocation" value="classpath:./META-INF/persistence.xml"/>
-        <!-- For Spring > 3.1
-        <property name="packagesToScan">
-            <list>
-                <value>it.geosolutions.opensdi</value>
-            </list>
-        </property> -->
         <property name="jpaVendorAdapter" ref="opensdiVendorAdapter"/>
-
         <property name="jpaPropertyMap">
             <map>
                 <entry key="hibernate.cache.use_second_level_cache" value="false"/>
             </map>
         </property>
     </bean>
-
     <bean id="opensdiTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="opensdiEntityManagerFactory"/>
     </bean>
-
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
-
     <tx:annotation-driven transaction-manager="opensdiTransactionManager"/>
-
 </beans>
