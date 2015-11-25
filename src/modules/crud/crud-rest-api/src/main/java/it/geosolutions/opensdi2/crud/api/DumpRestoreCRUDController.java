@@ -1,6 +1,6 @@
 package it.geosolutions.opensdi2.crud.api;
 
-import it.geosolutions.opensdi.dto.CRUDResponseWrapper;
+import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
 import it.geosolutions.opensdi2.exceptions.RESTControllerException;
 
 import org.springframework.web.bind.annotation.RequestBody;

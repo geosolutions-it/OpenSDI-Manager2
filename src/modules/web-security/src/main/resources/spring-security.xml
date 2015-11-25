@@ -9,7 +9,7 @@
 	<http auto-config="true" create-session="never">
 		<http-basic  entry-point-ref="restAuthenticationEntryPoint"/>
 		<anonymous />
-		<intercept-url pattern="/mvc/admin/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/mvc/admin/**" access="ROLE_ANONYMOUS" />
 	</http>
 	
 	<beans:bean id="restAuthenticationEntryPoint" class="it.geosolutions.opensdi2.security.RestAuthenticationEntryPoint" >

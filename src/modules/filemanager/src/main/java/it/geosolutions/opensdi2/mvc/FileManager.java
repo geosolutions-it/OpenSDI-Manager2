@@ -108,6 +108,7 @@ public class FileManager extends BaseFileManager {
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
 	        String rootDir = configureModule(request);
+		System.out.println("UPLOADING FILE !!!");
 		super.upload(rootDir, file, name, chunks, chunk, folder, request, servletResponse);
 	}
 

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-    <groupId>it.geosolutions.opensdi2</groupId>
-    <artifactId>opensdi2-modules</artifactId>
+        <groupId>it.geosolutions.opensdi2</groupId>
+        <artifactId>opensdi2-modules</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
     <properties>
-        <!-- version 1.1.0 because of this issue https://groups.google.com/forum/#!topic/java-generic-dao/4G54keSoaBg -->
         <hibernate-generic-dao.version>1.1.0</hibernate-generic-dao.version>
         <nrl.version>1.1-SNAPSHOT</nrl.version>
         <osdim2.version>1.1-SNAPSHOT</osdim2.version>
@@ -16,10 +16,10 @@
     <groupId>it.geosolutions.opensdi2</groupId>
     <artifactId>vibi-modules</artifactId>
     <packaging>pom</packaging>
-  
+
     <name>OpenSDI Manager - VIBI</name>
     <dependencyManagement>
-    <dependencies>
+        <dependencies>
             <!-- INTERNAL -->
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
@@ -27,17 +27,17 @@
                 <version>${osdim2.version}</version>
             </dependency>
             <dependency>
-                    <groupId>it.geosolutions.opensdi2</groupId>
-                    <artifactId>opensdi2-crud-model</artifactId>
-                    <version>${osdim2.version}</version>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-model</artifactId>
+                <version>${osdim2.version}</version>
             </dependency>
             <!-- 
                 JACKSON
             -->
-             <dependency>
-                <groupId>org.codehaus.jackson</groupId> 
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-core-asl</artifactId>
-                 <version>${jackson.version}</version>
+                <version>${jackson.version}</version>
             </dependency>
             <!-- =========================================================== -->
             <!--     HIBERNATE-GENERIC-DAO                                   -->
@@ -62,7 +62,7 @@
                 <artifactId>search-hibernate</artifactId>
                 <version>${hibernate-generic-dao.version}</version>
             </dependency>
-           
+
 
             <dependency>
                 <groupId>cglib</groupId>
@@ -126,9 +126,9 @@
                 <artifactId>hsqldb</artifactId>
                 <version>2.2.9</version>
             </dependency>
-             
-    
-    </dependencies>
+
+
+        </dependencies>
     </dependencyManagement>
     <!-- MODULES  -->
     <modules>

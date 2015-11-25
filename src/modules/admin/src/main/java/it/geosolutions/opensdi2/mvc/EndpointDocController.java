@@ -2,7 +2,7 @@ package it.geosolutions.opensdi2.mvc;
 
 import it.geosolutions.httpproxy.service.ProxyConfig;
 import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.opensdi.dto.CRUDResponseWrapper;
+import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
 import it.geosolutions.opensdi2.crud.api.PagebleEntityCRUDController;
 import it.geosolutions.opensdi2.exceptions.RESTControllerException;
 import it.geosolutions.opensdi2.model.mapping.EndPointMapping;

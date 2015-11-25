@@ -1,13 +1,12 @@
 package it.geosolutions.opensdi2.crud.api;
 
-import it.geosolutions.opensdi.dto.CRUDResponseWrapper;
+import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
 import it.geosolutions.opensdi2.exceptions.RESTControllerException;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Simple Generic REST controller with basic CRUD operations for an entity.

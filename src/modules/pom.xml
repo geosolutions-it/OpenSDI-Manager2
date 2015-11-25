@@ -7,7 +7,7 @@
         <artifactId>opensdi-manager2</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
-  
+
     <groupId>it.geosolutions.opensdi2</groupId>
     <artifactId>opensdi2-modules</artifactId>
     <packaging>pom</packaging>
@@ -23,6 +23,7 @@
 		<module>workflow</module>
 		<module>crud</module>
 		<module>admin</module>
+        <module>vibi</module>
     </modules>
     <!-- profile geocollect -->
     <profiles>
@@ -40,6 +41,6 @@
         </profile>
   </profiles>
 
-		
-    
+
+
 </project>
