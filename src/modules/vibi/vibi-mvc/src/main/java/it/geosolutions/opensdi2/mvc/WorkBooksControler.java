@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/vibi")
 public final class WorkBooksControler extends BaseFileManager {
 
-    private final static Pattern allowedFileExtensions = Pattern.compile("(?:\\.xls$)||(?:\\.xlsx$)");
+    private final static Pattern allowedFileExtensions = Pattern.compile(".+?\\.(?:(?:xls$)|(?:xlsx$))");
 
     @RequestMapping(value = "download", method = {RequestMethod.POST, RequestMethod.GET})
     public void download(
@@ -36,10 +36,10 @@ public final class WorkBooksControler extends BaseFileManager {
             @RequestParam(required = false) String folder,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        if(!allowedFileExtensions.matcher(name).matches()) {
-            throw new RuntimeException("Only Excel files (xls, xlsx) are allowed.");
+        if (!allowedFileExtensions.matcher(name).matches()) {
+            throw new RuntimeException("Only Excel files (xls, xlsx) are allowed: '" + name + "'.");
         }
-        String uniqueName = UUID.randomUUID().toString() + "-" + name;
-        super.upload("", file, uniqueName, chunks, chunk, folder, request, response);
+        String uniqueName = UUID.randomUUID().toString() + "_uuid_" + name;
+        super.upload("", file, name, uniqueName, chunks, chunk, folder, request, response);
     }
 }

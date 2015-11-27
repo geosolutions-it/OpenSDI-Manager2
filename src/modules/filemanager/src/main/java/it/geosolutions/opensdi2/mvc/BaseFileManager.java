@@ -243,10 +243,25 @@ public class BaseFileManager extends AbstractFileController {
 	 * @return
 	 * @throws IOException
 	 */
+
+	public void upload(
+			String rootDir,
+			MultipartFile file,
+			String name,
+			int chunks,
+			int chunk,
+			String folder,
+			HttpServletRequest request,
+			HttpServletResponse servletResponse)
+			throws IOException {
+		upload(rootDir, file, name, name, chunks, chunk, folder, request, servletResponse);
+	}
+
 	public void upload(
 	                 String rootDir,
 			 MultipartFile file,
 			 String name,
+			 String targetName,
 			 int chunks,
 			 int chunk,
 			 String folder,
@@ -271,14 +286,14 @@ public class BaseFileManager extends AbstractFileController {
 	        }
 	        if (chunk == chunks - 1) {
 	            // get the final file
-	        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, name, folder), entry);
+	        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, targetName, folder), entry);
 	        }
 	    } else {
 	        // init bytes for the chunk upload
 	        Entry<String, ?> entry = fileUploadService.addChunk(name, 1,
 	                0, file);
 	        // get the final file
-        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, name, folder), entry);
+        	fileUploadService.getCompletedFile(name, getFilePath(rootDir, targetName, folder), entry);
 	    }
 	}
 
