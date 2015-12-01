@@ -18,4 +18,16 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="plotService" class="it.geosolutions.opensdi2.service.PlotService"/>
+    <bean id="plotModuleHerbaceousDao" class="it.geosolutions.opensdi2.persistence.PlotModuleHerbaceousDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="plotModuleHerbaceousService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousService"/>
+    <bean id="herbaceousRelativeCoverDao" class="it.geosolutions.opensdi2.persistence.HerbaceousRelativeCoverDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="herbaceousRelativeCoverService" class="it.geosolutions.opensdi2.service.HerbaceousRelativeCoverService"/>
+    <bean id="woodyImportanceValueDao" class="it.geosolutions.opensdi2.persistence.WoodyImportanceValueDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="woodyImportanceValueService" class="it.geosolutions.opensdi2.service.WoodyImportanceValueService"/>
 </beans>
