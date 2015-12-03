@@ -34,7 +34,7 @@ public class PlotModuleHerbaceousDaoImpl extends BaseDao<PlotModuleHerbaceous, S
     }
 
     @Override
-    protected Class<PlotModuleHerbaceous> getEntityType() {
+    public Class<PlotModuleHerbaceous> getEntityType() {
         return PlotModuleHerbaceous.class;
     }
 }

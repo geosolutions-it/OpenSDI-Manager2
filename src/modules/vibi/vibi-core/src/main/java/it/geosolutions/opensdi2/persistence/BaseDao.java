@@ -1,8 +1,11 @@
 package it.geosolutions.opensdi2.persistence;
 
 import com.googlecode.genericdao.dao.jpa.GenericDAOImpl;
+import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.Search;
 import com.googlecode.genericdao.search.jpa.JPASearchProcessor;
+import org.hibernate.SessionFactory;
+import org.hibernate.metadata.ClassMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Transactional(value = "opensdiTransactionManager")
 @Repository
 public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl<T, ID> implements GenericVibiDao<T, ID> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(BaseDao.class);
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Override
     @PersistenceContext
@@ -91,11 +100,6 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     }
 
     /**
-     * @return the actual type of the entity managed by the concrete DAO
-     */
-    protected abstract Class getEntityType();
-
-    /**
      * Returns the field identified as unique, that represent the composite primary key in the Relational model.
      * <p/>
      * This method should replace the hardcoded list in the old DAO objects.
@@ -122,4 +126,24 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         return uc[0].columnNames().clone();
     }
 
+    @Override
+    public String[] getAllPropertiesNames() {
+        ClassMetadata classMetadata = sessionFactory.getClassMetadata(getEntityType());
+        String[] normalProperties = classMetadata.getPropertyNames();
+        String[] properties = Arrays.copyOf(normalProperties, normalProperties.length + 1);
+        properties[properties.length - 1] = classMetadata.getIdentifierPropertyName();
+        return properties;
+    }
+
+    @Override
+    public Filter getKeyWordSearchFilter(String keyword) {
+        List<Filter> filters = new ArrayList<Filter>();
+        ClassMetadata classMetadata = sessionFactory.getClassMetadata(getEntityType());
+        for (String property : getAllPropertiesNames()) {
+            if (classMetadata.getPropertyType(property).getName().equals("string")) {
+                filters.add(Filter.ilike(property, keyword));
+            }
+        }
+        return Filter.or(filters.toArray(new Filter[filters.size()]));
+    }
 }

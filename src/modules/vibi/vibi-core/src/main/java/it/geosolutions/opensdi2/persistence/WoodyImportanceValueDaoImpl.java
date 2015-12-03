@@ -34,7 +34,7 @@ public class WoodyImportanceValueDaoImpl extends BaseDao<WoodyImportanceValue, S
     }
 
     @Override
-    protected Class<WoodyImportanceValue> getEntityType() {
+    public Class<WoodyImportanceValue> getEntityType() {
         return WoodyImportanceValue.class;
     }
 }

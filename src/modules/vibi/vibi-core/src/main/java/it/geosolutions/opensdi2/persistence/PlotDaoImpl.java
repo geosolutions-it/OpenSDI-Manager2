@@ -29,16 +29,12 @@ public class PlotDaoImpl extends BaseDao<Plot, Long> implements PlotDao {
             "plot_no"
     };
 
-
     public String[] getPKNames() {
         return PKNames;
     }
 
-
     @Override
-    protected Class<Plot> getEntityType() {
+    public Class<Plot> getEntityType() {
         return Plot.class;
     }
-
-
 }

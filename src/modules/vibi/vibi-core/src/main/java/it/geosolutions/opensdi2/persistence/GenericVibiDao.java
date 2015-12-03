@@ -22,6 +22,7 @@
 package it.geosolutions.opensdi2.persistence;
 
 import com.googlecode.genericdao.dao.jpa.GenericDAO;
+import com.googlecode.genericdao.search.Filter;
 
 import java.io.Serializable;
 
@@ -37,4 +38,10 @@ public interface GenericVibiDao<T, ID extends Serializable> extends
     T searchByPK(Serializable... pkObjects);
 
     T searchByPK(String[] names, Serializable... pkObjects);
+
+    String[] getAllPropertiesNames();
+
+    Filter getKeyWordSearchFilter(String keyword);
+
+    Class getEntityType();
 }

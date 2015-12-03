@@ -1,19 +1,19 @@
 package it.geosolutions.opensdi2.service;
 
 import it.geosolutions.opensdi2.persistence.GenericVibiDao;
-import it.geosolutions.opensdi2.persistence.Plot;
-import it.geosolutions.opensdi2.persistence.PlotDao;
+import it.geosolutions.opensdi2.persistence.Species;
+import it.geosolutions.opensdi2.persistence.SpeciesDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotService extends BaseService<Plot> {
+public class SpeciesService extends BaseService<Species> {
 
     @Autowired
-    private PlotDao plotDao;
+    private SpeciesDao speciesDao;
 
     @Override
     protected GenericVibiDao getDao() {
-        return plotDao;
+        return speciesDao;
     }
 }

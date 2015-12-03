@@ -27,6 +27,7 @@
             </map>
         </property>
     </bean>
+    <bean id="sessionFactory" factory-bean="opensdiEntityManagerFactory" factory-method="getSessionFactory" />
     <bean id="opensdiTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="opensdiEntityManagerFactory"/>
     </bean>

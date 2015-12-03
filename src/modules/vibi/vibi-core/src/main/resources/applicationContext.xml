@@ -30,4 +30,8 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="woodyImportanceValueService" class="it.geosolutions.opensdi2.service.WoodyImportanceValueService"/>
+    <bean id="speciesDao" class="it.geosolutions.opensdi2.persistence.SpeciesDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="speciesService" class="it.geosolutions.opensdi2.service.SpeciesService"/>
 </beans>
