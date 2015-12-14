@@ -426,11 +426,7 @@ public class ServiceManager extends BaseFileManager {
             @RequestParam(value = "userid", required = false) String userid,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        if (userid != null) {
-            return getDetailedServicesListForUser(userid);
-        }
-
-        return new ArrayList<Map<String, Object>>();
+        return getDetailedServicesListForUser(userid);
     }
 
     @RequestMapping(value = "getServiceDetails", method = { RequestMethod.GET })
@@ -492,6 +488,14 @@ public class ServiceManager extends BaseFileManager {
         return new HashMap<String, Object>();
     }
 
+    @RequestMapping(value = "getServiceAccessByUser", method = { RequestMethod.GET })
+    public @ResponseBody Object getServiceAccessByUser(
+            @RequestParam(value = "userid", required = true) String userid,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        return getDetailedServicesAccessListForUser(userid);
+    }
+    
     /**
      * 
      * @param serviceid
@@ -589,6 +593,24 @@ public class ServiceManager extends BaseFileManager {
         return servicesList;
     }
 
+    /**
+     * 
+     * @param userid
+     * @return
+     */
+    protected List<Map<String, Object>> getDetailedServicesAccessListForUser(String userid) {
+
+        List<Service> services = this.serviceDAO.getServiceAccessByUser(userid);
+        List<Map<String, Object>> servicesList = new LinkedList<Map<String, Object>>();
+
+        // write operations available
+        for (Service service : services) {
+            servicesList.add(getDetailedServiceById(service.getServiceId(), false));
+        }
+
+        return servicesList;
+    }
+    
     /**
      * @param serviceId
      * @param service
@@ -746,6 +768,56 @@ public class ServiceManager extends BaseFileManager {
         return response;
     }
 
+    /**
+     * Updates the Service Access for the User
+     * 
+     * @param user
+     * @param request
+     * @param httpServletResponse
+     * @return
+     */
+    @RequestMapping(value = "putServicesAccessList", method = { RequestMethod.GET,
+            RequestMethod.POST })
+    public @ResponseBody Object putServicesAccessList(
+            @RequestParam(value = "user", required = true) String user,
+            HttpServletRequest request, HttpServletResponse httpServletResponse) {
+
+        Map<String, Object> response = new HashMap<String, Object>();
+
+        StringBuffer jb = new StringBuffer();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null)
+                jb.append(line);
+        } catch (Exception e) {
+            /* report an error */
+            LOGGER.error("Error reading JSON data from the request", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+
+        try {
+            List<String> serviceIds = new ArrayList<String>();
+
+            JSONArray jsonArray = new JSONArray(jb.toString());
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject item = jsonArray.getJSONObject(i);
+                serviceIds.add(item.getString("serviceId"));
+            }
+
+            this.serviceDAO.updateServicesAccess(user, serviceIds);
+
+            response.put(ResponseConstants.SUCCESS, true);
+        } catch (JSONException e) {
+            // crash and burn
+            LOGGER.error("Error parsing JSON request string", e);
+            response.put(ResponseConstants.SUCCESS, false);
+        }
+
+        return response;
+    }
+    
     /**
      * Check if the user is the logged one and exists the service
      * 
