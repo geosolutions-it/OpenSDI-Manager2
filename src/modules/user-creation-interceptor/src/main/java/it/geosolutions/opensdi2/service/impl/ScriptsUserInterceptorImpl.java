@@ -19,12 +19,6 @@
  */
 package it.geosolutions.opensdi2.service.impl;
 
-import it.geosolutions.geostore.core.model.User;
-import it.geosolutions.geostore.core.model.UserAttribute;
-import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
-import it.geosolutions.opensdi2.service.UserInterceptorService;
-import it.geosolutions.opensdi2.service.WrappedCredentials;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +33,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.log4j.Logger;
+
+import it.geosolutions.geostore.core.model.User;
+import it.geosolutions.geostore.core.model.UserAttribute;
+import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
+import it.geosolutions.opensdi2.service.UserInterceptorService;
+import it.geosolutions.opensdi2.service.WrappedCredentials;
 
 /**
  * This user interceptor call customized scripts in the user management interception
@@ -102,6 +102,7 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
      * Known extra attributes in user attributes for the scripts
      */
     private static final List<String> USER_KNOWN_ATTRIBUTES;
+
     static {
         USER_KNOWN_ATTRIBUTES = new LinkedList<String>();
         USER_KNOWN_ATTRIBUTES.add(NAME);
@@ -208,11 +209,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
         userInformation.put("EMAIL", "THEMAIL");
 
         if (copyPassword)
-            userInformation.put(
-                    PASS,
-                    passwordEncoding
-                            + (user.getNewPassword() != null ? user.getNewPassword() : user
-                                    .getPassword()));
+            userInformation.put(PASS, passwordEncoding
+                    + (user.getNewPassword() != null ? user.getNewPassword() : user.getPassword()));
         if (copyKnownAttributes && user.getAttribute() != null) {
             for (UserAttribute ua : user.getAttribute()) {
                 if (USER_KNOWN_ATTRIBUTES.contains(ua.getName().toUpperCase())
@@ -233,7 +231,8 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
      * @return process
      * @throws IOException
      */
-    public Process callScript(Map<String, String> parameters, String scriptPath) throws IOException {
+    public Process callScript(Map<String, String> parameters, String scriptPath)
+            throws IOException {
 
         String[] env = new String[parameters != null ? parameters.size() + 2 : 2];
 
@@ -389,6 +388,7 @@ public class ScriptsUserInterceptorImpl implements UserInterceptorService {
      * 
      * @return credentials to perform the operation
      */
+    @Override
     public WrappedCredentials getCredentials() {
         // Wrapped on user groups interceptor
         return null;

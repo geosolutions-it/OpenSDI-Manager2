@@ -20,8 +20,6 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
-
 import java.io.IOException;
 
 import javax.annotation.Resource;
@@ -34,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import it.geosolutions.opensdi2.config.OpenSDIManagerConfig;
 
 /**
  * Controller for the base file manager. **NOTE** : This have to be hard-coded because of this https://jira.spring.io/browse/SPR-5757 Once the issue
@@ -68,15 +68,17 @@ public class FileManager extends BaseFileManager {
      * @param response servlet response
      * 
      * @return
+     * @throws Exception 
      */
+    @Override
     @RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody
-    Object extJSbrowser(@RequestParam(value = "action", required = false) String action,
+    public @ResponseBody Object extJSbrowser(
+            @RequestParam(value = "action", required = false) String action,
             @RequestParam(value = "folder", required = false) String folder,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "oldName", required = false) String oldName,
-            @RequestParam(value = "file", required = false) String file,
-            HttpServletRequest request, HttpServletResponse response) {
+            @RequestParam(value = "file", required = false) String file, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
 
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
 
@@ -93,6 +95,7 @@ public class FileManager extends BaseFileManager {
      * @return
      * @throws IOException
      */
+    @Override
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     public void upload(@RequestParam MultipartFile file,
             @RequestParam(required = false, defaultValue = "uploadedFile") String name,
@@ -111,6 +114,7 @@ public class FileManager extends BaseFileManager {
      * @param file to be downloaded
      * @param resp servlet response
      */
+    @Override
     @RequestMapping(value = "download", method = { RequestMethod.POST, RequestMethod.GET })
     public void downloadFile(@RequestParam(value = "folder", required = false) String folder,
             @RequestParam(value = "file", required = true) String file, HttpServletResponse resp) {

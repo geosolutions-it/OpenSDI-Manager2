@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
@@ -30,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
 
 /**
  * HostChecker class for host check.
@@ -60,6 +60,7 @@ public class HostChecker extends AbstractProxyCallback implements ProxyCallback 
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         Set<String> hosts = config.getHostsWhitelist();
@@ -72,8 +73,8 @@ public class HostChecker extends AbstractProxyCallback implements ProxyCallback 
             String host = getRemoteAddr(request);
 
             if (!hosts.contains(host)) {
-                throw new HttpErrorException(403, "Client Host " + host
-                        + " is not among the ones allowed for this proxy");
+                throw new HttpErrorException(403,
+                        "Client Host " + host + " is not among the ones allowed for this proxy");
             }
         }
     }
@@ -83,6 +84,7 @@ public class HostChecker extends AbstractProxyCallback implements ProxyCallback 
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
     }
 
@@ -91,6 +93,7 @@ public class HostChecker extends AbstractProxyCallback implements ProxyCallback 
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

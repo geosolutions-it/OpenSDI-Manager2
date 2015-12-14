@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
@@ -30,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
 
 /**
  * MimeTypeChecker class for the mimetype check.
@@ -59,6 +59,7 @@ public class MimeTypeChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
     }
@@ -68,6 +69,7 @@ public class MimeTypeChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
         Set<String> mimeTypes = config.getMimetypeWhitelist();
 
@@ -92,6 +94,7 @@ public class MimeTypeChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

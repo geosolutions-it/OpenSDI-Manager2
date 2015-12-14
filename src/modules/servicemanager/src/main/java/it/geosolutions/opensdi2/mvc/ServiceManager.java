@@ -20,20 +20,6 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.geobatch.mariss.dao.ServiceDAO;
-import it.geosolutions.geobatch.mariss.model.AreaOfInterest;
-import it.geosolutions.geobatch.mariss.model.Sensor;
-import it.geosolutions.geobatch.mariss.model.SensorMode;
-import it.geosolutions.geobatch.mariss.model.Service;
-import it.geosolutions.httpproxy.callback.ProxyCallback;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.httpproxy.utils.ProxyInfo;
-import it.geosolutions.opensdi2.config.FileManagerConfig;
-import it.geosolutions.opensdi2.config.FolderPermission;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-import it.geosolutions.opensdi2.utils.ResponseConstants;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,13 +31,16 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -60,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jettison.json.JSONArray;
@@ -74,6 +64,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import it.geosolutions.geobatch.mariss.dao.ServiceDAO;
+import it.geosolutions.geobatch.mariss.model.AreaOfInterest;
+import it.geosolutions.geobatch.mariss.model.Product;
+import it.geosolutions.geobatch.mariss.model.Sensor;
+import it.geosolutions.geobatch.mariss.model.SensorMode;
+import it.geosolutions.geobatch.mariss.model.Service;
+import it.geosolutions.httpproxy.callback.ProxyCallback;
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
+import it.geosolutions.opensdi2.config.FileManagerConfig;
+import it.geosolutions.opensdi2.config.FolderPermission;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
+import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 /**
  * Controller for the service file manager.
@@ -175,9 +180,10 @@ public class ServiceManager extends BaseFileManager {
      */
     @Resource(name = "serviceManagerProxy")
     public void setProxyService(ProxyService proxyService) {
-        
+
         callback = new ProxyCallback() {
             String user;
+
             String service;
 
             @Override
@@ -187,6 +193,7 @@ public class ServiceManager extends BaseFileManager {
             /**
              * On request we save current call
              */
+            @Override
             public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
                     throws IOException {
                 service = request.getParameter("service");
@@ -196,8 +203,11 @@ public class ServiceManager extends BaseFileManager {
             /**
              * On remote response we download the files and manipulate it
              */
+            @Override
             public void onRemoteResponse(HttpMethod method) throws IOException {
-                LOGGER.debug(" [serviceManagerProxy] --------------- onRemoteResponse --------------- (downloadMethod): ("+downloadMethod+")");
+                LOGGER.debug(
+                        " [serviceManagerProxy] --------------- onRemoteResponse --------------- (downloadMethod): ("
+                                + downloadMethod + ")");
                 if (METHOD_CONFIRMED_ACQ_PLAN.endsWith(downloadMethod)) {
                     downloadConfirmedAcqPLan(method);
                 } else {
@@ -277,7 +287,7 @@ public class ServiceManager extends BaseFileManager {
                     // File channel to append bytes
                     @SuppressWarnings("resource")
                     FileChannel channel = new FileOutputStream(tmpFile, true).getChannel();
-                    ByteBuffer buf = ByteBuffer.allocateDirect((int) bytes.length);
+                    ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
 
                     // put bytes
                     buf.put(bytes);
@@ -326,26 +336,61 @@ public class ServiceManager extends BaseFileManager {
      * @param response servlet response
      * 
      * @return
+     * @throws Exception
      */
+    @Override
     @RequestMapping(value = "extJSbrowser", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody
-    Object extJSbrowser(@RequestParam(value = "action", required = false) String action,
+    public @ResponseBody Object extJSbrowser(
+            @RequestParam(value = "action", required = false) String action,
             @RequestParam(value = "folder", required = false) String folder,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "oldName", required = false) String oldName,
-            @RequestParam(value = "file", required = false) String file,
-            HttpServletRequest request, HttpServletResponse response) {
+            @RequestParam(value = "file", required = false) String file, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
 
         String finalFolder = folder != null && !folder.equals("root") ? folder : null;
         Integer level = folder != null ? folder.split(ControllerUtils.SEPARATOR).length - 1 : 0;
 
-        if (EXTJS_FOLDER_NEW.equals(action)) {
+        LOGGER.debug(action + " -- " + finalFolder + " -- " + level + " -- " + folder);
+
+        if (EXTJS_FOLDER_NEW.equals(action) || EXTJS_FOLDER_DEL.equals(action)
+                || EXTJS_FILE_DELETE.equals(action)) {
             if (finalFolder != null && level == 2) {
-                String serviceId = FilenameUtils.getName(finalFolder);
-                String parent = FilenameUtils.getFullPathNoEndSeparator(finalFolder);
-                String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1] : null;
-                if (serviceDAO.findByServiceId(serviceId) == null) {
+                final String serviceId = FilenameUtils.getName(finalFolder);
+                final String parent = FilenameUtils.getFullPathNoEndSeparator(finalFolder);
+                final String user = folder != null ? folder.split(ControllerUtils.SEPARATOR)[1]
+                        : null;
+
+                final Service service = serviceDAO.findByServiceId(serviceId);
+
+                if (service == null && EXTJS_FOLDER_NEW.equals(action)) {
                     serviceDAO.insert(new Service(serviceId, parent, user, "NEW"));
+                } else if (service != null
+                        && (EXTJS_FOLDER_DEL.equals(action) || EXTJS_FILE_DELETE.equals(action))) {
+                    try {
+                        LOGGER.info("Delete all entries from DB for " + serviceId);
+                        if (LOGGER.isDebugEnabled()) {
+                            for (Entry<String, String> entry : fileManagerConfig
+                                    .getServiceAuxiliaryTables().entrySet()) {
+                                LOGGER.debug(entry.getKey() + " = " + entry.getValue());
+                            }
+                        }
+                        boolean result = serviceDAO.delete(serviceId,
+                                fileManagerConfig.getServiceAuxiliaryTables());
+
+                        if (result) {
+                            purgeServiceIngestedProductFiles(service);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Error occurred while trying to remove Service " + serviceId,
+                                e);
+                    }
+                } else {
+                    LOGGER.error("The folder cannot be created since a service id with the name "
+                            + serviceId + " already exists");
+                    throw new Exception(
+                            "The folder cannot be created since a service id with the name "
+                                    + serviceId + " already exists");
                 }
             }
         } else if (EXTJS_FILE_DOWNLOAD.equals(action)) {
@@ -376,6 +421,205 @@ public class ServiceManager extends BaseFileManager {
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
     }
 
+    @RequestMapping(value = "getServicesList", method = { RequestMethod.GET })
+    public @ResponseBody Object getServicesList(
+            @RequestParam(value = "userid", required = false) String userid,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        if (userid != null) {
+            return getDetailedServicesListForUser(userid);
+        }
+
+        return new ArrayList<Map<String, Object>>();
+    }
+
+    @RequestMapping(value = "getServiceDetails", method = { RequestMethod.GET })
+    public @ResponseBody Object getServiceDetails(
+            @RequestParam(value = "serviceid", required = false) String serviceid,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        if (serviceid != null) {
+            return getDetailedServiceById(serviceid, true);
+        }
+
+        return new HashMap<String, Object>();
+    }
+
+    @RequestMapping(value = "getServiceStatus", method = { RequestMethod.GET })
+    public @ResponseBody Object getServiceStatus(
+            @RequestParam(value = "serviceid", required = false) String serviceid,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        if (serviceid != null) {
+            final Service service = serviceDAO.findByServiceId(serviceid);
+
+            final String status = service.getStatus();
+
+            Map<String, Object> rootElement = new HashMap<String, Object>();
+
+            rootElement.put("serviceId", serviceid);
+            rootElement.put("status", status);
+
+            return rootElement;
+        }
+
+        return new HashMap<String, Object>();
+    }
+
+    @RequestMapping(value = "setServiceStatus", method = { RequestMethod.PUT, RequestMethod.POST })
+    public @ResponseBody Object setServiceStatus(
+            @RequestParam(value = "serviceid", required = false) String serviceid,
+            @RequestParam(value = "status", required = false) String status,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        if (serviceid != null && status != null) {
+            final Service service = serviceDAO.findByServiceId(serviceid);
+
+            final String oldStatus = service.getStatus();
+
+            boolean result = serviceDAO.updateServiceStatus(service, status);
+
+            Map<String, Object> rootElement = new HashMap<String, Object>();
+
+            rootElement.put("serviceId", serviceid);
+            rootElement.put("oldStatus", oldStatus);
+            rootElement.put("newStatus", status);
+            rootElement.put("result", result);
+
+            return rootElement;
+        }
+
+        return new HashMap<String, Object>();
+    }
+
+    /**
+     * 
+     * @param serviceid
+     * @param detailed
+     * @return
+     */
+    protected Map<String, Object> getDetailedServiceById(String serviceid, boolean detailed) {
+        Map<String, Object> rootElement = new HashMap<String, Object>();
+
+        Service service = serviceDAO.findByServiceId(serviceid);
+        
+        if (service != null) {
+            rootElement.put("serviceId", service.getServiceId());
+            rootElement.put("userId", service.getUser());
+            rootElement.put("status", service.getStatus());
+            rootElement.put("parent", service.getParent());
+
+            // AOIs
+            if (service.getAoi() != null) {
+                AreaOfInterest aoi = service.getAoi();
+                rootElement.put("aoiStartTime", aoi.getStartTime());
+                rootElement.put("aoiEndTime", aoi.getEndTime());
+                rootElement.put("aoiGeometry", aoi.getTheGeom());
+                rootElement.put("aoiStatus", aoi.getStatus());
+                rootElement.put("aoiDescription", aoi.getDescription());
+            }
+
+            if (detailed) {
+                // Sensors
+                if (service.getSensors() != null) {
+                    List<Sensor> sensors = service.getSensors();
+                    List<Map<String, Object>> sensorsDocument = new ArrayList<Map<String, Object>>();
+                    for (Sensor sensor : sensors) {
+                        Map<String, Object> sensorElement = new HashMap<String, Object>();
+
+                        sensorElement.put("sensor", sensor.getSensor());
+                        sensorElement.put("sensorMode", sensor.getSensorMode().getSensorMode());
+
+                        sensorsDocument.add(sensorElement);
+                    }
+
+                    rootElement.put("sensors", sensorsDocument);
+                }
+
+                // Products
+                if (service.getSensors() != null) {
+                    List<Product> products = service.getProducts();
+                    List<Map<String, Object>> productsDocument = new ArrayList<Map<String, Object>>();
+
+                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+                    for (Product product : products) {
+                        Map<String, Object> productElement = new HashMap<String, Object>();
+
+                        productElement.put("product", product.getIdentifier());
+                        productElement.put("bbox", product.getGeometry());
+                        productElement.put("time",
+                                (product.getTime() != null ? sdf.format(product.getTime()) : ""));
+                        productElement.put("variable", product.getVariable());
+                        productElement.put("sarType", product.getSarType());
+                        productElement.put("partition", product.getPartition());
+                        productElement.put("layerName", product.getLayerName());
+                        productElement.put("numOilSpill", product.getNumOilSpill());
+                        productElement.put("numShipDetection", product.getNumShipDetect());
+                        productElement.put("outFileLocation", product.getOutFileLocation());
+                        productElement.put("originalFilePath", product.getOriginalFilePath());
+
+                        productsDocument.add(productElement);
+                    }
+
+                    rootElement.put("products", productsDocument);
+                }
+            }
+        }
+        
+        return rootElement;
+    }
+    
+    /**
+     * 
+     * @param userid
+     * @return
+     */
+    protected List<Map<String, Object>> getDetailedServicesListForUser(String userid) {
+
+        List<Service> services = this.serviceDAO.findByUser(userid);
+        List<Map<String, Object>> servicesList = new LinkedList<Map<String, Object>>();
+
+        // write operations available
+        for (Service service : services) {
+            servicesList.add(getDetailedServiceById(service.getServiceId(), false));
+        }
+
+        return servicesList;
+    }
+
+    /**
+     * @param serviceId
+     * @param service
+     */
+    protected void purgeServiceIngestedProductFiles(final Service service) {
+        final String serviceId = service.getServiceId();
+
+        LOGGER.info("Cleanup all ingested products files for " + serviceId);
+
+        for (Product prod : service.getProducts()) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Remove file " + prod.getOriginalFilePath());
+                LOGGER.debug("Remove file " + prod.getOutFileLocation());
+            }
+
+            try {
+                FileUtils.forceDelete(new File(prod.getOriginalFilePath()));
+            } catch (Exception e) {
+                LOGGER.warn("Could not remove the file [" + prod.getOriginalFilePath()
+                        + "] for Service " + serviceId + " --> " + e.getLocalizedMessage());
+            }
+
+            try {
+                FileUtils.forceDelete(new File(prod.getOutFileLocation()));
+            } catch (Exception e) {
+                LOGGER.warn("Could not remove the file [" + prod.getOutFileLocation()
+                        + "] for Service " + serviceId + " --> " + e.getLocalizedMessage());
+            }
+        }
+    }
+
     /**
      * Download a confirmed AOI to target folder
      * 
@@ -386,8 +630,8 @@ public class ServiceManager extends BaseFileManager {
      * @return
      */
     @RequestMapping(value = "confirmServiceAOI", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody
-    Object confirmService(@RequestParam(value = "user", required = true) String user,
+    public @ResponseBody Object confirmService(
+            @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "service", required = true) String service,
             HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
@@ -395,9 +639,7 @@ public class ServiceManager extends BaseFileManager {
         try {
             if (checkUserAndService(user, service, METHOD_CONFIRMED_AOI)) {
                 downloadMethod = METHOD_CONFIRMED_AOI;
-                System.out.println(" --------------------------->>>> " + downloadMethod);
                 proxyService.execute(request, new MockHttpServletResponse());
-                System.out.println(" --------------------------->>>> " + "proxyService.execute " + proxyService.getClass().getCanonicalName());
                 response.put(ResponseConstants.SUCCESS, true);
 
                 Service dbService = this.serviceDAO.findByServiceId(service);
@@ -425,8 +667,8 @@ public class ServiceManager extends BaseFileManager {
      */
     @RequestMapping(value = "confirmServiceAcqPlan", method = { RequestMethod.GET,
             RequestMethod.POST })
-    public @ResponseBody
-    Object confirmServiceAcqPlan(@RequestParam(value = "user", required = true) String user,
+    public @ResponseBody Object confirmServiceAcqPlan(
+            @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "service", required = true) String service,
             HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
@@ -462,8 +704,8 @@ public class ServiceManager extends BaseFileManager {
      */
     @RequestMapping(value = "putServiceSensorsList", method = { RequestMethod.GET,
             RequestMethod.POST })
-    public @ResponseBody
-    Object putServiceSensorsList(@RequestParam(value = "user", required = true) String user,
+    public @ResponseBody Object putServiceSensorsList(
+            @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "service", required = true) String service,
             HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
@@ -488,8 +730,8 @@ public class ServiceManager extends BaseFileManager {
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
-                sensors.add(new Sensor(item.getString("sensor_type"), new SensorMode(item
-                        .getString("sensor_mode"))));
+                sensors.add(new Sensor(item.getString("sensor_type"),
+                        new SensorMode(item.getString("sensor_mode"))));
             }
 
             this.serviceDAO.insertOrUpdate(service, sensors);
@@ -523,23 +765,27 @@ public class ServiceManager extends BaseFileManager {
                         + File.separator + service)).exists();
 
                 if (METHOD_CONFIRMED_AOI.equals(method)) {
-                    final File ftp_folder = new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + ACQ_LIST_FOLDER);
+                    final File ftp_folder = new File(
+                            fileManagerConfig.getBaseFolder() + File.separator + user
+                                    + File.separator + service + File.separator + ACQ_LIST_FOLDER);
                     checked = ftp_folder.mkdirs();
                     try {
-                        chkmod_all(ftp_folder);                            
+                        chkmod_all(ftp_folder);
                     } catch (IOException e) {
-                        LOGGER.warn("Could not set folder permissions properly for folder: " + ftp_folder.getAbsolutePath(), e);
+                        LOGGER.warn("Could not set folder permissions properly for folder: "
+                                + ftp_folder.getAbsolutePath(), e);
                     }
                 } else if (METHOD_CONFIRMED_ACQ_PLAN.equals(method)) {
-                    final File ftp_folder = new File(fileManagerConfig.getBaseFolder() + File.separator + user
-                            + File.separator + service + File.separator + PRODUCTS_FOLDER);
+                    final File ftp_folder = new File(
+                            fileManagerConfig.getBaseFolder() + File.separator + user
+                                    + File.separator + service + File.separator + PRODUCTS_FOLDER);
                     checked = ftp_folder.mkdirs();
                     if (checked) {
                         try {
-                            chkmod_all(ftp_folder);                            
+                            chkmod_all(ftp_folder);
                         } catch (IOException e) {
-                            LOGGER.warn("Could not set folder permissions properly for folder: " + ftp_folder.getAbsolutePath(), e);
+                            LOGGER.warn("Could not set folder permissions properly for folder: "
+                                    + ftp_folder.getAbsolutePath(), e);
                         }
                     }
                 }
@@ -553,7 +799,7 @@ public class ServiceManager extends BaseFileManager {
     /**
      * 
      * @param ftp_folder
-     * @throws IOException 
+     * @throws IOException
      */
     private void chkmod_all(File ftp_folder) throws IOException {
         // using PosixFilePermission to set file permissions 777
@@ -585,6 +831,7 @@ public class ServiceManager extends BaseFileManager {
      * @return
      * @throws IOException
      */
+    @Override
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     public void upload(@RequestParam MultipartFile file,
             @RequestParam(required = false, defaultValue = "uploadedFile") String name,
@@ -608,6 +855,7 @@ public class ServiceManager extends BaseFileManager {
      * @param file to be downloaded
      * @param resp servlet response
      */
+    @Override
     @RequestMapping(value = "download", method = { RequestMethod.POST, RequestMethod.GET })
     public void downloadFile(@RequestParam(value = "folder", required = false) String folder,
             @RequestParam(value = "file", required = true) String file, HttpServletResponse resp) {

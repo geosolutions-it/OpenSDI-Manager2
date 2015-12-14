@@ -19,12 +19,6 @@
  */
 package it.geosolutions.httpproxy.service.impl;
 
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.service.ProxyHelper;
-import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.httpproxy.utils.HttpMethods;
-import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -38,6 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Repository;
+
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.service.ProxyHelper;
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.httpproxy.utils.HttpMethods;
+import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
 
 /**
  * Proxy helper implementation. This implementation loads a PropertyConfiguration from Spring context to the proxy config
@@ -58,6 +58,7 @@ public class ProxyHelperImpl implements ProxyHelper {
      * 
      * @param proxy to be initialized
      */
+    @Override
     public void initProxy(ProxyService proxy) {
         this.initProxy(proxy, null);
     }
@@ -68,6 +69,7 @@ public class ProxyHelperImpl implements ProxyHelper {
      * @param proxy to be initialized
      * @param context of the proxy
      */
+    @Override
     public void initProxy(ProxyService proxy, ServletContext context) {
         proxy.setProxyConfig(proxyConfig);
     }
@@ -84,9 +86,10 @@ public class ProxyHelperImpl implements ProxyHelper {
      * @throws IOException
      * @throws ServletException
      */
+    @Override
     public ProxyMethodConfig prepareProxyMethod(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse, ProxyService proxy) throws IOException,
-            ServletException {
+            HttpServletResponse httpServletResponse, ProxyService proxy)
+                    throws IOException, ServletException {
         URL url = null;
         String user = null, password = null;
         Map<?, ?> pars;

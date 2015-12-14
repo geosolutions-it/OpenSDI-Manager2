@@ -22,9 +22,6 @@ package it.geosolutions.opensdi2.mvc;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +44,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import it.geosolutions.opensdi2.config.OpenSDIManagerConfigImpl;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
+import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 /**
  * Test class for FileManager
@@ -138,15 +139,20 @@ public class FileManagerTest {
     @Test
     public void testFileList() {
         HttpServletResponse response = new MockHttpServletResponse();
-        Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null,
-                null, new MockHttpServletRequest(), response);
-        if (jsonResp != null && jsonResp instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> json = (Map<String, Object>) jsonResp;
-            Object objCount = json.get(ResponseConstants.COUNT);
-            assertTrue(objCount instanceof Integer);
-            assertTrue(((Integer) objCount) == (files + folders));
-        } else {
+        Object jsonResp;
+        try {
+            jsonResp = fileManager.extJSbrowser(BaseFileManager.EXTJS_FILE_LIST, null, null, null,
+                    null, new MockHttpServletRequest(), response);
+            if (jsonResp != null && jsonResp instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> json = (Map<String, Object>) jsonResp;
+                Object objCount = json.get(ResponseConstants.COUNT);
+                assertTrue(objCount instanceof Integer);
+                assertTrue(((Integer) objCount) == (files + folders));
+            } else {
+                fail("Not valid response");
+            }
+        } catch (Exception e) {
             fail("Not valid response");
         }
     }
@@ -158,18 +164,28 @@ public class FileManagerTest {
     public void testFileDeleteFiles() {
         HttpServletResponse response = new MockHttpServletResponse();
         for (File file : currentFiles) {
-            fileManager.extJSbrowser(FileManager.EXTJS_FILE_DELETE, null, file.getName(), null,
-                    null, new MockHttpServletRequest(), response);
+            try {
+                fileManager.extJSbrowser(BaseFileManager.EXTJS_FILE_DELETE, null, file.getName(), null,
+                        null, new MockHttpServletRequest(), response);
+            } catch (Exception e) {
+                fail("Not valid response");
+            }
         }
-        Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null,
-                null, new MockHttpServletRequest(), response);
-        if (jsonResp != null && jsonResp instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> json = (Map<String, Object>) jsonResp;
-            Object objCount = json.get(ResponseConstants.COUNT);
-            assertTrue(objCount instanceof Integer);
-            assertTrue(((Integer) objCount) == folders);
-        } else {
+        
+        Object jsonResp;
+        try {
+            jsonResp = fileManager.extJSbrowser(BaseFileManager.EXTJS_FILE_LIST, null, null, null,
+                    null, new MockHttpServletRequest(), response);
+            if (jsonResp != null && jsonResp instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> json = (Map<String, Object>) jsonResp;
+                Object objCount = json.get(ResponseConstants.COUNT);
+                assertTrue(objCount instanceof Integer);
+                assertTrue(((Integer) objCount) == folders);
+            } else {
+                fail("Not valid response");
+            }
+        } catch (Exception e) {
             fail("Not valid response");
         }
     }
@@ -181,18 +197,27 @@ public class FileManagerTest {
     public void testFileDeleteFolder() {
         HttpServletResponse response = new MockHttpServletResponse();
         for (File file : currentFolders) {
-            fileManager.extJSbrowser(FileManager.EXTJS_FOLDER_DEL, file.getName(), null, null,
-                    null, new MockHttpServletRequest(), response);
+            try {
+                fileManager.extJSbrowser(BaseFileManager.EXTJS_FOLDER_DEL, file.getName(), null, null, null,
+                        new MockHttpServletRequest(), response);
+            } catch (Exception e) {
+                fail("Not valid response");
+            }
         }
-        Object jsonResp = fileManager.extJSbrowser(FileManager.EXTJS_FILE_LIST, null, null, null,
-                null, new MockHttpServletRequest(), response);
-        if (jsonResp != null && jsonResp instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> json = (Map<String, Object>) jsonResp;
-            Object objCount = json.get(ResponseConstants.COUNT);
-            assertTrue(objCount instanceof Integer);
-            assertTrue(((Integer) objCount) == files);
-        } else {
+        Object jsonResp;
+        try {
+            jsonResp = fileManager.extJSbrowser(BaseFileManager.EXTJS_FILE_LIST, null, null, null,
+                    null, new MockHttpServletRequest(), response);
+            if (jsonResp != null && jsonResp instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> json = (Map<String, Object>) jsonResp;
+                Object objCount = json.get(ResponseConstants.COUNT);
+                assertTrue(objCount instanceof Integer);
+                assertTrue(((Integer) objCount) == files);
+            } else {
+                fail("Not valid response");
+            }
+        } catch (Exception e) {
             fail("Not valid response");
         }
     }

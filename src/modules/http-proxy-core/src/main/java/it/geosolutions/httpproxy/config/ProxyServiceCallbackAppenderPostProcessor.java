@@ -19,13 +19,13 @@
  */
 package it.geosolutions.httpproxy.config;
 
-import it.geosolutions.httpproxy.callback.ProxyCallback;
-import it.geosolutions.httpproxy.service.ProxyService;
-
 import java.util.List;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+
+import it.geosolutions.httpproxy.callback.ProxyCallback;
+import it.geosolutions.httpproxy.service.ProxyService;
 
 /**
  * This post processor append a list of callbacks {@link #callbacksToAdd} to a specific proxy (by {@link #beanName}) or to all proxy instances in the
@@ -73,6 +73,7 @@ public class ProxyServiceCallbackAppenderPostProcessor implements BeanPostProces
      * 
      * @see BeanPostProcessor#postProcessBeforeInitialization(Object, String)
      */
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName)
             throws BeansException {
         return bean;

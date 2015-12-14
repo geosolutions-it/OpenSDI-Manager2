@@ -4,9 +4,6 @@
  */
 package it.geosolutions.servicebox.geoservices;
 
-import it.geosolutions.servicebox.ServiceBoxActionParameters;
-import it.geosolutions.servicebox.ServiceBoxActionServlet;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +40,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.geosolutions.servicebox.ServiceBoxActionParameters;
+import it.geosolutions.servicebox.ServiceBoxActionServlet;
 
 /**
  * 
@@ -106,6 +106,7 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
     }
 
+    @Override
     protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
@@ -119,8 +120,8 @@ public class KMZUploader extends ServiceBoxActionServlet {
             BufferedReader br = null;
             PrintWriter writer = null;
             try {
-                file = new File(tempDirectory + File.separatorChar + code + File.separatorChar
-                        + filename);
+                file = new File(
+                        tempDirectory + File.separatorChar + code + File.separatorChar + filename);
                 br = new BufferedReader(new FileReader(file));
                 writer = response.getWriter();
                 String line = null;
@@ -132,9 +133,8 @@ public class KMZUploader extends ServiceBoxActionServlet {
                     LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
                 }
                 response.setContentType("text/html");
-                writeResponse(response,
-                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
-                                + "\"}");
+                writeResponse(response, "{ \"success\":false, \"errorMessage\":\""
+                        + ex.getLocalizedMessage() + "\"}");
             } finally {
                 try {
                     br.close();
@@ -280,8 +280,8 @@ public class KMZUploader extends ServiceBoxActionServlet {
 
                                         newFileName = "new_" + fileName;
                                         kmlFileName = uuid + File.separatorChar + newFileName;
-                                        File newFile = new File(tempDirectory + File.separatorChar
-                                                + kmlFileName);
+                                        File newFile = new File(
+                                                tempDirectory + File.separatorChar + kmlFileName);
                                         fos = new FileOutputStream(newFile);
 
                                         TransformerFactory tFactory = TransformerFactory
@@ -350,9 +350,8 @@ public class KMZUploader extends ServiceBoxActionServlet {
                 }
 
                 response.setContentType("text/html");
-                writeResponse(response,
-                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
-                                + "\"}");
+                writeResponse(response, "{ \"success\":false, \"errorMessage\":\""
+                        + ex.getLocalizedMessage() + "\"}");
             } finally {
                 // do nothing
             }

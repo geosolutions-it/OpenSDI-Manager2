@@ -20,9 +20,9 @@
  */
 package it.geosolutions.opensdi2.config;
 
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-
 import java.io.Serializable;
+
+import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 /**
  * Base configuration for OpenSDI-Manager2 This bean could centralize all common configuration
@@ -33,8 +33,8 @@ import java.io.Serializable;
 public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerConfig {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 4107456302675180556L;
 
     private String baseFolder;
@@ -42,6 +42,7 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
     /**
      * @return base folder for the application
      */
+    @Override
     public String getBaseFolder() {
         return baseFolder;
     }
@@ -53,9 +54,8 @@ public class OpenSDIManagerConfigImpl implements Serializable, OpenSDIManagerCon
      */
     public void setBaseFolder(String baseFolder) {
         this.baseFolder = baseFolder;
-        if (this.baseFolder != null
-                && this.baseFolder.lastIndexOf(ControllerUtils.SEPARATOR) != this.baseFolder
-                        .length() - 1) {
+        if (this.baseFolder != null && this.baseFolder
+                .lastIndexOf(ControllerUtils.SEPARATOR) != this.baseFolder.length() - 1) {
             this.baseFolder += ControllerUtils.SEPARATOR;
         }
     }

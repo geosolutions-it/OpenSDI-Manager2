@@ -19,8 +19,6 @@
  */
 package it.geosolutions.httpproxy.service;
 
-import it.geosolutions.httpproxy.callback.ProxyCallback;
-
 import java.io.IOException;
 import java.net.URL;
 
@@ -29,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.callback.ProxyCallback;
 
 /**
  * Proxy common interface

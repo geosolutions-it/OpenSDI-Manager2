@@ -1,7 +1,5 @@
 package it.geosolutions.servicebox;
 
-import it.geosolutions.servicebox.utils.IOUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import it.geosolutions.servicebox.utils.IOUtil;
 
 /**
  * HTTPWebGISFileDownload class.
@@ -46,6 +46,7 @@ public class HTTPWebGISFileDownload extends HttpServlet {
      * 
      * @param servletConfig The Servlet configuration passed in by the servlet container
      */
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
@@ -80,11 +81,12 @@ public class HTTPWebGISFileDownload extends HttpServlet {
      * 
      *        Used for download a file saved from the temp directory
      */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        String fileName = (String) request.getParameter("file");
-        String outFileName = (String) request.getParameter("fileName");
+        String fileName = request.getParameter("file");
+        String outFileName = request.getParameter("fileName");
         String temp = this.props.getProperty("temp");
         String filePath = temp + "/" + fileName;
 
@@ -139,6 +141,7 @@ public class HTTPWebGISFileDownload extends HttpServlet {
      * 
      *        used to save the xml file in a temp directory.
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -162,19 +165,17 @@ public class HTTPWebGISFileDownload extends HttpServlet {
 
                 response.setContentType("text/plain");
                 response.setContentType("application/force-download");
-                if (request.getQueryString() == null
-                        || (request.getQueryString() != null && !request.getQueryString().contains(
-                                "filename")))
+                if (request.getQueryString() == null || (request.getQueryString() != null
+                        && !request.getQueryString().contains("filename")))
                     response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
                 else {
                     int fileNameIndex = request.getQueryString().indexOf("filename")
                             + "filename=".length();
                     String reqfilename = request.getQueryString().substring(fileNameIndex);
-                    reqfilename = reqfilename.substring(
-                            0,
-                            reqfilename.indexOf('&') > 0 ? reqfilename.indexOf('&') : reqfilename
-                                    .length());
-                    response.setHeader("Content-Disposition", "attachment; filename=" + reqfilename);
+                    reqfilename = reqfilename.substring(0, reqfilename.indexOf('&') > 0
+                            ? reqfilename.indexOf('&') : reqfilename.length());
+                    response.setHeader("Content-Disposition",
+                            "attachment; filename=" + reqfilename);
                 }
 
                 out = response.getWriter();
@@ -211,8 +212,8 @@ public class HTTPWebGISFileDownload extends HttpServlet {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void returnFile(String filename, Writer out) throws FileNotFoundException,
-            IOException {
+    public static void returnFile(String filename, Writer out)
+            throws FileNotFoundException, IOException {
         Reader in = null;
 
         try {

@@ -52,6 +52,7 @@ public class RequestTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         Set<String> reqTypes = config.getReqtypeWhitelist();
@@ -83,8 +84,8 @@ public class RequestTypeChecker implements ProxyCallback {
             }
 
             if (!check)
-                throw new HttpErrorException(403, "Request Type"
-                        + " is not among the ones allowed for this proxy");
+                throw new HttpErrorException(403,
+                        "Request Type" + " is not among the ones allowed for this proxy");
         }
     }
 
@@ -93,6 +94,7 @@ public class RequestTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
     }
 
@@ -101,6 +103,7 @@ public class RequestTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

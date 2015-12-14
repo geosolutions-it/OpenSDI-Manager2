@@ -20,8 +20,6 @@
  */
 package it.geosolutions.servicebox;
 
-import it.geosolutions.servicebox.utils.Utilities;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -35,11 +33,12 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import it.geosolutions.servicebox.utils.Utilities;
+import net.sf.json.JSONObject;
 
 /**
  * File upload callback. Limit the files to be uploaded
@@ -50,8 +49,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class FileUploadCallback implements Serializable, Callback {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = -8442796981472140058L;
 
     private final static Logger LOGGER = Logger.getLogger(FileUploadCallback.class.toString());
@@ -68,9 +67,10 @@ public class FileUploadCallback implements Serializable, Callback {
      * 
      * @throws IOException
      */
+    @Override
     public ServiceBoxActionParameters onGet(HttpServletRequest request,
             HttpServletResponse response, ServiceBoxActionParameters callbackResult)
-            throws IOException {
+                    throws IOException {
         return onPost(request, response, callbackResult);
     }
 
@@ -84,10 +84,11 @@ public class FileUploadCallback implements Serializable, Callback {
      * 
      * @throws IOException
      */
+    @Override
     @SuppressWarnings("unchecked")
     public ServiceBoxActionParameters onPost(HttpServletRequest request,
             HttpServletResponse response, ServiceBoxActionParameters callbackResult)
-            throws IOException {
+                    throws IOException {
 
         // Get items if already initialized
         List<FileItem> items = null;
@@ -110,7 +111,6 @@ public class FileUploadCallback implements Serializable, Callback {
             if (items == null && ServletFileUpload.isMultipartContent(request) && tempDir != null
                     && tempDir.exists()) {
                 // items are not initialized. Read it from the request
-
                 DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
 
                 /*
@@ -129,12 +129,10 @@ public class FileUploadCallback implements Serializable, Callback {
                  * Parse the request
                  */
                 items = uploadHandler.parseRequest(request);
-
             }
 
             // Read items
             if (items != null) {
-
                 itemSize = items.size();
                 callbackResult.setItems(items);
                 if (itemSize <= this.callbackConfiguration.getMaxItems()) {
@@ -149,9 +147,8 @@ public class FileUploadCallback implements Serializable, Callback {
                             } else if (this.callbackConfiguration.getFileTypePatterns() != null) {
                                 fileTypeMatch = false;
                                 int index = 0;
-                                while (!fileTypeMatch
-                                        && index < this.callbackConfiguration.getFileTypePatterns()
-                                                .size()) {
+                                while (!fileTypeMatch && index < this.callbackConfiguration
+                                        .getFileTypePatterns().size()) {
                                     Pattern pattern = this.callbackConfiguration
                                             .getFileTypePatterns().get(index++);
                                     fileTypeMatch = pattern.matcher(itemName).matches();
@@ -180,7 +177,6 @@ public class FileUploadCallback implements Serializable, Callback {
             jsonObj.put("errorMessage", ex.getLocalizedMessage());
 
             Utilities.writeResponse(response, jsonObj.toString(), LOGGER);
-
         }
 
         // prepare and send error if exists

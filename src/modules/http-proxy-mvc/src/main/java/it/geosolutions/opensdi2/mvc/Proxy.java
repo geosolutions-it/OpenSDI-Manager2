@@ -20,8 +20,6 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
-import it.geosolutions.httpproxy.service.ProxyService;
-
 import java.io.IOException;
 
 import javax.annotation.Resource;
@@ -33,6 +31,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import it.geosolutions.httpproxy.service.ProxyService;
 
 /**
  * Proxy controller for OpenSDI-Manager2
@@ -60,8 +60,8 @@ public class Proxy {
      * @throws IOException
      */
     @RequestMapping(value = "/", method = { RequestMethod.GET, RequestMethod.POST })
-    public void proxy(HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
+    public void proxy(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Calling proxy");

@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy;
 
-import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.httpproxy.service.impl.ProxyServiceImpl;
-
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -34,6 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.httpproxy.service.impl.ProxyServiceImpl;
 
 /**
  * HTTPProxy class. Now delegated in IProxyService
@@ -58,6 +58,7 @@ public class HTTPProxy extends HttpServlet {
      * 
      * @param servletConfig The Servlet configuration passed in by the servlet conatiner
      */
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
@@ -75,8 +76,9 @@ public class HTTPProxy extends HttpServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
-    public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    @Override
+    public void doGet(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException, ServletException {
         proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
@@ -86,6 +88,7 @@ public class HTTPProxy extends HttpServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
+    @Override
     public void doPost(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
         proxyService.execute(httpServletRequest, httpServletResponse);
@@ -97,8 +100,9 @@ public class HTTPProxy extends HttpServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
-    public void doPut(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    @Override
+    public void doPut(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException, ServletException {
         proxyService.execute(httpServletRequest, httpServletResponse);
     }
 
@@ -108,6 +112,7 @@ public class HTTPProxy extends HttpServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
+    @Override
     public void doDelete(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
         proxyService.execute(httpServletRequest, httpServletResponse);

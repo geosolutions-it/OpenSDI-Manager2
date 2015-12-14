@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -33,6 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
 
 /**
  * RequestTypeChecker class for request type check.
@@ -123,6 +123,7 @@ public class RequestTypeChecker extends AbstractProxyCallback implements ProxyCa
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         loadPatterns();
@@ -145,8 +146,8 @@ public class RequestTypeChecker extends AbstractProxyCallback implements ProxyCa
         }
 
         if (!check)
-            throw new HttpErrorException(403, "Request Type"
-                    + " is not among the ones allowed for this proxy");
+            throw new HttpErrorException(403,
+                    "Request Type" + " is not among the ones allowed for this proxy");
     }
 
     /*
@@ -154,6 +155,7 @@ public class RequestTypeChecker extends AbstractProxyCallback implements ProxyCa
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
     }
 
@@ -162,6 +164,7 @@ public class RequestTypeChecker extends AbstractProxyCallback implements ProxyCa
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

@@ -34,8 +34,8 @@ import java.util.regex.Pattern;
 public class FileUploadCallbackConfiguration implements Serializable {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = -3221221019219179718L;
 
     private long maxSize;

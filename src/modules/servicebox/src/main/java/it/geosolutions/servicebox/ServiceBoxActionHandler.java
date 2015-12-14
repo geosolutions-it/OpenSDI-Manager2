@@ -43,8 +43,8 @@ public interface ServiceBoxActionHandler {
      * 
      * @throws IOException
      */
-    public ServiceBoxActionParameters doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException;
+    public ServiceBoxActionParameters doGet(HttpServletRequest request,
+            HttpServletResponse response) throws IOException;
 
     /**
      * Handle a POST request

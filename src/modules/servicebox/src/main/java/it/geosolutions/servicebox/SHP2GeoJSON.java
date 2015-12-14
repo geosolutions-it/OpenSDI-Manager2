@@ -20,8 +20,6 @@
  */
 package it.geosolutions.servicebox;
 
-import it.geosolutions.servicebox.utils.GeoUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -34,6 +32,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+
+import it.geosolutions.servicebox.utils.GeoUtil;
 
 /**
  * Servlet implementation class SHP2GeoJSON. It serve a shape file in GeoJSON format
@@ -56,6 +56,7 @@ public class SHP2GeoJSON extends FileUploader {
      * @throws IOException
      * @throws ServletException
      */
+    @Override
     protected String readFileContents(HttpServletResponse response, String uuid)
             throws IOException, ServletException {
         StringBuilder content = new StringBuilder();
@@ -93,9 +94,8 @@ public class SHP2GeoJSON extends FileUploader {
 
             if (response != null) {
                 response.setContentType("text/html");
-                writeResponse(response,
-                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
-                                + "\"}");
+                writeResponse(response, "{ \"success\":false, \"errorMessage\":\""
+                        + ex.getLocalizedMessage() + "\"}");
             }
 
             return null;

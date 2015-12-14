@@ -20,10 +20,11 @@
  */
 package it.geosolutions.opensdi2.config;
 
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
+
+import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 /**
  * FileManagerConfig based on two maps:
@@ -35,12 +36,12 @@ import java.util.Map;
  * @author adiaz
  * 
  */
-public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl implements Serializable,
-        FileManagerConfig {
+public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl
+        implements Serializable, FileManagerConfig {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = -6199791588955305910L;
 
     /**
@@ -52,6 +53,11 @@ public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl implements S
      * Default permission for the folders
      */
     private FolderPermission defaultPermission;
+    
+    /**
+     * The list of tables and columns associated to the Service ID
+     */
+    private Map<String, String> serviceAuxiliaryTables = new HashMap<String, String> ();
 
     /**
      * Permissions by folder name
@@ -64,12 +70,27 @@ public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl implements S
     private Map<Integer, FolderPermission> permissionsByLevel;
 
     /**
+     * @return the serviceAuxiliaryTables
+     */
+    public Map<String, String> getServiceAuxiliaryTables() {
+        return serviceAuxiliaryTables;
+    }
+
+    /**
+     * @param serviceAuxiliaryTables the serviceAuxiliaryTables to set
+     */
+    public void setServiceAuxiliaryTables(Map<String, String> serviceAuxiliaryTables) {
+        this.serviceAuxiliaryTables = serviceAuxiliaryTables;
+    }
+
+    /**
      * Get folder permission
      * 
      * @param folder
      * 
      * @return permissions on the folder
      */
+    @Override
     public FolderPermission getPermission(String folder) {
         FolderPermission permission = defaultPermission;
         if (permissionsByFolder != null && permissionsByFolder.containsKey(folder)) {
@@ -148,6 +169,7 @@ public class FileManagerConfigImpl extends OpenSDIManagerConfigImpl implements S
     /**
      * @return the rootText
      */
+    @Override
     public String getRootText() {
         return rootText;
     }

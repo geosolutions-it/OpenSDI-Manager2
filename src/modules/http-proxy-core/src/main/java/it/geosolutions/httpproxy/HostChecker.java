@@ -49,6 +49,7 @@ public class HostChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         Set<String> hosts = config.getHostsWhitelist();
@@ -61,8 +62,8 @@ public class HostChecker implements ProxyCallback {
             String host = getRemoteAddr(request);
 
             if (!hosts.contains(host)) {
-                throw new HttpErrorException(403, "Client Host " + host
-                        + " is not among the ones allowed for this proxy");
+                throw new HttpErrorException(403,
+                        "Client Host " + host + " is not among the ones allowed for this proxy");
             }
         }
     }
@@ -72,6 +73,7 @@ public class HostChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
     }
 
@@ -80,6 +82,7 @@ public class HostChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

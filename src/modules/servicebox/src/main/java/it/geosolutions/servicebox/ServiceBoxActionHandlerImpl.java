@@ -46,8 +46,9 @@ public class ServiceBoxActionHandlerImpl implements ServiceBoxActionHandler {
      * 
      * @throws IOException
      */
-    public ServiceBoxActionParameters doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    @Override
+    public ServiceBoxActionParameters doGet(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
         ServiceBoxActionParameters callbackResult = null;
         if (callbacks != null) {
             for (Callback callback : callbacks) {
@@ -71,6 +72,7 @@ public class ServiceBoxActionHandlerImpl implements ServiceBoxActionHandler {
      * 
      * @throws IOException
      */
+    @Override
     public ServiceBoxActionParameters doPost(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
         ServiceBoxActionParameters callbackResult = null;

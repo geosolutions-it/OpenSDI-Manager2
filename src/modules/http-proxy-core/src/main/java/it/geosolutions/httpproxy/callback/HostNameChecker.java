@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
@@ -30,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
 
 /**
  * HostNameChecker class for hostname check.
@@ -58,6 +58,7 @@ public class HostNameChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         Set<String> hostNames = config.getHostnameWhitelist();
@@ -70,8 +71,8 @@ public class HostNameChecker extends AbstractProxyCallback implements ProxyCallb
             String hostName = url.getHost();
 
             if (!hostNames.contains(hostName)) {
-                throw new HttpErrorException(403, "Host Name " + hostName
-                        + " is not among the ones allowed for this proxy");
+                throw new HttpErrorException(403,
+                        "Host Name " + hostName + " is not among the ones allowed for this proxy");
             }
         }
     }
@@ -81,6 +82,7 @@ public class HostNameChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
     }
 
@@ -89,6 +91,7 @@ public class HostNameChecker extends AbstractProxyCallback implements ProxyCallb
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

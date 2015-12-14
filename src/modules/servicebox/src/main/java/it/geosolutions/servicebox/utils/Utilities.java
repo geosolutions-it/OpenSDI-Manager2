@@ -1,7 +1,5 @@
 package it.geosolutions.servicebox.utils;
 
-import it.geosolutions.servicebox.FileUploadCallback;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -21,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import it.geosolutions.servicebox.FileUploadCallback;
 
 /**
  * Utilities Class to support XML/JSON translation for GeoExplorer Configuration
@@ -119,7 +119,7 @@ public final class Utilities {
      */
     public static void writeError(HttpServletResponse response, int errorCode,
             Map<String, Object> errorDetails, String errorMessage, Logger LOGGER)
-            throws IOException {
+                    throws IOException {
         Map<String, Object> messageJSON = new HashMap<String, Object>();
         messageJSON.put(JSON_MODEL.SUCCESS, false);
         messageJSON.put(JSON_MODEL.ERROR_CODE, errorCode);

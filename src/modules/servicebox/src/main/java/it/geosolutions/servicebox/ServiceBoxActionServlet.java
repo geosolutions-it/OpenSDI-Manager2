@@ -45,14 +45,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public abstract class ServiceBoxActionServlet extends HttpServlet {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 8403642389129639997L;
 
     private final static String PROPERTY_FILE_PARAM = "app.properties";
 
-    private final static Logger LOGGER = Logger.getLogger(ServiceBoxActionServlet.class
-            .getSimpleName());
+    private final static Logger LOGGER = Logger
+            .getLogger(ServiceBoxActionServlet.class.getSimpleName());
 
     /**
      * Service box properties
@@ -90,6 +90,7 @@ public abstract class ServiceBoxActionServlet extends HttpServlet {
     /**
      * Init method of the servlet. Don't forgot override it on the actions and change the action name
      */
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         this.actionName = this.getClass().getSimpleName();
         super.init(servletConfig);
@@ -127,6 +128,7 @@ public abstract class ServiceBoxActionServlet extends HttpServlet {
     /**
      * Do GET envelope
      */
+    @Override
     protected final void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ServiceBoxActionParameters actionParameters = serviceBoxActionHandler.doGet(request,
@@ -139,6 +141,7 @@ public abstract class ServiceBoxActionServlet extends HttpServlet {
     /**
      * Do POST envelope
      */
+    @Override
     protected final void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ServiceBoxActionParameters actionParameters = serviceBoxActionHandler.doPost(request,
@@ -188,8 +191,8 @@ public abstract class ServiceBoxActionServlet extends HttpServlet {
      * @throws IOException
      */
     protected abstract void doGetAction(HttpServletRequest request, HttpServletResponse response,
-            ServiceBoxActionParameters serviceBoxActionParameters) throws ServletException,
-            IOException;
+            ServiceBoxActionParameters serviceBoxActionParameters)
+                    throws ServletException, IOException;
 
     /**
      * Do POST enveloped method
@@ -201,6 +204,6 @@ public abstract class ServiceBoxActionServlet extends HttpServlet {
      * @throws IOException
      */
     protected abstract void doPostAction(HttpServletRequest request, HttpServletResponse response,
-            ServiceBoxActionParameters serviceBoxActionParameters) throws ServletException,
-            IOException;
+            ServiceBoxActionParameters serviceBoxActionParameters)
+                    throws ServletException, IOException;
 }

@@ -185,8 +185,8 @@ final class ProxyConfig {
                         : this.connectionTimeout);
 
                 String max_conn = props.getProperty("max_total_connections");
-                this.setMaxTotalConnections(max_conn != null ? Integer.parseInt(max_conn)
-                        : this.maxTotalConnections);
+                this.setMaxTotalConnections(
+                        max_conn != null ? Integer.parseInt(max_conn) : this.maxTotalConnections);
 
                 String def_conn_host = props.getProperty("default_max_connections_per_host");
                 this.setMaxTotalConnections(def_conn_host != null ? Integer.parseInt(def_conn_host)

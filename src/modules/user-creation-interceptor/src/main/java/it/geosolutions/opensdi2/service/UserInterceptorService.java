@@ -19,14 +19,14 @@
  */
 package it.geosolutions.opensdi2.service;
 
-import it.geosolutions.geostore.core.model.User;
-
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.geostore.core.model.User;
 
 /**
  * User interceptor interface

@@ -19,14 +19,14 @@
  */
 package it.geosolutions.httpproxy.service;
 
-import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
-
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
 
 /**
  * Proxy helper interface. This interface can initialize the proxy and prepare proxy method execution
@@ -64,7 +64,7 @@ public interface ProxyHelper {
      * @throws ServletException
      */
     public ProxyMethodConfig prepareProxyMethod(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse, ProxyService proxy) throws IOException,
-            ServletException;
+            HttpServletResponse httpServletResponse, ProxyService proxy)
+                    throws IOException, ServletException;
 
 }

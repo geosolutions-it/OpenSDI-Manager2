@@ -50,6 +50,7 @@ public class MimeTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
     }
@@ -59,6 +60,7 @@ public class MimeTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons.httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
         Set<String> mimeTypes = config.getMimetypeWhitelist();
 
@@ -83,6 +85,7 @@ public class MimeTypeChecker implements ProxyCallback {
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
     }
 

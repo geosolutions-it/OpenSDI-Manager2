@@ -1,7 +1,5 @@
 package it.geosolutions.servicebox;
 
-import it.geosolutions.servicebox.utils.Utilities;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -13,13 +11,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
-import net.sf.json.xml.XMLSerializer;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.serialize.OutputFormat;
 import org.w3c.dom.Document;
+
+import it.geosolutions.servicebox.utils.Utilities;
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
+import net.sf.json.xml.XMLSerializer;
 
 /**
  * HTTPWebGISSave class.
@@ -42,6 +41,7 @@ public class HTTPWebGISSave extends ServiceBoxActionServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
      */
+    @Override
     protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
     }
@@ -52,9 +52,10 @@ public class HTTPWebGISSave extends ServiceBoxActionServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
      * @param httpServletResponse The {@link HttpServletResponse} object by which we response to the client
      */
+    @Override
     protected void doPostAction(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse, ServiceBoxActionParameters actionParameters)
-            throws ServletException, IOException {
+                    throws ServletException, IOException {
 
         InputStream is = null;
 

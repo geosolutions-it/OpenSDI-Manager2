@@ -19,12 +19,12 @@
  */
 package it.geosolutions.httpproxy.service;
 
-import it.geosolutions.httpproxy.BaseHttpTest;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import it.geosolutions.httpproxy.BaseHttpTest;
 
 /**
  * Proxy service test

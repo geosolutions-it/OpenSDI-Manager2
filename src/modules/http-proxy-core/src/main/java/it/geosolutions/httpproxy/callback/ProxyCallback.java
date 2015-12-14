@@ -19,10 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.utils.ProxyInfo;
-
 import java.io.IOException;
 import java.net.URL;
 
@@ -30,6 +26,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpMethod;
+
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
 
 /**
  * A pluggable callback that can perform checks or alter the request.

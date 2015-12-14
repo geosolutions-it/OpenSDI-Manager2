@@ -16,14 +16,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-import net.sf.json.xml.XMLSerializer;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
 
 /**
  * HTTPWebGISFileUpload class.
@@ -49,6 +49,7 @@ public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
      * 
      * @param servletConfig The Servlet configuration passed in by the servlet conatiner
      */
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
@@ -81,6 +82,7 @@ public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
      */
+    @Override
     protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
     }
@@ -91,6 +93,7 @@ public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can response to the client
      */
+    @Override
     @SuppressWarnings("unchecked")
     protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
@@ -137,7 +140,7 @@ public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
                 Iterator<FileItem> itr = items.iterator();
 
                 while (itr.hasNext()) {
-                    FileItem item = (FileItem) itr.next();
+                    FileItem item = itr.next();
 
                     if (item.getName().toLowerCase().endsWith(".map")) {
                         /*
@@ -199,7 +202,8 @@ public class HTTPWebGISFileUpload extends ServiceBoxActionServlet {
      * @param jsonObj
      * @throws IOException
      */
-    private void writeResponse(HttpServletResponse response, JSONObject jsonObj) throws IOException {
+    private void writeResponse(HttpServletResponse response, JSONObject jsonObj)
+            throws IOException {
         Writer writer = null;
         try {
             writer = response.getWriter();

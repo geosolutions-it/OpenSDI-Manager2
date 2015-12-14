@@ -23,9 +23,6 @@ package it.geosolutions.opensdi2.mvc;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.RESULTS;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
 import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
-import it.geosolutions.opensdi2.service.FileUploadService;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -63,6 +60,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
+
+import it.geosolutions.opensdi2.service.FileUploadService;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
+import it.geosolutions.opensdi2.utils.ResponseConstants;
 
 /**
  * File Manager controller base for ExtJS
@@ -164,9 +165,10 @@ public class BaseFileManager extends AbstractFileController {
      * @param response servlet response
      * 
      * @return
+     * @throws Exception 
      */
     public Object extJSbrowser(String action, String folder, String name, String oldName,
-            String file, HttpServletRequest request, HttpServletResponse response) {
+            String file, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Performing " + action + " in extJSFileBrowser");
@@ -213,7 +215,6 @@ public class BaseFileManager extends AbstractFileController {
         }
 
         return result;
-
     }
 
     /**
@@ -300,7 +301,8 @@ public class BaseFileManager extends AbstractFileController {
                     return false;
                 }
             } else {
-                LOGGER.error("Incorrect permissions on file '" + filePath + "'. We can't delete it");
+                LOGGER.error(
+                        "Incorrect permissions on file '" + filePath + "'. We can't delete it");
                 return false;
             }
         } else {
@@ -346,7 +348,7 @@ public class BaseFileManager extends AbstractFileController {
         }
         try {
             File newFolder = new File(getFilePath(newFolderPath, null));
-            if (newFolder.mkdir() ) {
+            if (newFolder.mkdir()) {
                 setFilePermissions(newFolder);
                 return true;
             }
@@ -360,24 +362,24 @@ public class BaseFileManager extends AbstractFileController {
     /**
      * 
      * @param newFolder
-     * @throws IOException 
+     * @throws IOException
      */
     protected void setFilePermissions(File newFolder) throws IOException {
-      //using PosixFilePermission to set file permissions 777
+        // using PosixFilePermission to set file permissions 777
         Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
-        //add owners permission
+        // add owners permission
         perms.add(PosixFilePermission.OWNER_READ);
         perms.add(PosixFilePermission.OWNER_WRITE);
         perms.add(PosixFilePermission.OWNER_EXECUTE);
-        //add group permissions
+        // add group permissions
         perms.add(PosixFilePermission.GROUP_READ);
         perms.add(PosixFilePermission.GROUP_WRITE);
         perms.add(PosixFilePermission.GROUP_EXECUTE);
-        //add others permissions
+        // add others permissions
         perms.add(PosixFilePermission.OTHERS_READ);
         perms.add(PosixFilePermission.OTHERS_WRITE);
         perms.add(PosixFilePermission.OTHERS_EXECUTE);
-   
+
         Files.setPosixFilePermissions(Paths.get(newFolder.getAbsolutePath()), perms);
     }
 
@@ -526,8 +528,8 @@ public class BaseFileManager extends AbstractFileController {
                     return false;
                 }
             } else {
-                LOGGER.error("Incorrect permissions on folder '" + folderPath
-                        + "'. We can't delete it");
+                LOGGER.error(
+                        "Incorrect permissions on folder '" + folderPath + "'. We can't delete it");
                 return false;
             }
         } else {

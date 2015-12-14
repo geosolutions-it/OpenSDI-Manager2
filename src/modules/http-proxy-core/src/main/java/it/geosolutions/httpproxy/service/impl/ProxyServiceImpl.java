@@ -19,15 +19,6 @@
  */
 package it.geosolutions.httpproxy.service.impl;
 
-import it.geosolutions.httpproxy.callback.ProxyCallback;
-import it.geosolutions.httpproxy.exception.HttpErrorException;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.service.ProxyHelper;
-import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.httpproxy.utils.ProxyInfo;
-import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
-import it.geosolutions.httpproxy.utils.Utils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,6 +60,15 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 
+import it.geosolutions.httpproxy.callback.ProxyCallback;
+import it.geosolutions.httpproxy.exception.HttpErrorException;
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.service.ProxyHelper;
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
+import it.geosolutions.httpproxy.utils.ProxyMethodConfig;
+import it.geosolutions.httpproxy.utils.Utils;
+
 /**
  * HTTPProxy delegated in this service
  * 
@@ -80,8 +80,8 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 public class ProxyServiceImpl implements ProxyService, Serializable {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 3318254969779984284L;
 
     private final static Logger LOGGER = Logger.getLogger(ProxyServiceImpl.class.toString());
@@ -146,6 +146,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * 
      * @return the proxy configuration
      */
+    @Override
     public ProxyConfig getProxyConfig() {
         return proxyConfig;
     }
@@ -155,6 +156,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * 
      * @param new proxy configuration
      */
+    @Override
     public void setProxyConfig(ProxyConfig proxyConfig) {
         this.proxyConfig = proxyConfig;
         loadProxyConfig();
@@ -197,6 +199,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * @param httpServletRequest The {@link HttpServletRequest} object passed in by the servlet engine representing the client request to be proxied
      * @param httpServletResponse The {@link HttpServletResponse} object by which we can send a proxied response to the client
      */
+    @Override
     public void execute(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws IOException, ServletException {
         try {
@@ -218,6 +221,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * @param response
      * @throws IOException
      */
+    @Override
     public void onInit(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         for (ProxyCallback callback : callbacks) {
@@ -229,6 +233,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * @param method
      * @throws IOException
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
         LOGGER.info(" [ProxyService] --- invoke callbacks... ");
         for (ProxyCallback callback : callbacks) {
@@ -239,6 +244,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
     /**
      * @throws IOException
      */
+    @Override
     public void onFinish() throws IOException {
         for (ProxyCallback callback : callbacks) {
             callback.onFinish();
@@ -313,7 +319,8 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
 
             if (methodProxyRequest instanceof EntityEnclosingMethod) {
                 if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-                    this.handleMultipart((EntityEnclosingMethod) methodProxyRequest, requestWrapper);
+                    this.handleMultipart((EntityEnclosingMethod) methodProxyRequest,
+                            requestWrapper);
                 } else {
                     this.handleStandard((EntityEnclosingMethod) methodProxyRequest, requestWrapper);
                 }
@@ -366,7 +373,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
             // Get the multipart items as a list
             // /////////////////////////////////////
 
-            List<FileItem> listFileItems = (List<FileItem>) servletFileUpload
+            List<FileItem> listFileItems = servletFileUpload
                     .parseRequest(httpServletRequest);
 
             // /////////////////////////////////////////
@@ -388,7 +395,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
 
                 if (fileItemCurrent.isFormField()) {
                     StringPart stringPart = new StringPart(
-                    // The field name
+                            // The field name
                             fileItemCurrent.getFieldName(),
                             // The field value
                             fileItemCurrent.getString());
@@ -407,14 +414,14 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
 
                     FilePart filePart = new FilePart(
 
-                    // /////////////////////
-                    // The field name
-                    // /////////////////////
+                            // /////////////////////
+                            // The field name
+                            // /////////////////////
 
                             fileItemCurrent.getFieldName(),
 
                             new ByteArrayPartSource(
-                            // The uploaded file name
+                                    // The uploaded file name
                                     fileItemCurrent.getName(),
                                     // The uploaded file contents
                                     fileItemCurrent.get()));
@@ -462,8 +469,8 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
             HttpServletRequest httpServletRequest) throws IOException {
         try {
 
-            methodProxyRequest.setRequestEntity(new InputStreamRequestEntity(httpServletRequest
-                    .getInputStream()));
+            methodProxyRequest.setRequestEntity(
+                    new InputStreamRequestEntity(httpServletRequest.getInputStream()));
             // LOGGER.info("original request content length:" + httpServletRequest.getContentLength());
             // LOGGER.info("proxied request content length:" +methodProxyRequest.getRequestEntity().getContentLength()+"");
 
@@ -483,7 +490,8 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      */
     private void executeProxyRequest(HttpMethod httpMethodProxyRequest,
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-            String user, String password, ProxyInfo proxyInfo) throws IOException, ServletException {
+            String user, String password, ProxyInfo proxyInfo)
+                    throws IOException, ServletException {
 
         // pre execute proxy request callback
         if (beforeExecuteProxyRequest(httpMethodProxyRequest, httpServletRequest,
@@ -514,8 +522,8 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
                         && intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
 
                     String stringStatusCode = Integer.toString(intProxyResponseCode);
-                    String stringLocation = httpMethodProxyRequest.getResponseHeader(
-                            Utils.LOCATION_HEADER).getValue();
+                    String stringLocation = httpMethodProxyRequest
+                            .getResponseHeader(Utils.LOCATION_HEADER).getValue();
 
                     if (stringLocation == null) {
                         throw new ServletException("Recieved status code: " + stringStatusCode
@@ -724,6 +732,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
      * 
      * @param callback to be added
      */
+    @Override
     public void addCallback(ProxyCallback callback) {
         if (callbacks == null) {
             callbacks = new LinkedList<ProxyCallback>();
@@ -804,6 +813,7 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
         /**
          * Get input stream wrapped
          */
+        @Override
         public ServletInputStream getInputStream() {
             try {
                 // Generate a new InputStream by stored buffer
@@ -833,14 +843,17 @@ public class ProxyServiceImpl implements ProxyService, Serializable {
             this.bais = bais;
         }
 
+        @Override
         public int available() {
             return bais.available();
         }
 
+        @Override
         public int read() {
             return bais.read();
         }
 
+        @Override
         public int read(byte[] buf, int off, int len) {
             return bais.read(buf, off, len);
         }

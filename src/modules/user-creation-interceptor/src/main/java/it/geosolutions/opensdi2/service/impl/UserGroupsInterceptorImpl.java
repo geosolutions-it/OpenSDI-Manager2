@@ -19,14 +19,6 @@
  */
 package it.geosolutions.opensdi2.service.impl;
 
-import it.geosolutions.geostore.core.model.User;
-import it.geosolutions.geostore.core.model.UserGroup;
-import it.geosolutions.geostore.core.model.enums.Role;
-import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
-import it.geosolutions.opensdi2.service.UserGroupService;
-import it.geosolutions.opensdi2.service.UserInterceptorService;
-import it.geosolutions.opensdi2.service.WrappedCredentials;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +35,14 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import it.geosolutions.geostore.core.model.User;
+import it.geosolutions.geostore.core.model.UserGroup;
+import it.geosolutions.geostore.core.model.enums.Role;
+import it.geosolutions.geostore.services.rest.AdministratorGeoStoreClient;
+import it.geosolutions.opensdi2.service.UserGroupService;
+import it.geosolutions.opensdi2.service.UserInterceptorService;
+import it.geosolutions.opensdi2.service.WrappedCredentials;
 
 /**
  * This user interceptor call uses an user group service to synchronize user and groups on the user edition
@@ -77,6 +77,7 @@ public class UserGroupsInterceptorImpl implements UserInterceptorService {
     /**
      * Synchronize user groups when the request is finished (after other actions)
      */
+    @Override
     public void onFinish() {
         if (!usersToSave.isEmpty())
             synchronizeUserGroups(usersToSave.pop());
@@ -194,6 +195,7 @@ public class UserGroupsInterceptorImpl implements UserInterceptorService {
      * 
      * @return credentials to perform the operation
      */
+    @Override
     public WrappedCredentials getCredentials() {
         // Get user groups from the secure context
         SecurityContext sc = SecurityContextHolder.getContext();

@@ -20,9 +20,6 @@
  */
 package it.geosolutions.opensdi2.service.impl;
 
-import it.geosolutions.opensdi2.service.FileUploadService;
-import it.geosolutions.opensdi2.utils.ControllerUtils;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +38,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
+
+import it.geosolutions.opensdi2.service.FileUploadService;
+import it.geosolutions.opensdi2.utils.ControllerUtils;
 
 /**
  * File upload service handling based on concurrent hash maps and disk storage
@@ -92,6 +92,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @return current list of byte arrays for the file
      * @throws IOException if no more uploads are available
      */
+    @Override
     public Entry<String, List<String>> addChunk(String name, int chunks, int chunk,
             MultipartFile file) throws IOException {
         Entry<String, List<String>> entry = null;
@@ -100,13 +101,13 @@ public class FileUploadServiceImpl implements FileUploadService {
             if (LOGGER.isTraceEnabled())
                 LOGGER.trace("entry [" + entry.getKey() + "] found ");
             List<String> uploadedChunks = entry.getValue();
-            String tmpFile = createTemporalFile(entry.getKey(), file.getBytes(), entry.getValue()
-                    .size());
+            String tmpFile = createTemporalFile(entry.getKey(), file.getBytes(),
+                    entry.getValue().size());
             // add chunk on its position
             uploadedChunks.add(chunk, tmpFile);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("uploadedChunks size[" + entry.getKey() + "] --> "
-                        + uploadedChunks.size());
+                LOGGER.debug(
+                        "uploadedChunks size[" + entry.getKey() + "] --> " + uploadedChunks.size());
             }
         } catch (IOException e) {
             LOGGER.error("Error on file upload", e);
@@ -124,6 +125,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @return absolute path to the file
      * @throws IOException
      */
+    @Override
     public String createTemporalFile(String key, byte[] bytes, int i) throws IOException {
 
         String filePath = temporaryFolder + File.separator + key;
@@ -140,7 +142,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             // File channel to append bytes
             @SuppressWarnings("resource")
             FileChannel channel = new FileOutputStream(tmpFile, true).getChannel();
-            ByteBuffer buf = ByteBuffer.allocateDirect((int) bytes.length);
+            ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
 
             // put bytes
             buf.put(bytes);
@@ -172,6 +174,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @return current entry for the file
      * @throws IOException if no more uploads are available
      */
+    @Override
     public Entry<String, List<String>> getChunk(String name, int chunks, int chunk)
             throws IOException {
         Integer key = null;
@@ -217,6 +220,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     /**
      * @return pending upload files size
      */
+    @Override
     public int size() {
         return uploadedChunksByFile.size();
     }
@@ -226,6 +230,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * 
      * @param key
      */
+    @Override
     public void remove(String key) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Removing uploading file " + key);
@@ -246,6 +251,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * This method cleans concurrent uploading files in two executions. It's ready to be called on a cronable method to check if there are pending
      * incomplete files without changes in the interval.
      */
+    @Override
     public void cleanup() {
         Date date = new Date();
         if (lastCheck == null) {
@@ -285,6 +291,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @param entry
      * @return
      */
+    @Override
     public File getCompletedFile(String name, Entry<String, ?> entry) {
         return getCompletedFile(name, temporaryFolder + File.separator + name, entry);
     }
@@ -297,6 +304,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @param entry
      * @return
      */
+    @Override
     @SuppressWarnings("unchecked")
     public File getCompletedFile(String name, String targetPath, Entry<String, ?> entry) {
         try {
@@ -304,8 +312,8 @@ public class FileUploadServiceImpl implements FileUploadService {
                 LOGGER.debug("Getting final file on: '" + targetPath + "'");
             }
             if (null != entry && ((List<String>) entry.getValue()).size() > 0) {
-                String tempFile = ControllerUtils.preventDirectoryTrasversing(((List<String>) entry
-                        .getValue()).get(0));
+                String tempFile = ControllerUtils
+                        .preventDirectoryTrasversing(((List<String>) entry.getValue()).get(0));
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Getting tmp file on: '" + tempFile + "': "
                             + new File(tempFile).exists());
@@ -347,6 +355,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @return File
      * @throws IOException if something occur while file generation
      */
+    @Override
     public File getCompletedFile(String name, MultipartFile file) throws IOException {
         return getCompletedFile(file, temporaryFolder + File.separator + name);
     }
@@ -358,6 +367,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * @param filePath
      * @throws IOException if something occur while file generation
      */
+    @Override
     public File getCompletedFile(MultipartFile file, String filePath) throws IOException {
         File outFile = new File(filePath);
         if (LOGGER.isDebugEnabled()) {

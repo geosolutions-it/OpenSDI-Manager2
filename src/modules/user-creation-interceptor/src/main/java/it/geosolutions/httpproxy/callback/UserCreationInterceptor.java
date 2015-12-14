@@ -19,12 +19,6 @@
  */
 package it.geosolutions.httpproxy.callback;
 
-import it.geosolutions.geostore.core.model.User;
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.utils.ProxyInfo;
-import it.geosolutions.opensdi2.service.UserInterceptorService;
-import it.geosolutions.opensdi2.service.WrappedCredentials;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -37,6 +31,11 @@ import javax.xml.bind.JAXB;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.log4j.Logger;
 
+import it.geosolutions.geostore.core.model.User;
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.ProxyInfo;
+import it.geosolutions.opensdi2.service.UserInterceptorService;
+import it.geosolutions.opensdi2.service.WrappedCredentials;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -87,6 +86,7 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRequest(javax.servlet.http. HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public void onRequest(HttpServletRequest request, HttpServletResponse response, URL url)
             throws IOException {
         if (enabled) {
@@ -95,19 +95,19 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
                 if (interceptedURL != null && interceptedURL.equals(request.getAttribute("url"))
                         && "POST".equals(request.getMethod())) {
                     // create user
-                    User user = (User) JAXB.unmarshal(request.getInputStream(), User.class);
+                    User user = JAXB.unmarshal(request.getInputStream(), User.class);
                     onUserCreation(user);
                 } else if ("DELETE".equals(request.getMethod())
                         && ((String) request.getAttribute("url")).startsWith(interceptedURL)) {
                     // delete by id
-                    String userIdString = ((String) request.getAttribute("url")).replace(
-                            interceptedURL + "user/", "").replaceAll("/", "");
+                    String userIdString = ((String) request.getAttribute("url"))
+                            .replace(interceptedURL + "user/", "").replaceAll("/", "");
                     Long userId = Long.decode(userIdString);
                     onUserDelete(userId);
                 } else if ("PUT".equals(request.getMethod())
                         && ((String) request.getAttribute("url")).startsWith(interceptedURL)) {
                     // update user
-                    User user = (User) JAXB.unmarshal(request.getInputStream(), User.class);
+                    User user = JAXB.unmarshal(request.getInputStream(), User.class);
                     onUserUpdate(user);
                 }
             } catch (Exception e) {
@@ -121,6 +121,7 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onRemoteResponse(org.apache.commons .httpclient.HttpMethod)
      */
+    @Override
     public void onRemoteResponse(HttpMethod method) throws IOException {
         // call on remote response
         try {
@@ -143,6 +144,7 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
      * 
      * @see it.geosolutions.httpproxy.ProxyCallback#onFinish()
      */
+    @Override
     public void onFinish() throws IOException {
         // call on finish
         try {
@@ -306,6 +308,7 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
      * @param proxyInfo
      * @return true if the proxy must continue and false otherwise
      */
+    @Override
     public boolean beforeExecuteProxyRequest(HttpMethod httpMethodProxyRequest,
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             String user, String password, ProxyInfo proxyInfo) {
@@ -322,10 +325,11 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
 
             // here we return the user information wrapped
             if ("GET".equals(httpServletRequest.getMethod())
-                    && ((String) httpServletRequest.getAttribute("url")).startsWith(interceptedURL)) {
+                    && ((String) httpServletRequest.getAttribute("url"))
+                            .startsWith(interceptedURL)) {
                 // other operation
-                String operation = ((String) httpServletRequest.getAttribute("url")).replace(
-                        interceptedURL + "user/", "").replaceAll("/", "");
+                String operation = ((String) httpServletRequest.getAttribute("url"))
+                        .replace(interceptedURL + "user/", "").replaceAll("/", "");
                 continueWithRequest = onUserOperation(operation, httpServletRequest,
                         httpServletResponse);
             }
@@ -338,10 +342,10 @@ public class UserCreationInterceptor extends AbstractProxyCallback implements Pr
                     && mustUseWrappedCredentials((String) httpServletRequest.getAttribute("url"))) {
                 // Basic authorization in the header with the new credentials
                 httpMethodProxyRequest.removeRequestHeader(HttpHeaders.AUTHORIZATION);
-                String encoding = new BASE64Encoder().encode((userName + ":" + userPassword)
-                        .getBytes());
-                httpMethodProxyRequest.setRequestHeader(HttpHeaders.AUTHORIZATION, "Basic "
-                        + encoding);
+                String encoding = new BASE64Encoder()
+                        .encode((userName + ":" + userPassword).getBytes());
+                httpMethodProxyRequest.setRequestHeader(HttpHeaders.AUTHORIZATION,
+                        "Basic " + encoding);
             }
 
             if (LOGGER.isDebugEnabled()) {

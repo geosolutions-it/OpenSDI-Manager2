@@ -10,6 +10,27 @@
     <!-- Specific configuration by level -->
 	<bean id="serviceManagerConfig" class="it.geosolutions.opensdi2.config.FileManagerConfigImpl">
         <property name="baseFolder" value="/tmp"/>
+        
+        <property name="serviceAuxiliaryTables">
+        	<map>
+        		<entry key="acq_list" value="service_name"/>
+        		<entry key="aois" value="service_name"/>
+        		<entry key="dirmet" value="service"/>
+        		<entry key="hs" value="service"/>
+        		<entry key="ingestionproducts" value="servicename"/>
+        		<entry key="oil_spills" value="servicename"/>
+        		<entry key="products_1to3" value="service_name"/>
+        		<entry key="products_5" value="service_name"/>
+        		<entry key="sar" value="service"/>
+        		<entry key="sensor" value="service_id"/>
+        		<entry key="ship_detections" value="servicename"/>
+        		<entry key="ships" value="service_name"/>
+        		<entry key="wind-direction" value="service"/>
+        		<entry key="wind-speed" value="service"/>
+        		<entry key="wl" value="service"/>
+        	</map>
+        </property>
+        
         <property name="defaultPermission">
      		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
      			<property name="canCreateFolder" value="true" />
@@ -25,14 +46,14 @@
 		     			<property name="canCreateFolder" value="true" />
 		     			<property name="canRename" value="false" />
 		     			<property name="canDelete" value="false" />
-		     			<property name="canUpload" value="false" />
+		     			<property name="canUpload" value="true" />
 		     		</bean>
         		</entry>
         		<entry key="1">
 		     		<bean class="it.geosolutions.opensdi2.config.FolderPermission">
 		     			<property name="canCreateFolder" value="true" />
 		     			<property name="canRename" value="false" />
-		     			<property name="canDelete" value="false" />
+		     			<property name="canDelete" value="true" />
 		     			<property name="canUpload" value="true" />
 		     		</bean>
         		</entry>

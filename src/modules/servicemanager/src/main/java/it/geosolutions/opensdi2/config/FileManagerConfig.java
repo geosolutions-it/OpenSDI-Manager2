@@ -20,6 +20,8 @@
  */
 package it.geosolutions.opensdi2.config;
 
+import java.util.Map;
+
 /**
  * File manager config
  * 
@@ -34,6 +36,12 @@ public interface FileManagerConfig extends OpenSDIManagerConfig {
     String getRootText();
 
     /**
+     * 
+     * @return
+     */
+    Map<String, String> getServiceAuxiliaryTables();
+
+    /**
      * Get folder permission
      * 
      * @param folder
@@ -41,5 +49,4 @@ public interface FileManagerConfig extends OpenSDIManagerConfig {
      * @return permissions on the folder
      */
     FolderPermission getPermission(String folder);
-
 }

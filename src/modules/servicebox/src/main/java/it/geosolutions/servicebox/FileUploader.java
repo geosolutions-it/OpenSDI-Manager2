@@ -1,8 +1,5 @@
 package it.geosolutions.servicebox;
 
-import it.geosolutions.servicebox.utils.IOUtil;
-import it.geosolutions.servicebox.utils.Utilities;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +28,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import it.geosolutions.servicebox.utils.IOUtil;
+import it.geosolutions.servicebox.utils.Utilities;
+
 /**
  * Servlet implementation class FileUploader
  */
@@ -58,6 +58,7 @@ public class FileUploader extends ServiceBoxActionServlet {
         super();
     }
 
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
@@ -106,6 +107,7 @@ public class FileUploader extends ServiceBoxActionServlet {
      * 
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
+    @Override
     protected void doGetAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
 
@@ -162,9 +164,8 @@ public class FileUploader extends ServiceBoxActionServlet {
 
             if (response != null) {
                 response.setContentType("text/html");
-                writeResponse(response,
-                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
-                                + "\"}");
+                writeResponse(response, "{ \"success\":false, \"errorMessage\":\""
+                        + ex.getLocalizedMessage() + "\"}");
             }
 
             return null;
@@ -191,6 +192,7 @@ public class FileUploader extends ServiceBoxActionServlet {
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    @Override
     @SuppressWarnings("unchecked")
     protected void doPostAction(HttpServletRequest request, HttpServletResponse response,
             ServiceBoxActionParameters actionParameters) throws ServletException, IOException {
@@ -286,7 +288,8 @@ public class FileUploader extends ServiceBoxActionServlet {
                                         LOGGER.log(Level.SEVERE,
                                                 "Error encountered while closing the file streams");
                                     throw new ServletException(
-                                            "Error encountered while closing the file streams", exc);
+                                            "Error encountered while closing the file streams",
+                                            exc);
                                 }
                             }
                         }
@@ -309,8 +312,8 @@ public class FileUploader extends ServiceBoxActionServlet {
             response.setContentType("text/html");
             // response.setContentType("application/json");
             if (type == null || !type.equalsIgnoreCase("inline")) {
-                writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid
-                        + "\"}}");
+                writeResponse(response,
+                        "{ \"success\":true, \"result\":{ \"code\":\"" + uuid + "\"}}");
             } else {
                 String content = readFileContents(null, uuid);
                 if (content != null && content.length() > 0)

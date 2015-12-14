@@ -54,6 +54,7 @@ public class HttpErrorException extends IOException {
     /**
      * The response message
      */
+    @Override
     public String getMessage() {
         return message;
     }

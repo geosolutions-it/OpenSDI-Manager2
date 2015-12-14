@@ -19,8 +19,6 @@
  */
 package it.geosolutions.opensdi2.service.impl;
 
-import it.geosolutions.opensdi2.service.UserGroupService;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +42,8 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.LikeFilter;
 import org.springframework.ldap.filter.OrFilter;
 import org.springframework.util.StringUtils;
+
+import it.geosolutions.opensdi2.service.UserGroupService;
 
 /**
  * User group service LDAP implementation
@@ -110,6 +110,7 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
      * 
      * @return Map with the user attributes
      */
+    @Override
     public List<Map<String, Object>> search(String uid) {
         try {
 
@@ -118,12 +119,12 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
             List<Map<String, Object>> entries = new LinkedList<Map<String, Object>>();
             for (Attributes attrs : list) {
                 Map<String, Object> values = new HashMap<String, Object>();
-                values.put(LDAP_CN_PROPERTY, (String) attrs.get(LDAP_CN_PROPERTY).get());
-                values.put(LDAP_UID_PROPERTY, (String) attrs.get(LDAP_UID_PROPERTY).get());
+                values.put(LDAP_CN_PROPERTY, attrs.get(LDAP_CN_PROPERTY).get());
+                values.put(LDAP_UID_PROPERTY, attrs.get(LDAP_UID_PROPERTY).get());
                 entries.add(values);
                 if (LOGGER.isTraceEnabled())
-                    LOGGER.trace(" Person Common Name = "
-                            + (String) attrs.get(LDAP_CN_PROPERTY).get());
+                    LOGGER.trace(
+                            " Person Common Name = " + (String) attrs.get(LDAP_CN_PROPERTY).get());
             }
 
             return entries;
@@ -141,6 +142,7 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
      * 
      * @return flag that indicates if the operation could be performed
      */
+    @Override
     public boolean setUserGroups(String uid, List<String> groups) {
         boolean success = false;
         try {
@@ -163,8 +165,8 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
                     }
                     // add new groups
                     for (String group : groups) {
-                        success = success
-                                && addUserToGroup(uid, searchDnInLdap(group).get(0).name.toString());
+                        success = success && addUserToGroup(uid,
+                                searchDnInLdap(group).get(0).name.toString());
                     }
                 } else if (!actualGroups.isEmpty()) {
                     // remove all groups
@@ -191,10 +193,11 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
      * 
      * @return groups that the user is member of
      */
+    @Override
     public List<String> getUserGroups(String uid) {
         List<String> actualGroups = new LinkedList<String>();
-        List<LDAPUnit> ldapGroups = searchInLdap(new EqualsFilter(parameterGroup,
-                parameterGroupValue));
+        List<LDAPUnit> ldapGroups = searchInLdap(
+                new EqualsFilter(parameterGroup, parameterGroupValue));
         for (LDAPUnit ldapGroup : ldapGroups) {
             if (ldapGroup.members != null) {
                 for (Object user : ldapGroup.members) {
@@ -228,9 +231,9 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
             if (LDAP_FORCE_BASE_SEARCH != null && !LDAP_FORCE_BASE_SEARCH.isEmpty()) {
                 for (String property : LDAP_FORCE_BASE_SEARCH
                         .split(LDAP_PROPERTIES_SEARCH_SEPARATOR)) {
-                    filter.and(new EqualsFilter(property
-                            .split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[0], property
-                            .split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[1]));
+                    filter.and(new EqualsFilter(
+                            property.split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[0],
+                            property.split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[1]));
                 }
             }
             filter.and(orFilter);
@@ -241,12 +244,14 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
              * cn=GLOBAL_WRITTER memberUid=admin
              */
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("************************************ Searching ***************************************\n"
-                        + filter.encode());
+                LOGGER.debug(
+                        "************************************ Searching ***************************************\n"
+                                + filter.encode());
 
             @SuppressWarnings("unchecked")
             List<Attributes> list = ldapTemplate.search(LDAP_USER_BASE_SEARCH, filter.encode(),
                     new AttributesMapper() {
+                        @Override
                         public Object mapFromAttributes(Attributes attrs) throws NamingException {
                             return attrs;
                         }
@@ -276,9 +281,9 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
             if (LDAP_FORCE_BASE_SEARCH != null && !LDAP_FORCE_BASE_SEARCH.isEmpty()) {
                 for (String property : LDAP_FORCE_BASE_SEARCH
                         .split(LDAP_PROPERTIES_SEARCH_SEPARATOR)) {
-                    filter.and(new EqualsFilter(property
-                            .split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[0], property
-                            .split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[1]));
+                    filter.and(new EqualsFilter(
+                            property.split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[0],
+                            property.split(LDAP_PROPERTIES_VALUES_SEARCH_SEPARATOR)[1]));
                 }
             }
             filter.and(orFilter);
@@ -305,8 +310,9 @@ public class LDAPUserGroupServiceImpl implements UserGroupService {
              * cn=GLOBAL_WRITTER memberUid=admin
              */
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("************************************ Searching ***************************************\n"
-                        + filter.encode());
+                LOGGER.debug(
+                        "************************************ Searching ***************************************\n"
+                                + filter.encode());
 
             @SuppressWarnings("unchecked")
             List<LDAPUnit> names = ldapTemplate.search(LDAP_USER_BASE_SEARCH, filter.encode(),

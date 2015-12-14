@@ -50,6 +50,7 @@ public class UploadCanvas extends ServiceBoxActionServlet {
      * 
      * @param servletConfig The Servlet configuration passed in by the servlet conatiner
      */
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
@@ -207,8 +208,8 @@ public class UploadCanvas extends ServiceBoxActionServlet {
             // response.getWriter().print("<html><head></head><body><h3>Couldn't download this file. </h3></body</html>");
         } catch (IOException e) {
             LOGGER.info(e.getMessage());
-            response.getWriter()
-                    .print("<html><head></head><body><h3>Sorry. We was unable to process your request. </h3></body</html>");
+            response.getWriter().print(
+                    "<html><head></head><body><h3>Sorry. We was unable to process your request. </h3></body</html>");
         } finally {
             if (out != null) {
                 try {

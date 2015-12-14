@@ -19,9 +19,6 @@
  */
 package it.geosolutions.httpproxy.service.impl;
 
-import it.geosolutions.httpproxy.service.ProxyConfig;
-import it.geosolutions.httpproxy.utils.Utils;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
@@ -40,6 +37,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.ServletContextResource;
+
+import it.geosolutions.httpproxy.service.ProxyConfig;
+import it.geosolutions.httpproxy.utils.Utils;
 
 /**
  * ProxyConfig class to define the proxy configuration.
@@ -150,8 +150,8 @@ public final class ProxyConfigImpl implements ProxyConfig {
     private String beanName = "proxyConfig";
 
     /**
-	 * 
-	 */
+     * 
+     */
     private Map<String, Long> timeModificationByLocation = new ConcurrentHashMap<String, Long>();
 
     /**
@@ -167,6 +167,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
      * 
      * @throws IOException
      */
+    @Override
     public void configProxy() {
 
         try {
@@ -182,8 +183,8 @@ public final class ProxyConfigImpl implements ProxyConfig {
             // /////////////////////////////////////////////////
 
             String bytesSize = defaultStreamByteSizeTmp;
-            this.setDefaultStreamByteSize(bytesSize != null ? Integer.parseInt(bytesSize)
-                    : this.defaultStreamByteSize);
+            this.setDefaultStreamByteSize(
+                    bytesSize != null ? Integer.parseInt(bytesSize) : this.defaultStreamByteSize);
 
             // /////////////////////////////////////////////////
             // Load connection manager configuration
@@ -193,12 +194,12 @@ public final class ProxyConfigImpl implements ProxyConfig {
             this.setSoTimeout(timeout != null ? Integer.parseInt(timeout) : this.soTimeout);
 
             String conn_timeout = connection_timeout;
-            this.setConnectionTimeout(conn_timeout != null ? Integer.parseInt(conn_timeout)
-                    : this.connectionTimeout);
+            this.setConnectionTimeout(
+                    conn_timeout != null ? Integer.parseInt(conn_timeout) : this.connectionTimeout);
 
             String max_conn = max_total_connections;
-            this.setMaxTotalConnections(max_conn != null ? Integer.parseInt(max_conn)
-                    : this.maxTotalConnections);
+            this.setMaxTotalConnections(
+                    max_conn != null ? Integer.parseInt(max_conn) : this.maxTotalConnections);
 
             String def_conn_host = default_max_connections_per_host;
             this.setMaxTotalConnections(def_conn_host != null ? Integer.parseInt(def_conn_host)
@@ -206,7 +207,8 @@ public final class ProxyConfigImpl implements ProxyConfig {
 
         } catch (NumberFormatException e) {
             if (LOGGER.isLoggable(Level.SEVERE))
-                LOGGER.log(Level.SEVERE, "Error parsing the proxy properties file using default", e);
+                LOGGER.log(Level.SEVERE, "Error parsing the proxy properties file using default",
+                        e);
 
             this.setSoTimeout(this.soTimeout);
             this.setConnectionTimeout(this.connectionTimeout);
@@ -266,8 +268,8 @@ public final class ProxyConfigImpl implements ProxyConfig {
             timeModificationByLocation.put(fileName, lastModified);
         } else if (isModified(fileName, lastModified)) {
             // Override proxy configuration
-            LOGGER.log(Level.INFO, "Proxy configuration has changed at runtime in file '"
-                    + fileName + "'");
+            LOGGER.log(Level.INFO,
+                    "Proxy configuration has changed at runtime in file '" + fileName + "'");
             overrideProperties(location);
         }
     }
@@ -311,6 +313,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the soTimeout
      */
+    @Override
     public int getSoTimeout() {
         return soTimeout;
     }
@@ -325,6 +328,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the connectionTimeout
      */
+    @Override
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
@@ -339,6 +343,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the maxTotalConnections
      */
+    @Override
     public int getMaxTotalConnections() {
         return maxTotalConnections;
     }
@@ -353,6 +358,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the defaultMaxConnectionsPerHost
      */
+    @Override
     public int getDefaultMaxConnectionsPerHost() {
         return defaultMaxConnectionsPerHost;
     }
@@ -367,6 +373,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the hostnameWhitelist
      */
+    @Override
     public Set<String> getHostnameWhitelist() {
 
         // ////////////////////////////////////////////////////////////
@@ -390,6 +397,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the mimetypeWhitelist
      */
+    @Override
     public Set<String> getMimetypeWhitelist() {
 
         Set<String> p = Utils.parseWhiteList(mimeTypeWhiteList);
@@ -409,6 +417,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the reqtypeWhitelist
      */
+    @Override
     public Set<String> getReqtypeWhitelist() {
 
         // ////////////////////////////////////////
@@ -451,6 +460,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the methodsWhitelist
      */
+    @Override
     public Set<String> getMethodsWhitelist() {
 
         Set<String> p = Utils.parseWhiteList(methodsWhiteList);
@@ -470,6 +480,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the hostsWhitelist
      */
+    @Override
     public Set<String> getHostsWhitelist() {
 
         Set<String> p = Utils.parseWhiteList(hostsWhiteList);
@@ -517,6 +528,7 @@ public final class ProxyConfigImpl implements ProxyConfig {
     /**
      * @return the defaultStreamByteSize
      */
+    @Override
     public int getDefaultStreamByteSize() {
         return defaultStreamByteSize;
     }

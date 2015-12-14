@@ -20,15 +20,15 @@
  */
 package it.geosolutions.opensdi2.service.impl;
 
-import it.geosolutions.httpproxy.service.ProxyService;
-import it.geosolutions.opensdi2.service.URLFacade;
-
 import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import it.geosolutions.httpproxy.service.ProxyService;
+import it.geosolutions.opensdi2.service.URLFacade;
 
 /**
  * URL Facade based on proxy service
@@ -67,6 +67,7 @@ public class URLFacadeImpl implements URLFacade {
      * 
      * @throws IOException
      */
+    @Override
     public void handleRequest(HttpServletRequest request, HttpServletResponse response,
             String urlWrapped, String... subPath) throws IOException {
 
@@ -145,6 +146,7 @@ public class URLFacadeImpl implements URLFacade {
      * 
      * @return true if is a wrapped one or false otherwise
      */
+    @Override
     public boolean isWrappedURL(String url) {
         return urlsWrapped != null && urlsWrapped.containsKey(url);
     }

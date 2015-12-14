@@ -49,6 +49,7 @@ public class FileDownloader extends HttpServlet {
         super();
     }
 
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         String appPropertyFile = getServletContext().getInitParameter(PROPERTY_FILE_PARAM);
@@ -86,6 +87,7 @@ public class FileDownloader extends HttpServlet {
         }
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -101,8 +103,8 @@ public class FileDownloader extends HttpServlet {
             try {
                 // set reponse headers
                 response.setContentType("application/force-download");
-                response.setHeader("Content-Disposition", "attachment; filename=\"" + filename
-                        + "\"");
+                response.setHeader("Content-Disposition",
+                        "attachment; filename=\"" + filename + "\"");
 
                 // get file
                 file = new File(tempDirectory + File.separatorChar + code);
@@ -120,9 +122,8 @@ public class FileDownloader extends HttpServlet {
                     LOGGER.log(Level.SEVERE, "Error encountered while downloading file");
                 }
                 response.setContentType("text/html");
-                writeResponse(response,
-                        "{ \"success\":false, \"errorMessage\":\"" + ex.getLocalizedMessage()
-                                + "\"}");
+                writeResponse(response, "{ \"success\":false, \"errorMessage\":\""
+                        + ex.getLocalizedMessage() + "\"}");
             } finally {
                 br.close();
                 writer.close();
@@ -144,6 +145,7 @@ public class FileDownloader extends HttpServlet {
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -194,8 +196,8 @@ public class FileDownloader extends HttpServlet {
             if (content != null) {
                 out.write(content);
                 response.setContentType("text/html");
-                writeResponse(response, "{ \"success\":true, \"result\":{ \"code\":\"" + uuid
-                        + "\"}}");
+                writeResponse(response,
+                        "{ \"success\":true, \"result\":{ \"code\":\"" + uuid + "\"}}");
             } else {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
                     LOGGER.log(Level.SEVERE,
