@@ -20,6 +20,10 @@
  */
 package it.geosolutions.opensdi2.mvc;
 
+import static it.geosolutions.opensdi2.utils.ResponseConstants.RESULTS;
+import static it.geosolutions.opensdi2.utils.ResponseConstants.ROOT;
+import static it.geosolutions.opensdi2.utils.ResponseConstants.SUCCESS;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -421,7 +425,11 @@ public class ServiceManager extends BaseFileManager {
         } else if (EXTJS_SERVICE_SENSORS_LIST.equals(action)) {
             return getServiceSensorsList(folder, name);
         } else if (EXTJS_SERVICE_ID_CLOSE.equals(action)) {
-            setServiceStatus(folder, "PRODUCTS", request, response);
+            Map<String, Object> result = new HashMap<String, Object>();
+            result.put(SUCCESS, setServiceStatus(folder, PRODUCTS_FOLDER, request, response));
+            result.put(ROOT, action);
+            result.put(RESULTS, 1);
+            return result;
         }
 
         // ----
