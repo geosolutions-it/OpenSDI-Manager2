@@ -142,6 +142,11 @@ public class ServiceManager extends BaseFileManager {
      * Known operation: Extjs integration serviceSensors list
      */
     public static final String EXTJS_SERVICE_SENSORS_LIST = "get_servicesensorslist";
+    
+    /**
+     * Known operation: Extjs integration serviceSensors list
+     */
+    public static final String EXTJS_SERVICE_ID_CLOSE = "close_service_id";
 
     private ProxyService proxyService;
 
@@ -415,6 +420,8 @@ public class ServiceManager extends BaseFileManager {
             return getSensorModesList();
         } else if (EXTJS_SERVICE_SENSORS_LIST.equals(action)) {
             return getServiceSensorsList(folder, name);
+        } else if (EXTJS_SERVICE_ID_CLOSE.equals(action)) {
+            setServiceStatus(folder, "PRODUCTS", request, response);
         }
 
         // ----
