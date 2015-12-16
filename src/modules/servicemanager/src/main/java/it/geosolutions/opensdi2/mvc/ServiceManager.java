@@ -436,7 +436,7 @@ public class ServiceManager extends BaseFileManager {
         return super.extJSbrowser(action, folder, name, oldName, file, request, response);
     }
 
-    @RequestMapping(value = "getServicesList", method = { RequestMethod.GET })
+    @RequestMapping(value = "getServicesList", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody Object getServicesList(
             @RequestParam(value = "userid", required = false) String userid,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -444,7 +444,7 @@ public class ServiceManager extends BaseFileManager {
         return getDetailedServicesListForUser(userid);
     }
 
-    @RequestMapping(value = "getServiceDetails", method = { RequestMethod.GET })
+    @RequestMapping(value = "getServiceDetails", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody Object getServiceDetails(
             @RequestParam(value = "serviceid", required = false) String serviceid,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -456,7 +456,7 @@ public class ServiceManager extends BaseFileManager {
         return new HashMap<String, Object>();
     }
 
-    @RequestMapping(value = "getServiceStatus", method = { RequestMethod.GET })
+    @RequestMapping(value = "getServiceStatus", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody Object getServiceStatus(
             @RequestParam(value = "serviceid", required = false) String serviceid,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -503,7 +503,7 @@ public class ServiceManager extends BaseFileManager {
         return new HashMap<String, Object>();
     }
 
-    @RequestMapping(value = "getServiceAccessByUser", method = { RequestMethod.GET })
+    @RequestMapping(value = "getServiceAccessByUser", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody Object getServiceAccessByUser(
             @RequestParam(value = "userid", required = true) String userid,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -536,6 +536,7 @@ public class ServiceManager extends BaseFileManager {
                 rootElement.put("aoiGeometry", aoi.getTheGeom());
                 rootElement.put("aoiStatus", aoi.getStatus());
                 rootElement.put("aoiDescription", aoi.getDescription());
+                rootElement.put("acqPlanUrl", service.getAcqPlanUrl());
             }
 
             if (detailed) {
@@ -707,21 +708,28 @@ public class ServiceManager extends BaseFileManager {
     public @ResponseBody Object confirmServiceAcqPlan(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "service", required = true) String service,
+            @RequestParam(value = "url", required = true) String url,
             HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
+        LOGGER.info(" --- confirmServiceAcqPlan > " + url);
+        
         Map<String, Object> response = new HashMap<String, Object>();
         try {
-            if (checkUserAndService(user, service, METHOD_CONFIRMED_ACQ_PLAN)) {
-                downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
-                proxyService.execute(request, new MockHttpServletResponse());
-
-                Service dbService = this.serviceDAO.findByServiceId(service);
-                if (dbService != null)
-                    this.serviceDAO.updateServiceStatus(dbService, "ACQUISITIONPLAN");
-                response.put(ResponseConstants.SUCCESS, true);
+            Service dbService = this.serviceDAO.findByServiceId(service);
+            if (dbService != null && "ACQUISITIONLIST".equals(dbService.getStatus())) {
+                if (checkUserAndService(user, service, METHOD_CONFIRMED_ACQ_PLAN)) {
+                    downloadMethod = METHOD_CONFIRMED_ACQ_PLAN;
+                    proxyService.execute(request, new MockHttpServletResponse());
+                    
+                    this.serviceDAO.updateServiceAcqPlan(dbService, url);
+                    response.put(ResponseConstants.SUCCESS, true);
+                } else {
+                    response.put(ResponseConstants.SUCCESS, false);
+                    response.put(ResponseConstants.ROOT, "Wrong user or service");
+                }
             } else {
                 response.put(ResponseConstants.SUCCESS, false);
-                response.put(ResponseConstants.ROOT, "Wrong user or service");
+                response.put(ResponseConstants.ROOT, "Acquisition Plan already generated for the Service " + service);
             }
         } catch (Exception e) {
             LOGGER.error("Error on acquisition list generation", e);
