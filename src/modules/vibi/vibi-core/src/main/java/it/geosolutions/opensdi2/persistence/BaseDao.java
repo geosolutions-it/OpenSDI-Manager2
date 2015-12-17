@@ -3,6 +3,7 @@ package it.geosolutions.opensdi2.persistence;
 import com.googlecode.genericdao.dao.jpa.GenericDAOImpl;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.Search;
+import com.googlecode.genericdao.search.Sort;
 import com.googlecode.genericdao.search.jpa.JPASearchProcessor;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
@@ -17,12 +18,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Transactional(value = "opensdiTransactionManager")
 @Repository
 public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl<T, ID> implements GenericVibiDao<T, ID> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(BaseDao.class);
+
+    private final static Pattern propertyFilterPattern = Pattern.compile("^(.*?):(.*?):'(.*?)'$");
+    private final static Pattern propertySortPattern = Pattern.compile("^(.*?):((?:ASC)|(?:DESC))$");
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -139,11 +145,58 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     public Filter getKeyWordSearchFilter(String keyword) {
         List<Filter> filters = new ArrayList<Filter>();
         ClassMetadata classMetadata = sessionFactory.getClassMetadata(getEntityType());
+        keyword = "%" + keyword + "%";
         for (String property : getAllPropertiesNames()) {
             if (classMetadata.getPropertyType(property).getName().equals("string")) {
                 filters.add(Filter.ilike(property, keyword));
+            } else {
+                filters.add(Filter.custom(String.format("cast({%s} as string) like ?1", property), keyword));
             }
         }
         return Filter.or(filters.toArray(new Filter[filters.size()]));
+    }
+
+    @Override
+    public Filter getPropertiesFilter(String filtersString) {
+        String[] filterParts = filtersString.split(";");
+        List<Filter> filters = new ArrayList<Filter>();
+        for (String propertyFilter : filterParts) {
+            filters.add(parsePropertyFilter(propertyFilter));
+        }
+        return Filter.and(filters.toArray(new Filter[filters.size()]));
+    }
+
+    @Override
+    public List<Sort> getPropertiesSorting(String sortingString) {
+        String[] sortingParts = sortingString.split(";");
+        List<Sort> sorts = new ArrayList<Sort>();
+        for (String propertySort : sortingParts) {
+            sorts.add(getSortingForPorperty(propertySort));
+        }
+        return sorts;
+    }
+
+    private Filter parsePropertyFilter(String propertyFilter) {
+        Matcher matcher = propertyFilterPattern.matcher(propertyFilter);
+        if (!matcher.matches()) {
+            throw new RuntimeException(String.format("Invalid property filter '%s'.", propertyFilter));
+        }
+        String propertyName = matcher.group(1);
+        String operator = matcher.group(2);
+        String expression = matcher.group(3);
+        return Filter.custom(String.format("{%s} %s %s", propertyName, operator, expression));
+    }
+
+    private Sort getSortingForPorperty(String propertySort) {
+        Matcher matcher = propertySortPattern.matcher(propertySort);
+        if (!matcher.matches()) {
+            throw new RuntimeException(String.format("Invalid property sorting '%s'.", propertySort));
+        }
+        String propertyName = matcher.group(1);
+        String order = matcher.group(2);
+        if (order.equals("ASC")) {
+            return Sort.asc(propertyName);
+        }
+        return Sort.desc(propertyName);
     }
 }
