@@ -1,6 +1,7 @@
 package it.geosolutions.opensdi2.service;
 
 import com.googlecode.genericdao.search.Search;
+import com.googlecode.genericdao.search.SearchResult;
 import it.geosolutions.opensdi2.persistence.GenericVibiDao;
 import it.geosolutions.opensdi2.persistence.HerbaceousRelativeCover;
 import it.geosolutions.opensdi2.persistence.Plot;
@@ -11,8 +12,8 @@ public abstract class BaseService<T> {
 
     protected abstract GenericVibiDao getDao();
 
-    public List<T> getAll(String keywordString, String filtersString,
-                             String sortingString, int maxResults, int firstResult, int page) {
+    public SearchResult getAll(String keywordString, String filtersString,
+                               String sortingString, int maxResults, int firstResult, int page) {
         Search search = new Search(getDao().getEntityType());
         if(keywordString != null) {
             search.addFilter(getDao().getKeyWordSearchFilter(keywordString));
@@ -20,7 +21,7 @@ public abstract class BaseService<T> {
         search.setMaxResults(maxResults);
         search.setFirstResult(firstResult);
         search.setPage(page);
-        return getDao().search(search);
+        return getDao().searchAndCount(search);
     }
 
     public List<T> getAll() {
