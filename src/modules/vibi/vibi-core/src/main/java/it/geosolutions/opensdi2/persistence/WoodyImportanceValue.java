@@ -16,9 +16,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class WoodyImportanceValue {
 
     @Id
-    @Column(name = "fid")
-    private String fid;
-
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -33,14 +30,6 @@ public class WoodyImportanceValue {
 
     @Column(name = "canopy_iv")
     private Double canopyIv;
-
-    public String getFid() {
-        return fid;
-    }
-
-    public void setFid(String fid) {
-        this.fid = fid;
-    }
 
     public Integer getPlotNo() {
         return plotNo;

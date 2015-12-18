@@ -3,21 +3,20 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class HerbaceousRelativeCoverDaoImpl extends BaseDao<HerbaceousRelativeCover, String>
-        implements HerbaceousRelativeCoverDao {
+public class PlotModuleWoodyDbhCmDaoImpl extends BaseDao<PlotModuleWoodyDbhCm, String> implements PlotModuleWoodyDbhCmDao {
 
     @Override
-    public void persist(HerbaceousRelativeCover... entities) {
+    public void persist(PlotModuleWoodyDbhCm... entities) {
         super.persist(entities);
     }
 
     @Override
-    public HerbaceousRelativeCover merge(HerbaceousRelativeCover entity) {
+    public PlotModuleWoodyDbhCm merge(PlotModuleWoodyDbhCm entity) {
         return super.merge(entity);
     }
 
     @Override
-    public boolean remove(HerbaceousRelativeCover entity) {
+    public boolean remove(PlotModuleWoodyDbhCm entity) {
         return super.remove(entity);
     }
 
@@ -33,7 +32,7 @@ public class HerbaceousRelativeCoverDaoImpl extends BaseDao<HerbaceousRelativeCo
     }
 
     @Override
-    public Class<HerbaceousRelativeCover> getEntityType() {
-        return HerbaceousRelativeCover.class;
+    public Class<PlotModuleWoodyDbhCm> getEntityType() {
+        return PlotModuleWoodyDbhCm.class;
     }
 }

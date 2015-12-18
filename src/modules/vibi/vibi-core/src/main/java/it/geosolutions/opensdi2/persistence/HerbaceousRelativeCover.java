@@ -16,9 +16,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class HerbaceousRelativeCover {
 
     @Id
-    @Column(name = "fid")
-    private String fid;
-
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -27,14 +24,6 @@ public class HerbaceousRelativeCover {
 
     @Column(name = "relative_cover")
     private Double relativeCover;
-
-    public String getFid() {
-        return fid;
-    }
-
-    public void setFid(String fid) {
-        this.fid = fid;
-    }
 
     public Integer getPlotNo() {
         return plotNo;

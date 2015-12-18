@@ -38,4 +38,16 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="metricsService" class="it.geosolutions.opensdi2.service.MetricsService"/>
+    <bean id="plotModuleWoodyRawDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyRawDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="plotModuleWoodyRawService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyRawService"/>
+    <bean id="plotModuleWoodyDbhDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyDbhDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="plotModuleWoodyDbhService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyDbhService"/>
+    <bean id="plotModuleWoodyDbhCmDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyDbhCmDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="plotModuleWoodyDbhCmService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyDbhCmService"/>
 </beans>

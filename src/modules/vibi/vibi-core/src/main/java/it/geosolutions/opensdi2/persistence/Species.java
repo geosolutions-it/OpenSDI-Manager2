@@ -19,9 +19,6 @@ public class Species {
     @Column(name = "scientific_name")
     private String scientificName;
 
-    @Column(name = "veg_id")
-    private Integer vegId;
-
     @Column(name = "acronym")
     private String acronym;
 
@@ -31,20 +28,17 @@ public class Species {
     @Column(name = "cofc")
     private Integer cofc;
 
-    @Column(name = "syn")
-    private String syn;
+    @Column(name = "tolerance")
+    private String tolerance;
 
     @Column(name = "common_name")
     private String commonName;
 
     @Column(name = "family")
-    private String family;
+    private String ind;
 
-    @Column(name = "fn")
-    private Integer fn;
-
-    @Column(name = "wet")
-    private String wet;
+    @Column(name = "hydro")
+    private String hydro;
 
     @Column(name = "form")
     private String form;
@@ -52,32 +46,26 @@ public class Species {
     @Column(name = "habit")
     private String habit;
 
+    @Column(name = "groupp")
+    private String groupp;
+
     @Column(name = "shade")
-    private String shade;
+    private String nativity;
 
-    @Column(name = "usda_id")
-    private String usdaId;
+    @Column(name = "code1")
+    private String code1;
 
-    @Column(name = "oh_tore")
-    private String ohTore;
+    @Column(name = "code2")
+    private String code2;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "code3")
+    private String code3;
 
-    @Column(name = "oh_status")
-    private String ohStatus;
+    @Column(name = "code4")
+    private String code4;
 
-    @Column(name = "emp")
-    private String emp;
-
-    @Column(name = "mw")
-    private String mw;
-
-    @Column(name = "ncne")
-    private String ncne;
-
-    @Column(name = "notes")
-    private String notes;
+    @Column(name = "code5")
+    private String code5;
 
     public String getScientificName() {
         return scientificName;
@@ -85,14 +73,6 @@ public class Species {
 
     public void setScientificName(String scientificName) {
         this.scientificName = scientificName;
-    }
-
-    public Integer getVegId() {
-        return vegId;
-    }
-
-    public void setVegId(Integer vegId) {
-        this.vegId = vegId;
     }
 
     public String getAcronym() {
@@ -119,12 +99,12 @@ public class Species {
         this.cofc = cofc;
     }
 
-    public String getSyn() {
-        return syn;
+    public String getTolerance() {
+        return tolerance;
     }
 
-    public void setSyn(String syn) {
-        this.syn = syn;
+    public void setTolerance(String tolerance) {
+        this.tolerance = tolerance;
     }
 
     public String getCommonName() {
@@ -135,28 +115,20 @@ public class Species {
         this.commonName = commonName;
     }
 
-    public String getFamily() {
-        return family;
+    public String getInd() {
+        return ind;
     }
 
-    public void setFamily(String family) {
-        this.family = family;
+    public void setInd(String ind) {
+        this.ind = ind;
     }
 
-    public Integer getFn() {
-        return fn;
+    public String getHydro() {
+        return hydro;
     }
 
-    public void setFn(Integer fn) {
-        this.fn = fn;
-    }
-
-    public String getWet() {
-        return wet;
-    }
-
-    public void setWet(String wet) {
-        this.wet = wet;
+    public void setHydro(String hydro) {
+        this.hydro = hydro;
     }
 
     public String getForm() {
@@ -175,75 +147,59 @@ public class Species {
         this.habit = habit;
     }
 
-    public String getShade() {
-        return shade;
+    public String getGroupp() {
+        return groupp;
     }
 
-    public void setShade(String shade) {
-        this.shade = shade;
+    public void setGroupp(String groupp) {
+        this.groupp = groupp;
     }
 
-    public String getUsdaId() {
-        return usdaId;
+    public String getNativity() {
+        return nativity;
     }
 
-    public void setUsdaId(String usdaId) {
-        this.usdaId = usdaId;
+    public void setNativity(String nativity) {
+        this.nativity = nativity;
     }
 
-    public String getOhTore() {
-        return ohTore;
+    public String getCode1() {
+        return code1;
     }
 
-    public void setOhTore(String ohTore) {
-        this.ohTore = ohTore;
+    public void setCode1(String code1) {
+        this.code1 = code1;
     }
 
-    public String getType() {
-        return type;
+    public String getCode2() {
+        return code2;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCode2(String code2) {
+        this.code2 = code2;
     }
 
-    public String getOhStatus() {
-        return ohStatus;
+    public String getCode3() {
+        return code3;
     }
 
-    public void setOhStatus(String ohStatus) {
-        this.ohStatus = ohStatus;
+    public void setCode3(String code3) {
+        this.code3 = code3;
     }
 
-    public String getEmp() {
-        return emp;
+    public String getCode4() {
+        return code4;
     }
 
-    public void setEmp(String emp) {
-        this.emp = emp;
+    public void setCode4(String code4) {
+        this.code4 = code4;
     }
 
-    public String getMw() {
-        return mw;
+    public String getCode5() {
+        return code5;
     }
 
-    public void setMw(String mw) {
-        this.mw = mw;
-    }
-
-    public String getNcne() {
-        return ncne;
-    }
-
-    public void setNcne(String ncne) {
-        this.ncne = ncne;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setCode5(String code5) {
+        this.code5 = code5;
     }
 }

@@ -31,6 +31,9 @@ public class PlotModuleHerbaceous {
     @Column(name = "species")
     private String species;
 
+    @Column(name = "cover_class_code")
+    private String coverClassCode;
+
     public String getFid() {
         return fid;
     }
@@ -77,5 +80,13 @@ public class PlotModuleHerbaceous {
 
     public void setSpecies(String species) {
         this.species = species;
+    }
+
+    public String getCoverClassCode() {
+        return coverClassCode;
+    }
+
+    public void setCoverClassCode(String coverClassCode) {
+        this.coverClassCode = coverClassCode;
     }
 }
