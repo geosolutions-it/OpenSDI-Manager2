@@ -14,13 +14,13 @@ public abstract class BaseService<T> {
     public SearchResult getAll(String keywordString, String filtersString,
                                String sortingString, int maxResults, int firstResult, int page) {
         Search search = new Search(getDao().getEntityType());
-        if (keywordString != null) {
+        if (keywordString != null && !keywordString.isEmpty()) {
             search.addFilter(getDao().getKeyWordSearchFilter(keywordString));
         }
-        if (filtersString != null) {
+        if (filtersString != null && !filtersString.isEmpty()) {
             search.addFilter(getDao().getPropertiesFilter(filtersString));
         }
-        if (sortingString != null) {
+        if (sortingString != null && !filtersString.isEmpty()) {
             for (Sort sort : getDao().getPropertiesSorting(sortingString)) {
                 search.addSort(sort);
             }

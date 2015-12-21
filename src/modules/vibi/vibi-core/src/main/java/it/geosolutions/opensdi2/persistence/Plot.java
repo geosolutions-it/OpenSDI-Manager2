@@ -87,7 +87,7 @@ public class Plot {
     private Double longitude;
 
     @Column(name = "total_modules")
-    private Integer toal_modules;
+    private Integer totalModule;
 
     @Column(name = "intensive_modules")
     private Integer intensiveModules;
@@ -96,7 +96,7 @@ public class Plot {
     private String plotConfiguration;
 
     @Column(name = "plot_size_for_cover_data_area_ha")
-    private Double Plot_size_for_cover_data_area_ha;
+    private Double plotSizeForCoverDataAreaHa;
 
     @Column(name = "estimate_of_per_open_water_entire_site")
     private Double estimateOfPerOpenWaterEntireSite;
@@ -132,7 +132,7 @@ public class Plot {
     private String hgmsubclass;
 
     @Column(name = "twoo_hgm")
-    private String twoo_hgm;
+    private String twooHgm;
 
     @Column(name = "hgmgroup")
     private String hgmgroup;
@@ -144,13 +144,13 @@ public class Plot {
     private String vegClassWetlandsOnly;
 
     @Column(name = "landform_type")
-    private String landform_type;
+    private String landformType;
 
     @Column(name = "homogeneity")
     private String homogeneity;
 
     @Column(name = "stand_size")
-    private String stand_size;
+    private String standSize;
 
     @Column(name = "drainage")
     private String drainage;
@@ -390,12 +390,12 @@ public class Plot {
         this.longitude = longitude;
     }
 
-    public Integer getToal_modules() {
-        return toal_modules;
+    public Integer getTotalModule() {
+        return totalModule;
     }
 
-    public void setToal_modules(Integer toal_modules) {
-        this.toal_modules = toal_modules;
+    public void setTotalModule(Integer totalModule) {
+        this.totalModule = totalModule;
     }
 
     public Integer getIntensiveModules() {
@@ -414,12 +414,12 @@ public class Plot {
         this.plotConfiguration = plotConfiguration;
     }
 
-    public Double getPlot_size_for_cover_data_area_ha() {
-        return Plot_size_for_cover_data_area_ha;
+    public Double getPlotSizeForCoverDataAreaHa() {
+        return plotSizeForCoverDataAreaHa;
     }
 
-    public void setPlot_size_for_cover_data_area_ha(Double plot_size_for_cover_data_area_ha) {
-        Plot_size_for_cover_data_area_ha = plot_size_for_cover_data_area_ha;
+    public void setPlotSizeForCoverDataAreaHa(Double plotSizeForCoverDataAreaHa) {
+        this.plotSizeForCoverDataAreaHa = plotSizeForCoverDataAreaHa;
     }
 
     public Double getEstimateOfPerOpenWaterEntireSite() {
@@ -510,12 +510,12 @@ public class Plot {
         this.hgmsubclass = hgmsubclass;
     }
 
-    public String getTwoo_hgm() {
-        return twoo_hgm;
+    public String getTwooHgm() {
+        return twooHgm;
     }
 
-    public void setTwoo_hgm(String twoo_hgm) {
-        this.twoo_hgm = twoo_hgm;
+    public void setTwooHgm(String twooHgm) {
+        this.twooHgm = twooHgm;
     }
 
     public String getHgmgroup() {
@@ -542,12 +542,12 @@ public class Plot {
         this.vegClassWetlandsOnly = vegClassWetlandsOnly;
     }
 
-    public String getLandform_type() {
-        return landform_type;
+    public String getLandformType() {
+        return landformType;
     }
 
-    public void setLandform_type(String landform_type) {
-        this.landform_type = landform_type;
+    public void setLandformType(String landformType) {
+        this.landformType = landformType;
     }
 
     public String getHomogeneity() {
@@ -558,12 +558,12 @@ public class Plot {
         this.homogeneity = homogeneity;
     }
 
-    public String getStand_size() {
-        return stand_size;
+    public String getStandSize() {
+        return standSize;
     }
 
-    public void setStand_size(String stand_size) {
-        this.stand_size = stand_size;
+    public void setStandSize(String standSize) {
+        this.standSize = standSize;
     }
 
     public String getDrainage() {

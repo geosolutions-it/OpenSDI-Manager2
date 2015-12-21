@@ -150,7 +150,7 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
             if (classMetadata.getPropertyType(property).getName().equals("string")) {
                 filters.add(Filter.ilike(property, keyword));
             } else {
-                filters.add(Filter.custom(String.format("cast({%s} as string) like ?1", property), keyword));
+                filters.add(Filter.custom(String.format("lower(cast({%s} as string)) like lower(?1)", property), keyword));
             }
         }
         return Filter.or(filters.toArray(new Filter[filters.size()]));
