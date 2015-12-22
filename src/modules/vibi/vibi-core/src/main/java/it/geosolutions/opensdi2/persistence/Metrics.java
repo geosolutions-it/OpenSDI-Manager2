@@ -76,6 +76,27 @@ public class Metrics {
     @Column(name = "stems_ha_wetland_shrubs")
     private Double steamsHaWetlandShrubs;
 
+    @Column(name = "per_unvegetated")
+    private Double perUnvegetated;
+
+    @Column(name = "per_button_bush")
+    private Double perButtonBush;
+
+    @Column(name = "per_perennial_native_hydrophytes")
+    private Double perPerennialNativeHydrophytes;
+
+    @Column(name = "per_adventives")
+    private Double perAdventives;
+
+    @Column(name = "per_open_water")
+    private Double perPpenWater;
+
+    @Column(name = "per_unvegetated_open_water")
+    private Double perUnvegetatedOpenWater;
+
+    @Column(name = "per_bare_ground")
+    private Double perBareGround;
+
     public Integer getPlotNo() {
         return plotNo;
     }
@@ -234,5 +255,61 @@ public class Metrics {
 
     public void setSteamsHaWetlandShrubs(Double steamsHaWetlandShrubs) {
         this.steamsHaWetlandShrubs = steamsHaWetlandShrubs;
+    }
+
+    public Double getPerUnvegetated() {
+        return perUnvegetated;
+    }
+
+    public void setPerUnvegetated(Double perUnvegetated) {
+        this.perUnvegetated = perUnvegetated;
+    }
+
+    public Double getPerButtonBush() {
+        return perButtonBush;
+    }
+
+    public void setPerButtonBush(Double perButtonBush) {
+        this.perButtonBush = perButtonBush;
+    }
+
+    public Double getPerPerennialNativeHydrophytes() {
+        return perPerennialNativeHydrophytes;
+    }
+
+    public void setPerPerennialNativeHydrophytes(Double perPerennialNativeHydrophytes) {
+        this.perPerennialNativeHydrophytes = perPerennialNativeHydrophytes;
+    }
+
+    public Double getPerAdventives() {
+        return perAdventives;
+    }
+
+    public void setPerAdventives(Double perAdventives) {
+        this.perAdventives = perAdventives;
+    }
+
+    public Double getPerPpenWater() {
+        return perPpenWater;
+    }
+
+    public void setPerPpenWater(Double perPpenWater) {
+        this.perPpenWater = perPpenWater;
+    }
+
+    public Double getPerUnvegetatedOpenWater() {
+        return perUnvegetatedOpenWater;
+    }
+
+    public void setPerUnvegetatedOpenWater(Double perUnvegetatedOpenWater) {
+        this.perUnvegetatedOpenWater = perUnvegetatedOpenWater;
+    }
+
+    public Double getPerBareGround() {
+        return perBareGround;
+    }
+
+    public void setPerBareGround(Double perBareGround) {
+        this.perBareGround = perBareGround;
     }
 }

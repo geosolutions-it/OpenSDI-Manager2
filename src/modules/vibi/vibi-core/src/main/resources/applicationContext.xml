@@ -50,4 +50,8 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="plotModuleWoodyDbhCmService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyDbhCmService"/>
+    <bean id="plotModuleHerbaceousInfoDao" class="it.geosolutions.opensdi2.persistence.PlotModuleHerbaceousInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="plotModuleHerbaceousInfoService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousInfoService"/>
 </beans>
