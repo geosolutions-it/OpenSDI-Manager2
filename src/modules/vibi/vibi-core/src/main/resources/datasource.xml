@@ -6,7 +6,7 @@
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
     <bean id="opensdiDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="${VIBI_DB_URL:jdbc:postgresql://localhost:5432/postgres}"/>
+        <property name="url" value="${VIBI_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}"/>
         <property name="username" value="${VIBI_DB_USER:postgres}"/>
         <property name="password" value="${VIBI_DB_PASS:postgres}"/>
     </bean>
