@@ -133,8 +133,13 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     }
 
     @Override
+    public ClassMetadata getClassMetadata() {
+        return sessionFactory.getClassMetadata(getEntityType());
+    }
+
+    @Override
     public String[] getAllPropertiesNames() {
-        ClassMetadata classMetadata = sessionFactory.getClassMetadata(getEntityType());
+        ClassMetadata classMetadata = getClassMetadata();
         String[] normalProperties = classMetadata.getPropertyNames();
         String[] properties = Arrays.copyOf(normalProperties, normalProperties.length + 1);
         properties[properties.length - 1] = classMetadata.getIdentifierPropertyName();
@@ -144,7 +149,7 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     @Override
     public Filter getKeyWordSearchFilter(String keyword) {
         List<Filter> filters = new ArrayList<Filter>();
-        ClassMetadata classMetadata = sessionFactory.getClassMetadata(getEntityType());
+        ClassMetadata classMetadata = getClassMetadata();
         keyword = "%" + keyword + "%";
         for (String property : getAllPropertiesNames()) {
             if (classMetadata.getPropertyType(property).getName().equals("string")) {
@@ -199,4 +204,6 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         }
         return Sort.desc(propertyName);
     }
+
+
 }

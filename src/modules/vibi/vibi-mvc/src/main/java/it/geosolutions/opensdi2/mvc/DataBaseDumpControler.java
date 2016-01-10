@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/vibi")
-public final class ExportControler extends BaseFileManager {
+public final class DataBaseDumpControler extends BaseFileManager {
 
     private static File temporaryFolder = new File(System.getProperty("java.io.tmpdir"));
 
@@ -24,8 +24,11 @@ public final class ExportControler extends BaseFileManager {
     public void sqlDump(HttpServletResponse response) {
         File folder = new File(temporaryFolder, UUID.randomUUID().toString());
         super.newFolder("", folder.getPath());
-        super.downloadFile("", folder.getAbsolutePath(), createSqlDump(folder), response);
-        super.deleteFolder("", folder.getAbsolutePath(), "");
+        try {
+            super.downloadFile("", folder.getAbsolutePath(), createSqlDump(folder), response);
+        } finally {
+            super.deleteFolder("", folder.getAbsolutePath(), "");
+        }
     }
 
     private static String createSqlDump(File folder) {
