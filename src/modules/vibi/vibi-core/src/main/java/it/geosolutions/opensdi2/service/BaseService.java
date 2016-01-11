@@ -6,14 +6,21 @@ import com.googlecode.genericdao.search.Sort;
 import it.geosolutions.opensdi2.persistence.GenericVibiDao;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.EntityMode;
 import org.hibernate.metadata.ClassMetadata;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public abstract class BaseService<T> {
@@ -44,6 +51,67 @@ public abstract class BaseService<T> {
 
     public String getEntityName() {
         return getDao().getEntityType().getSimpleName();
+    }
+
+    public void writeEntitiesToExcel(File file, List<Object> entities, String propertiesMappingString) {
+        List<PropertyMapping> propertiesMappings = getAllPropertiesMappings(propertiesMappingString);
+        Workbook workBook = new HSSFWorkbook();
+        Sheet sheet = workBook.createSheet(getEntityName());
+        Row row = sheet.createRow(0);
+        for (int i = 0; i < propertiesMappings.size(); i++) {
+            row.createCell(i).setCellValue(propertiesMappings.get(i).header);
+        }
+        ClassMetadata classMetadata = getDao().getClassMetadata();
+        for (int i = 0; i < entities.size(); i++) {
+            writeEntityToExcel(sheet.createRow(i + 1), entities.get(i), classMetadata, propertiesMappings);
+        }
+        FileOutputStream output = null;
+        try {
+            output = new FileOutputStream(file);
+            workBook.write(output);
+
+        } catch (Exception exception) {
+            throw new RuntimeException("Error writing excel file.", exception);
+        } finally {
+            try {
+                if (output != null) {
+                    output.flush();
+                    output.close();
+                }
+            } catch (Exception exception) {
+                LOGGER.error("Error closing excel output file.", exception);
+            }
+        }
+    }
+
+    private void writeEntityToExcel(Row row, Object entity,
+                                    ClassMetadata classMetadata, List<PropertyMapping> propertiesMappings) {
+        String idProperty = classMetadata.getIdentifierPropertyName();
+        for (int i = 0; i < propertiesMappings.size(); i++) {
+            PropertyMapping mapping = propertiesMappings.get(i);
+            if (!mapping.name.equalsIgnoreCase(idProperty)) {
+                setRowValue(row, classMetadata.getPropertyValue(entity, mapping.name, EntityMode.POJO), i);
+            } else {
+                setRowValue(row, classMetadata.getIdentifier(entity, EntityMode.POJO), i);
+            }
+        }
+    }
+
+    private void setRowValue(Row row, Object value, int columnIndex) {
+        if (value == null) {
+            return;
+        }
+        if (value instanceof Double) {
+            row.createCell(columnIndex).setCellValue((Double) value);
+        } else if (value instanceof Date) {
+            row.createCell(columnIndex).setCellValue((Date) value);
+        } else if (value instanceof Calendar) {
+            row.createCell(columnIndex).setCellValue((Calendar) value);
+        } else if (value instanceof Boolean) {
+            row.createCell(columnIndex).setCellValue((Boolean) value);
+        } else {
+            row.createCell(columnIndex).setCellValue(value.toString());
+        }
     }
 
     public void writeEntitiesToCsv(File file, List<Object> entities, String propertiesMappingString) {

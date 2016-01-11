@@ -32,7 +32,7 @@ public class Plot {
     @Column(name = "monitoring_event")
     private String monitoringEvent;
 
-    @Column(name = "timestamptz")
+    @Column(name = "datetimer")
     private Date dateTimer;
 
     @Column(name = "party")

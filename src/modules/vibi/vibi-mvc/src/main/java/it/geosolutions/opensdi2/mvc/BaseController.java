@@ -45,13 +45,13 @@ public abstract class BaseController<T> extends BaseFileManager {
                        @RequestParam(required = false, defaultValue = "-1") Integer firstResult,
                        @RequestParam(required = false, defaultValue = "-1") Integer page,
                        @RequestParam(required = false) String format,
-                       @RequestParam(required = false) String propertiesMappings,
+                       @RequestParam(required = false) String mappings,
                        HttpServletResponse response) {
         SearchResult searchResult = getBaseService().getAll(keyword, filters, ordering, maxResults, firstResult, page);
         File folder = new File(temporaryFolder, UUID.randomUUID().toString());
         super.newFolder("", folder.getPath());
         try {
-            String file = handleExport(format, folder, searchResult.getResult(), propertiesMappings);
+            String file = handleExport(format, folder, searchResult.getResult(), mappings);
             super.downloadFile("", folder.getAbsolutePath(), file, response);
         } finally {
             super.deleteFolder("", folder.getAbsolutePath(), "");
@@ -63,7 +63,7 @@ public abstract class BaseController<T> extends BaseFileManager {
             return handleCsv(folder, entities, propertiesMappings);
         }
         if (format.equalsIgnoreCase("excel")) {
-            return handleCsv(folder, entities, propertiesMappings);
+            return handleExcel(folder, entities, propertiesMappings);
         }
         throw new RuntimeException(String.format(
                 "Invalid export format '%s', available ones are: ['%s', '%s'].", format, "csv", "excel"));
@@ -73,6 +73,13 @@ public abstract class BaseController<T> extends BaseFileManager {
         String fileName = String.format("%s-%s.csv", System.currentTimeMillis(), getBaseService().getEntityName());
         File file = new File(folder, fileName);
         getBaseService().writeEntitiesToCsv(file, entities, propertiesMappings);
+        return fileName;
+    }
+
+    private String handleExcel(File folder, List<Object> entities, String propertiesMappings) {
+        String fileName = String.format("%s-%s.xlsx", System.currentTimeMillis(), getBaseService().getEntityName());
+        File file = new File(folder, fileName);
+        getBaseService().writeEntitiesToExcel(file, entities, propertiesMappings);
         return fileName;
     }
 }
