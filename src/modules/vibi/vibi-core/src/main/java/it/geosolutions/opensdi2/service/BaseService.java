@@ -197,4 +197,20 @@ public abstract class BaseService<T> {
             this.header = header;
         }
     }
+
+    public void persist(T entity) {
+        getDao().persist(entity);
+    }
+
+    public void merge(Long id, T entity) {
+        getDao().getClassMetadata().setIdentifier(entity, id, EntityMode.POJO);
+        getDao().merge(entity);
+    }
+
+    public void delete(Long id) {
+        T entity = getDao().find(id);
+        if (entity != null) {
+            getDao().remove(entity);
+        }
+    }
 }

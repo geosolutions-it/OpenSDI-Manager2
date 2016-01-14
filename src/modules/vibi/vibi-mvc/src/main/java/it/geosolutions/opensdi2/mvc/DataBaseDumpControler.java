@@ -1,6 +1,8 @@
 package it.geosolutions.opensdi2.mvc;
 
+import it.geosolutions.opensdi2.service.SecurityService;
 import org.apache.commons.exec.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,10 +20,14 @@ import java.util.UUID;
 @RequestMapping("/vibi")
 public final class DataBaseDumpControler extends BaseFileManager {
 
+    @Autowired
+    SecurityService securityService;
+
     private static File temporaryFolder = new File(System.getProperty("java.io.tmpdir"));
 
     @RequestMapping(value = "sqlDump", method = {RequestMethod.POST, RequestMethod.GET})
     public void sqlDump(HttpServletResponse response) {
+        securityService.validate("download", "export", null, "sql", null);
         File folder = new File(temporaryFolder, UUID.randomUUID().toString());
         super.newFolder("", folder.getPath());
         try {

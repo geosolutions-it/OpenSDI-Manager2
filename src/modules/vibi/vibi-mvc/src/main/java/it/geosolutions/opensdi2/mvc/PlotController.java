@@ -9,6 +9,7 @@ import it.geosolutions.opensdi2.persistence.HerbaceousRelativeCover;
 import it.geosolutions.opensdi2.persistence.Plot;
 import it.geosolutions.opensdi2.service.BaseService;
 import it.geosolutions.opensdi2.service.PlotService;
+import it.geosolutions.opensdi2.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

@@ -54,4 +54,10 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="plotModuleHerbaceousInfoService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousInfoService"/>
+
+    <bean id="ruleDao" class="it.geosolutions.opensdi2.persistence.RuleDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="ruleService" class="it.geosolutions.opensdi2.service.RuleService"/>
+    <bean id="securityService" class="it.geosolutions.opensdi2.service.SecurityService"/>
 </beans>

@@ -205,5 +205,8 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         return Sort.desc(propertyName);
     }
 
-
+    @Override
+    public void persist(T entity) {
+        em().persist(entity);
+    }
 }

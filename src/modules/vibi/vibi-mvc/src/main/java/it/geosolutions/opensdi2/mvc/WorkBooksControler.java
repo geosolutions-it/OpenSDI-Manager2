@@ -1,5 +1,7 @@
 package it.geosolutions.opensdi2.mvc;
 
+import it.geosolutions.opensdi2.service.SecurityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +19,9 @@ import java.util.regex.Pattern;
 @RequestMapping("/vibi")
 public final class WorkBooksControler extends BaseFileManager {
 
+    @Autowired
+    SecurityService securityService;
+
     private final static Pattern allowedFileExtensions = Pattern.compile(".+?\\.(?:(?:xls$)|(?:xlsx$))");
 
     @RequestMapping(value = "download", method = {RequestMethod.POST, RequestMethod.GET})
@@ -24,6 +29,7 @@ public final class WorkBooksControler extends BaseFileManager {
             @RequestParam String folder,
             @RequestParam String file,
             HttpServletRequest request, HttpServletResponse response) {
+        securityService.validate("download", "workbook", null, null, null);
         super.downloadFile("", folder, file, response);
     }
 
@@ -36,6 +42,7 @@ public final class WorkBooksControler extends BaseFileManager {
             @RequestParam(required = false) String folder,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+        securityService.validate("upload", "workbook", null, null, null);
         if (!allowedFileExtensions.matcher(name).matches()) {
             throw new RuntimeException("Only Excel files (xls, xlsx) are allowed: '" + name + "'.");
         }

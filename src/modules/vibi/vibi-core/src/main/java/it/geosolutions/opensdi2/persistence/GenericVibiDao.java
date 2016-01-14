@@ -53,4 +53,6 @@ public interface GenericVibiDao<T, ID extends Serializable> extends
     List<Sort> getPropertiesSorting(String sortingString);
 
     Class getEntityType();
+
+    void persist(T entity);
 }

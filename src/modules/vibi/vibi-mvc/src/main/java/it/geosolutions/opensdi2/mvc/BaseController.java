@@ -3,10 +3,9 @@ package it.geosolutions.opensdi2.mvc;
 import com.googlecode.genericdao.search.SearchResult;
 import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
 import it.geosolutions.opensdi2.service.BaseService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import it.geosolutions.opensdi2.service.SecurityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -16,6 +15,9 @@ import java.util.UUID;
 public abstract class BaseController<T> extends BaseFileManager {
 
     private static File temporaryFolder = new File(System.getProperty("java.io.tmpdir"));
+
+    @Autowired
+    SecurityService securityService;
 
     protected abstract BaseService<T> getBaseService();
 
@@ -33,9 +35,33 @@ public abstract class BaseController<T> extends BaseFileManager {
         responseWrapper.setCount(searchResult.getResult().size());
         responseWrapper.setTotalCount(searchResult.getTotalCount());
         responseWrapper.setData(searchResult.getResult());
+        securityService.validate("crud", "read", getBaseService().getEntityName(), "json", searchResult.getResult().size());
         return responseWrapper;
     }
 
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    void create(@RequestBody T entity) {
+        securityService.validate("crud", "create", getBaseService().getEntityName(), null, null);
+        getBaseService().persist(entity);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public
+    @ResponseBody
+    void update(@PathVariable(value = "id") Long id, @RequestBody T entity) {
+        securityService.validate("crud", "update", getBaseService().getEntityName(), null, null);
+        getBaseService().merge(id, entity);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public
+    @ResponseBody
+    void delete(@PathVariable(value = "id") Long id) {
+        securityService.validate("crud", "delete", getBaseService().getEntityName(), null, null);
+        getBaseService().delete(id);
+    }
 
     @RequestMapping(value = "export", method = {RequestMethod.POST, RequestMethod.GET})
     public void export(@RequestParam(required = false) String keyword,
@@ -44,10 +70,11 @@ public abstract class BaseController<T> extends BaseFileManager {
                        @RequestParam(required = false, defaultValue = "50") Integer maxResults,
                        @RequestParam(required = false, defaultValue = "-1") Integer firstResult,
                        @RequestParam(required = false, defaultValue = "-1") Integer page,
-                       @RequestParam(required = false) String format,
+                       @RequestParam(required = false, defaultValue = "csv") String format,
                        @RequestParam(required = false) String mappings,
                        HttpServletResponse response) {
         SearchResult searchResult = getBaseService().getAll(keyword, filters, ordering, maxResults, firstResult, page);
+        securityService.validate("download", "export", getBaseService().getEntityName(), format, searchResult.getResult().size());
         File folder = new File(temporaryFolder, UUID.randomUUID().toString());
         super.newFolder("", folder.getPath());
         try {
@@ -59,7 +86,7 @@ public abstract class BaseController<T> extends BaseFileManager {
     }
 
     private String handleExport(String format, File folder, List<Object> entities, String propertiesMappings) {
-        if (format == null || format.equalsIgnoreCase("csv")) {
+        if (format.equalsIgnoreCase("csv")) {
             return handleCsv(folder, entities, propertiesMappings);
         }
         if (format.equalsIgnoreCase("excel")) {

@@ -291,6 +291,12 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -323,6 +329,11 @@
                  <artifactId>geostore-rest-client</artifactId>
                  <version>${geostore.version}</version>
              </dependency>
+            <dependency>
+                <groupId>it.geosolutions.geostore</groupId>
+                <artifactId>geostore-model</artifactId>
+                <version>${geostore.version}</version>
+            </dependency>
             <!-- =========================================================== -->
             <!--     TEST                                                    -->
             <!-- =========================================================== -->
