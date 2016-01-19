@@ -3,20 +3,21 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class WoodyImportanceValueDaoImpl extends BaseDao<WoodyImportanceValue, Integer> implements WoodyImportanceValueDao {
+public class CoverMidpointLookupDaoImpl extends BaseDao<CoverMidpointLookup, Integer>
+        implements CoverMidpointLookupDao {
 
     @Override
-    public void persist(WoodyImportanceValue... entities) {
+    public void persist(CoverMidpointLookup... entities) {
         super.persist(entities);
     }
 
     @Override
-    public WoodyImportanceValue merge(WoodyImportanceValue entity) {
+    public CoverMidpointLookup merge(CoverMidpointLookup entity) {
         return super.merge(entity);
     }
 
     @Override
-    public boolean remove(WoodyImportanceValue entity) {
+    public boolean remove(CoverMidpointLookup entity) {
         return super.remove(entity);
     }
 
@@ -25,16 +26,14 @@ public class WoodyImportanceValueDaoImpl extends BaseDao<WoodyImportanceValue, I
         return super.removeById(id);
     }
 
-    private static String[] PKNames = {
-            "fid"
-    };
+    private static String[] PKNames = {};
 
     public String[] getPKNames() {
         return PKNames;
     }
 
     @Override
-    public Class<WoodyImportanceValue> getEntityType() {
-        return WoodyImportanceValue.class;
+    public Class<CoverMidpointLookup> getEntityType() {
+        return CoverMidpointLookup.class;
     }
 }

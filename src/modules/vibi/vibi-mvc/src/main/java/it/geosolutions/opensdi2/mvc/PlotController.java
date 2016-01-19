@@ -18,13 +18,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/vibi/plot")
-public class PlotController extends BaseController<Plot> {
+public class PlotController extends BaseController<Plot, Long> {
 
     @Autowired
     PlotService plotService;
 
     @Override
-    protected BaseService<Plot> getBaseService() {
+    protected BaseService<Plot, Long> getBaseService() {
         return plotService;
     }
 }

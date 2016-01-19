@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/vibi/species")
-public class SpeciesController extends BaseController<Species> {
+public class SpeciesController extends BaseController<Species, String> {
 
     @Autowired
     SpeciesService speciesService;
 
     @Override
-    protected BaseService<Species> getBaseService() {
+    protected BaseService<Species, String> getBaseService() {
         return speciesService;
     }
 }

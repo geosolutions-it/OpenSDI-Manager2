@@ -3,7 +3,7 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class MetricsDaoImpl extends BaseDao<Metrics, Long> implements MetricsDao {
+public class MetricsDaoImpl extends BaseDao<Metrics, Integer> implements MetricsDao {
 
     @Override
     public void persist(Metrics... entities) {
@@ -21,7 +21,7 @@ public class MetricsDaoImpl extends BaseDao<Metrics, Long> implements MetricsDao
     }
 
     @Override
-    public boolean removeById(Long id) {
+    public boolean removeById(Integer id) {
         return super.removeById(id);
     }
 

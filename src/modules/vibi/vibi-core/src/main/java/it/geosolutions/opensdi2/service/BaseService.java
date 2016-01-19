@@ -14,20 +14,17 @@ import org.hibernate.EntityMode;
 import org.hibernate.metadata.ClassMetadata;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public abstract class BaseService<T> {
+public abstract class BaseService<T, K extends Serializable> {
 
     private final static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
 
-    protected abstract GenericVibiDao<T, Long> getDao();
+    protected abstract GenericVibiDao<T, K> getDao();
 
     public SearchResult getAll(String keywordString, String filtersString,
                                String sortingString, int maxResults, int firstResult, int page) {
@@ -202,12 +199,16 @@ public abstract class BaseService<T> {
         getDao().persist(entity);
     }
 
-    public void merge(Long id, T entity) {
+    public void refreshCalculations() {
+        getDao().getEntityManager().createNativeQuery("select from refresh_calculations()");
+    }
+
+    public void merge(K id, T entity) {
         getDao().getClassMetadata().setIdentifier(entity, id, EntityMode.POJO);
         getDao().merge(entity);
     }
 
-    public void delete(Long id) {
+    public void delete(K id) {
         T entity = getDao().find(id);
         if (entity != null) {
             getDao().remove(entity);

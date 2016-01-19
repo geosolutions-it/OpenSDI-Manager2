@@ -15,13 +15,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/vibi/woodyImportanceValue")
-public class WoodyImportanceValueController extends BaseController<WoodyImportanceValue> {
+public class WoodyImportanceValueController extends BaseController<WoodyImportanceValue, Integer> {
 
     @Autowired
     WoodyImportanceValueService herbaceousRelativeCoverService;
 
     @Override
-    protected BaseService<WoodyImportanceValue> getBaseService() {
+    protected BaseService<WoodyImportanceValue, Integer> getBaseService() {
         return herbaceousRelativeCoverService;
     }
 }

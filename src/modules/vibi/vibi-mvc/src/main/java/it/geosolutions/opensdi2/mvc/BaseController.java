@@ -9,17 +9,18 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class BaseController<T> extends BaseFileManager {
+public abstract class BaseController<T, K extends Serializable> extends BaseFileManager {
 
     private static File temporaryFolder = new File(System.getProperty("java.io.tmpdir"));
 
     @Autowired
     SecurityService securityService;
 
-    protected abstract BaseService<T> getBaseService();
+    protected abstract BaseService<T, K> getBaseService();
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public
@@ -45,22 +46,25 @@ public abstract class BaseController<T> extends BaseFileManager {
     void create(@RequestBody T entity) {
         securityService.validate("crud", "create", getBaseService().getEntityName(), null, null);
         getBaseService().persist(entity);
+        getBaseService().refreshCalculations();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public
     @ResponseBody
-    void update(@PathVariable(value = "id") Long id, @RequestBody T entity) {
+    void update(@PathVariable(value = "id") K id, @RequestBody T entity) {
         securityService.validate("crud", "update", getBaseService().getEntityName(), null, null);
         getBaseService().merge(id, entity);
+        getBaseService().refreshCalculations();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public
     @ResponseBody
-    void delete(@PathVariable(value = "id") Long id) {
+    void delete(@PathVariable(value = "id") K id) {
         securityService.validate("crud", "delete", getBaseService().getEntityName(), null, null);
         getBaseService().delete(id);
+        getBaseService().refreshCalculations();
     }
 
     @RequestMapping(value = "export", method = {RequestMethod.POST, RequestMethod.GET})

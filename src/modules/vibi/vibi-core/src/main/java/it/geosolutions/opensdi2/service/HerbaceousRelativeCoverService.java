@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(value = "opensdiTransactionManager")
-public class HerbaceousRelativeCoverService extends BaseService<HerbaceousRelativeCover> {
+public class HerbaceousRelativeCoverService extends BaseService<HerbaceousRelativeCover, Integer> {
 
     @Autowired
     private HerbaceousRelativeCoverDao herbaceousRelativeCoverDao;
 
     @Override
-    protected GenericVibiDao getDao() {
+    protected GenericVibiDao<HerbaceousRelativeCover, Integer> getDao() {
         return herbaceousRelativeCoverDao;
     }
 }

@@ -3,7 +3,7 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class HerbaceousRelativeCoverDaoImpl extends BaseDao<HerbaceousRelativeCover, String>
+public class HerbaceousRelativeCoverDaoImpl extends BaseDao<HerbaceousRelativeCover, Integer>
         implements HerbaceousRelativeCoverDao {
 
     @Override
@@ -22,7 +22,7 @@ public class HerbaceousRelativeCoverDaoImpl extends BaseDao<HerbaceousRelativeCo
     }
 
     @Override
-    public boolean removeById(String id) {
+    public boolean removeById(Integer id) {
         return super.removeById(id);
     }
 

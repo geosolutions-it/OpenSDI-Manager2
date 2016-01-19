@@ -19,6 +19,12 @@ public class Metrics {
     @Column(name = "plot_no")
     private Integer plotNo;
 
+    @Column(name = "vibi_type")
+    private String vibiType;
+
+    @Column(name = "score")
+    private Double score;
+
     @Column(name = "carex_metric_value")
     private Double carexMetricValue;
 
@@ -103,6 +109,22 @@ public class Metrics {
 
     public void setPlotNo(Integer plotNo) {
         this.plotNo = plotNo;
+    }
+
+    public String getVibiType() {
+        return vibiType;
+    }
+
+    public void setVibiType(String vibiType) {
+        this.vibiType = vibiType;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
     }
 
     public Double getCarexMetricValue() {

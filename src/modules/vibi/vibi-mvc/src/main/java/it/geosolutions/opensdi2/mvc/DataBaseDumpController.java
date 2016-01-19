@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/vibi")
-public final class DataBaseDumpControler extends BaseFileManager {
+public final class DataBaseDumpController extends BaseFileManager {
 
     @Autowired
     SecurityService securityService;

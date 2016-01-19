@@ -16,13 +16,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/vibi/herbaceousRelativeCover")
-public class HerbaceousRelativeCoverController extends BaseController<HerbaceousRelativeCover> {
+public class HerbaceousRelativeCoverController extends BaseController<HerbaceousRelativeCover, Integer> {
 
     @Autowired
     HerbaceousRelativeCoverService herbaceousRelativeCoverService;
 
     @Override
-    protected BaseService<HerbaceousRelativeCover> getBaseService() {
+    protected BaseService<HerbaceousRelativeCover, Integer> getBaseService() {
         return herbaceousRelativeCoverService;
     }
 }

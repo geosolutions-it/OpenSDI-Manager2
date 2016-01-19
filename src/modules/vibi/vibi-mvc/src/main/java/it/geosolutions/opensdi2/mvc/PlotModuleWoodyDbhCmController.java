@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/vibi/plotModuleWoodyDbhCm")
-public class PlotModuleWoodyDbhCmController extends BaseController<PlotModuleWoodyDbhCm> {
+public class PlotModuleWoodyDbhCmController extends BaseController<PlotModuleWoodyDbhCm, Integer> {
 
     @Autowired
     PlotModuleWoodyDbhCmService plotModuleWoodyDbhCmService;
 
     @Override
-    protected BaseService<PlotModuleWoodyDbhCm> getBaseService() {
+    protected BaseService<PlotModuleWoodyDbhCm, Integer> getBaseService() {
         return plotModuleWoodyDbhCmService;
     }
 }

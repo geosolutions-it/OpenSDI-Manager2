@@ -54,7 +54,22 @@
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
     <bean id="plotModuleHerbaceousInfoService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousInfoService"/>
-
+    <bean id="classCodeModNatureServeDao" class="it.geosolutions.opensdi2.persistence.ClassCodeModNatureServeDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="classCodeModNatureServeService" class="it.geosolutions.opensdi2.service.ClassCodeModNatureServeService"/>
+    <bean id="coverMidpointLookupDao" class="it.geosolutions.opensdi2.persistence.CoverMidpointLookupDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="coverMidpointLookupService" class="it.geosolutions.opensdi2.service.CoverMidpointLookupService"/>
+    <bean id="biomassRawDao" class="it.geosolutions.opensdi2.persistence.BiomassRawDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="biomassRawService" class="it.geosolutions.opensdi2.service.BiomassRawService"/>
+    <bean id="biomassDao" class="it.geosolutions.opensdi2.persistence.BiomassDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="biomassService" class="it.geosolutions.opensdi2.service.BiomassService"/>
     <bean id="ruleDao" class="it.geosolutions.opensdi2.persistence.RuleDaoImpl">
         <property name="searchProcessor" ref="searchProcessor"/>
     </bean>

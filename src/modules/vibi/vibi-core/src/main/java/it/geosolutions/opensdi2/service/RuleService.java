@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(value = "opensdiTransactionManager")
-public class RuleService extends BaseService<Rule> {
+public class RuleService extends BaseService<Rule, Long> {
 
     @Autowired
     private RuleDao ruleDao;

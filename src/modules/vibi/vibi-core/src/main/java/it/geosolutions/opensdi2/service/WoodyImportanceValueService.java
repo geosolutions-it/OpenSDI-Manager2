@@ -7,13 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(value = "opensdiTransactionManager")
-public class WoodyImportanceValueService extends BaseService<WoodyImportanceValue> {
+public class WoodyImportanceValueService extends BaseService<WoodyImportanceValue, Integer> {
 
     @Autowired
     private WoodyImportanceValueDao woodyImportanceValueDao;
 
     @Override
-    protected GenericVibiDao getDao() {
+    protected GenericVibiDao<WoodyImportanceValue, Integer> getDao() {
         return woodyImportanceValueDao;
     }
 }

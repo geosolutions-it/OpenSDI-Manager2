@@ -26,6 +26,7 @@ import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.Sort;
 import org.hibernate.metadata.ClassMetadata;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.List;
 
@@ -55,4 +56,6 @@ public interface GenericVibiDao<T, ID extends Serializable> extends
     Class getEntityType();
 
     void persist(T entity);
+
+    EntityManager getEntityManager();
 }

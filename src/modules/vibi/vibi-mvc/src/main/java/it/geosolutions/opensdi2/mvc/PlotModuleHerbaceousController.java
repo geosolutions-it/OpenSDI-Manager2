@@ -15,13 +15,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/vibi/plotModuleHerbaceous")
-public class PlotModuleHerbaceousController extends BaseController<PlotModuleHerbaceous>{
+public class PlotModuleHerbaceousController extends BaseController<PlotModuleHerbaceous, String>{
 
     @Autowired
     PlotModuleHerbaceousService plotModuleHerbaceousService;
 
     @Override
-    protected BaseService<PlotModuleHerbaceous> getBaseService() {
+    protected BaseService<PlotModuleHerbaceous, String> getBaseService() {
         return plotModuleHerbaceousService;
     }
 }

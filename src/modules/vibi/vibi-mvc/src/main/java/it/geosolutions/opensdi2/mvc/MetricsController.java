@@ -16,13 +16,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/vibi/metrics")
-public class MetricsController extends BaseController<Metrics> {
+public class MetricsController extends BaseController<Metrics, Integer> {
 
     @Autowired
     private MetricsService metricsService;
 
     @Override
-    protected BaseService<Metrics> getBaseService() {
+    protected BaseService<Metrics, Integer> getBaseService() {
         return metricsService;
     }
 }

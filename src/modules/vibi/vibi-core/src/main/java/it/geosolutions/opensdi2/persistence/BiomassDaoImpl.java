@@ -3,25 +3,26 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotModuleWoodyDbhDaoImpl extends BaseDao<PlotModuleWoodyDbh, Integer> implements PlotModuleWoodyDbhDao {
+public class BiomassDaoImpl extends BaseDao<Biomass, String>
+        implements BiomassDao {
 
     @Override
-    public void persist(PlotModuleWoodyDbh... entities) {
+    public void persist(Biomass... entities) {
         super.persist(entities);
     }
 
     @Override
-    public PlotModuleWoodyDbh merge(PlotModuleWoodyDbh entity) {
+    public Biomass merge(Biomass entity) {
         return super.merge(entity);
     }
 
     @Override
-    public boolean remove(PlotModuleWoodyDbh entity) {
+    public boolean remove(Biomass entity) {
         return super.remove(entity);
     }
 
     @Override
-    public boolean removeById(Integer id) {
+    public boolean removeById(String id) {
         return super.removeById(id);
     }
 
@@ -32,7 +33,7 @@ public class PlotModuleWoodyDbhDaoImpl extends BaseDao<PlotModuleWoodyDbh, Integ
     }
 
     @Override
-    public Class<PlotModuleWoodyDbh> getEntityType() {
-        return PlotModuleWoodyDbh.class;
+    public Class<Biomass> getEntityType() {
+        return Biomass.class;
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/vibi/rule")
-public class RuleController extends BaseController<Rule> {
+public class RuleController extends BaseController<Rule, Long> {
 
     @Autowired
     private RuleService ruleService;

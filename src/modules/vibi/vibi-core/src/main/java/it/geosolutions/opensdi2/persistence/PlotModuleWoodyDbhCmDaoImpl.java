@@ -3,7 +3,7 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotModuleWoodyDbhCmDaoImpl extends BaseDao<PlotModuleWoodyDbhCm, String> implements PlotModuleWoodyDbhCmDao {
+public class PlotModuleWoodyDbhCmDaoImpl extends BaseDao<PlotModuleWoodyDbhCm, Integer> implements PlotModuleWoodyDbhCmDao {
 
     @Override
     public void persist(PlotModuleWoodyDbhCm... entities) {
@@ -21,7 +21,7 @@ public class PlotModuleWoodyDbhCmDaoImpl extends BaseDao<PlotModuleWoodyDbhCm, S
     }
 
     @Override
-    public boolean removeById(String id) {
+    public boolean removeById(Integer id) {
         return super.removeById(id);
     }
 

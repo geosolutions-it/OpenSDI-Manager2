@@ -5,14 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotModuleHerbaceousInfoService extends BaseService<PlotModuleHerbaceousInfo>{
+public class PlotModuleHerbaceousInfoService extends BaseService<PlotModuleHerbaceousInfo, String>{
 
     @Autowired
     private PlotModuleHerbaceousInfoDao plotModuleHerbaceousInfoDao;
 
 
     @Override
-    protected GenericVibiDao getDao() {
+    protected GenericVibiDao<PlotModuleHerbaceousInfo, String> getDao() {
         return plotModuleHerbaceousInfoDao;
     }
 }

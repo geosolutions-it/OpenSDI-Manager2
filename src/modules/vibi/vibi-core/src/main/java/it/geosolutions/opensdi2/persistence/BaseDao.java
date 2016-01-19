@@ -209,4 +209,9 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     public void persist(T entity) {
         em().persist(entity);
     }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return em();
+    }
 }

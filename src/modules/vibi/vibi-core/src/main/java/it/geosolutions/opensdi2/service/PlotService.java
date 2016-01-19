@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotService extends BaseService<Plot> {
+public class PlotService extends BaseService<Plot, Long> {
 
     @Autowired
     private PlotDao plotDao;
 
     @Override
-    protected GenericVibiDao getDao() {
+    protected GenericVibiDao<Plot, Long> getDao() {
         return plotDao;
     }
 }
