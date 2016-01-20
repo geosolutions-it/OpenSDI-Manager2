@@ -7,6 +7,9 @@ import com.googlecode.genericdao.search.Sort;
 import com.googlecode.genericdao.search.jpa.JPASearchProcessor;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.StringType;
+import org.hibernate.type.TextType;
+import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,8 +168,9 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     public Filter getPropertiesFilter(String filtersString) {
         String[] filterParts = filtersString.split(";");
         List<Filter> filters = new ArrayList<Filter>();
+        ClassMetadata classMetadata = getClassMetadata();
         for (String propertyFilter : filterParts) {
-            filters.add(parsePropertyFilter(propertyFilter));
+            filters.add(parsePropertyFilter(classMetadata, propertyFilter));
         }
         return Filter.and(filters.toArray(new Filter[filters.size()]));
     }
@@ -176,12 +180,12 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         String[] sortingParts = sortingString.split(";");
         List<Sort> sorts = new ArrayList<Sort>();
         for (String propertySort : sortingParts) {
-            sorts.add(getSortingForPorperty(propertySort));
+            sorts.add(getSortingForProperty(propertySort));
         }
         return sorts;
     }
 
-    private Filter parsePropertyFilter(String propertyFilter) {
+    private Filter parsePropertyFilter(ClassMetadata classMetadata, String propertyFilter) {
         Matcher matcher = propertyFilterPattern.matcher(propertyFilter);
         if (!matcher.matches()) {
             throw new RuntimeException(String.format("Invalid property filter '%s'.", propertyFilter));
@@ -189,10 +193,23 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         String propertyName = matcher.group(1);
         String operator = matcher.group(2);
         String expression = matcher.group(3);
+        if(isStringType(classMetadata, propertyName)) {
+            return Filter.custom(String.format("{%s} %s '%s'", propertyName, operator, expression));
+        }
         return Filter.custom(String.format("{%s} %s %s", propertyName, operator, expression));
     }
 
-    private Sort getSortingForPorperty(String propertySort) {
+    private boolean isStringType(ClassMetadata classMetadata, String propertyName) {
+        Type type;
+        if(propertyName.equals(classMetadata.getIdentifierPropertyName())) {
+            type = classMetadata.getIdentifierType();
+        } else {
+            type = classMetadata.getPropertyType(propertyName);
+        }
+        return type instanceof StringType || type instanceof TextType;
+    }
+
+    private Sort getSortingForProperty(String propertySort) {
         Matcher matcher = propertySortPattern.matcher(propertySort);
         if (!matcher.matches()) {
             throw new RuntimeException(String.format("Invalid property sorting '%s'.", propertySort));

@@ -12,7 +12,6 @@ import java.util.Date;
 
 @Entity(name = "plot")
 @Table(name = "plot")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "plot")
 @XmlRootElement(name = "plot")
 public class Plot {
 

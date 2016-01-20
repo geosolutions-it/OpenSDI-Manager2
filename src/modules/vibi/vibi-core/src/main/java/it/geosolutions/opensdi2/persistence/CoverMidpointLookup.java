@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "cover_midpoint_lookup")
 @Table(name = "cover_midpoint_lookup")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "cover_midpoint_lookup")
 @XmlRootElement(name = "cover_midpoint_lookup")
 public class CoverMidpointLookup {
 

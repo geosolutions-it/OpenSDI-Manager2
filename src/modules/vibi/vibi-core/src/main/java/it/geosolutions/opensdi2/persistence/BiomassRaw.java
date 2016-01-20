@@ -12,7 +12,6 @@ import java.util.Date;
 
 @Entity(name = "biomass_raw")
 @Table(name = "biomass_raw")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "biomass_raw")
 @XmlRootElement(name = "biomass_raw")
 public class BiomassRaw {
 

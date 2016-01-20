@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "plot_module_herbaceous")
 @Table(name = "plot_module_herbaceous")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "plot_module_herbaceous")
 @XmlRootElement(name = "plot_module_herbaceous")
 public class PlotModuleHerbaceous {
 

@@ -12,7 +12,6 @@ import java.util.Date;
 
 @Entity(name = "class_code_Mod_NatureServe")
 @Table(name = "class_code_Mod_NatureServe")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "class_code_Mod_NatureServe")
 @XmlRootElement(name = "class_code_Mod_NatureServe")
 public class ClassCodeModNatureServe {
 

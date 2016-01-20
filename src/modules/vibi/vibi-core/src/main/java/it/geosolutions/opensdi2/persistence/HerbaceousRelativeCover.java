@@ -11,11 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "herbaceous_relative_cover")
 @Table(name = "herbaceous_relative_cover")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "herbaceous_relative_cover")
 @XmlRootElement(name = "herbaceous_relative_cover")
 public class HerbaceousRelativeCover {
 
     @Id
+    @Column(name = "view_id")
+    private Integer viewId;
+
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -24,6 +26,14 @@ public class HerbaceousRelativeCover {
 
     @Column(name = "relative_cover")
     private Double relativeCover;
+
+    public Integer getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
+    }
 
     public Integer getPlotNo() {
         return plotNo;

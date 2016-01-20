@@ -9,13 +9,12 @@ import java.util.Date;
 
 @Entity(name = "biomass")
 @Table(name = "biomass")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "biomass")
 @XmlRootElement(name = "biomass")
 public class Biomass {
 
     @Id
-    @Column(name = "fid")
-    private String fid;
+    @Column(name = "view_id")
+    private Integer viewId;
 
     @Column(name = "plot_no")
     private Integer plotNo;
@@ -50,12 +49,12 @@ public class Biomass {
     @Column(name = "grams_per_sq_meter")
     private Double gramsPerSqMeter;
 
-    public String getFid() {
-        return fid;
+    public Integer getViewId() {
+        return viewId;
     }
 
-    public void setFid(String fid) {
-        this.fid = fid;
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
     }
 
     public Integer getPlotNo() {

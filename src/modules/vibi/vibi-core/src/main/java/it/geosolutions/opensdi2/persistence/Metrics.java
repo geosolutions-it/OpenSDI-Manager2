@@ -11,11 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "metric_calculations")
 @Table(name = "metric_calculations")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "metric_calculations")
 @XmlRootElement(name = "metric_calculations")
 public class Metrics {
 
     @Id
+    @Column(name = "view_id")
+    private Integer viewId;
+
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -76,6 +78,9 @@ public class Metrics {
     @Column(name = "canopy_iv")
     private Double canopyIv;
 
+    @Column(name = "biomass_metric_value")
+    private Double biomassMetricValue;
+
     @Column(name = "stems_ha_wetland_trees")
     private Double steamsHaWetlandTrees;
 
@@ -102,6 +107,14 @@ public class Metrics {
 
     @Column(name = "per_bare_ground")
     private Double perBareGround;
+
+    public Integer getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
+    }
 
     public Integer getPlotNo() {
         return plotNo;
@@ -261,6 +274,14 @@ public class Metrics {
 
     public void setCanopyIv(Double canopyIv) {
         this.canopyIv = canopyIv;
+    }
+
+    public Double getBiomassMetricValue() {
+        return biomassMetricValue;
+    }
+
+    public void setBiomassMetricValue(Double biomassMetricValue) {
+        this.biomassMetricValue = biomassMetricValue;
     }
 
     public Double getSteamsHaWetlandTrees() {

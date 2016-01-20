@@ -20,4 +20,11 @@ public class PlotModuleHerbaceousService extends BaseService<PlotModuleHerbaceou
     protected GenericVibiDao<PlotModuleHerbaceous, String> getDao() {
         return plotModuleHerbaceousDao;
     }
+
+    @Override
+    public void persist(PlotModuleHerbaceous entity) {
+        entity.setFid(String.format("%d-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
+                entity.getCornerId(), entity.getSpecies().toLowerCase()));
+        super.persist(entity);
+    }
 }

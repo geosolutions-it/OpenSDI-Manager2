@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "species")
 @Table(name = "species")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "species")
 @XmlRootElement(name = "species")
 public class Species {
 

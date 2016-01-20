@@ -33,7 +33,7 @@ public class BiomassRawDaoImpl extends BaseDao<BiomassRaw, String>
     }
 
     @Override
-    public Class<Biomass> getEntityType() {
-        return Biomass.class;
+    public Class<BiomassRaw> getEntityType() {
+        return BiomassRaw.class;
     }
 }

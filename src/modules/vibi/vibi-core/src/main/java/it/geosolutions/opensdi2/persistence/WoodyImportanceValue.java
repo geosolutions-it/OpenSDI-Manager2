@@ -1,8 +1,5 @@
 package it.geosolutions.opensdi2.persistence;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,11 +8,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "woody_importance_value")
 @Table(name = "woody_importance_value")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "woody_importance_value")
 @XmlRootElement(name = "woody_importance_value")
 public class WoodyImportanceValue {
 
     @Id
+    @Column(name = "view_id")
+    private Integer viewId;
+
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -30,6 +29,14 @@ public class WoodyImportanceValue {
 
     @Column(name = "canopy_iv")
     private Double canopyIv;
+
+    public Integer getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
+    }
 
     public Integer getPlotNo() {
         return plotNo;

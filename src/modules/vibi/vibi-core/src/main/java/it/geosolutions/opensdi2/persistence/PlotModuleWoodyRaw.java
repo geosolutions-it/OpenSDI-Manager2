@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "plot_module_woody_raw")
 @Table(name = "plot_module_woody_raw")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "plot_module_woody_raw")
 @XmlRootElement(name = "plot_module_woody_raw")
 public class PlotModuleWoodyRaw {
 
@@ -26,7 +25,7 @@ public class PlotModuleWoodyRaw {
     private Double sub;
 
     @Column(name = "module_id")
-    private Integer module_id;
+    private Integer moduleId;
 
     @Column(name = "species")
     private String species;
@@ -64,12 +63,12 @@ public class PlotModuleWoodyRaw {
         this.sub = sub;
     }
 
-    public Integer getModule_id() {
-        return module_id;
+    public Integer getModuleId() {
+        return moduleId;
     }
 
-    public void setModule_id(Integer module_id) {
-        this.module_id = module_id;
+    public void setModuleId(Integer moduleId) {
+        this.moduleId = moduleId;
     }
 
     public String getSpecies() {

@@ -14,4 +14,11 @@ public class PlotModuleWoodyRawService extends BaseService<PlotModuleWoodyRaw, S
     protected GenericVibiDao<PlotModuleWoodyRaw, String> getDao() {
         return plotModuleWoodyRawDao;
     }
+
+    @Override
+    public void persist(PlotModuleWoodyRaw entity) {
+        entity.setFid(String.format("%s-%s-%s-%s", entity.getPlotNo(),
+                entity.getModuleId(), entity.getSpecies(), entity.getDbhClass()));
+        super.persist(entity);
+    }
 }

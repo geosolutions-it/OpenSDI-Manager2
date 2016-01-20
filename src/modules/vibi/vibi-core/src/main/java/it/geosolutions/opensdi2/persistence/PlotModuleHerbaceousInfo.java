@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "plot_module_herbaceous_info")
 @Table(name = "plot_module_herbaceous_info")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "plot_module_herbaceous_info")
 @XmlRootElement(name = "plot_module_herbaceous_info")
 public class PlotModuleHerbaceousInfo {
 

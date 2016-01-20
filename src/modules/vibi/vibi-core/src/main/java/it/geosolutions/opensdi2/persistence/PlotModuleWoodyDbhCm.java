@@ -11,11 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "plot_module_woody_dbh_cm")
 @Table(name = "plot_module_woody_dbh_cm")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "plot_module_woody_dbh_cm")
 @XmlRootElement(name = "plot_module_woody_dbh_cm")
 public class PlotModuleWoodyDbhCm {
 
     @Id
+    @Column(name = "view_id")
+    private Integer viewId;
+
     @Column(name = "plot_no")
     private Integer plotNo;
 
@@ -33,6 +35,14 @@ public class PlotModuleWoodyDbhCm {
 
     @Column(name = "dbh_cm")
     private Double dbhCm;
+
+    public Integer getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
+    }
 
     public Integer getPlotNo() {
         return plotNo;
