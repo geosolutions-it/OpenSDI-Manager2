@@ -46,6 +46,9 @@ public class BiomassRaw {
     @Column(name = "biomass_collected")
     private String biomassCollected;
 
+    @Column(name = "actual_or_derived")
+    private String actualOrDerived;
+
     public String getFid() {
         return fid;
     }
@@ -124,5 +127,13 @@ public class BiomassRaw {
 
     public void setBiomassCollected(String biomassCollected) {
         this.biomassCollected = biomassCollected;
+    }
+
+    public String getActualOrDerived() {
+        return actualOrDerived;
+    }
+
+    public void setActualOrDerived(String actualOrDerived) {
+        this.actualOrDerived = actualOrDerived;
     }
 }

@@ -1,9 +1,7 @@
 package it.geosolutions.opensdi2.service;
 
-import it.geosolutions.opensdi2.persistence.GenericVibiDao;
-import it.geosolutions.opensdi2.persistence.HerbaceousRelativeCoverDao;
-import it.geosolutions.opensdi2.persistence.PlotModuleHerbaceous;
-import it.geosolutions.opensdi2.persistence.PlotModuleHerbaceousDao;
+import it.geosolutions.opensdi2.persistence.*;
+import it.geosolutions.opensdi2.persistence.derivated.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +23,19 @@ public class PlotModuleHerbaceousService extends BaseService<PlotModuleHerbaceou
     public void persist(PlotModuleHerbaceous entity) {
         entity.setFid(String.format("%d-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
                 entity.getCornerId(), entity.getSpecies().toLowerCase()));
+        handleDerivated(entity);
         super.persist(entity);
+    }
+
+    @Override
+    public void merge(String id, PlotModuleHerbaceous entity) {
+        handleDerivated(entity);
+        super.merge(id, entity);
+    }
+
+    private void handleDerivated(PlotModuleHerbaceous entity) {
+        persistDerivated(entity.getModuleId(), new Module());
+        persistDerivated(entity.getCornerId(), new Corner());
+        persistDerivated(entity.getDepth(), new Depth());
     }
 }

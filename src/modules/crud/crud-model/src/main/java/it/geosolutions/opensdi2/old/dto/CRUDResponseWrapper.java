@@ -1,5 +1,8 @@
 package it.geosolutions.opensdi2.old.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 /**
  * Wrapper for data of the REST Controller
@@ -7,7 +10,9 @@ import java.util.List;
  *
  * @param <TYPE> the type of the Resource to wrap.
  */
+
 public class CRUDResponseWrapper<TYPE> {
+
 	private List<TYPE> data;
 	private int count;
 	private long  totalCount;

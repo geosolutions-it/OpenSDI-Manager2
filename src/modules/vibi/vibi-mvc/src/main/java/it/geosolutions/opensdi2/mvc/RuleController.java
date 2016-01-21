@@ -4,6 +4,7 @@ import com.googlecode.genericdao.search.SearchResult;
 import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
 import it.geosolutions.opensdi2.persistence.Rule;
 import it.geosolutions.opensdi2.service.RuleService;
+import it.geosolutions.opensdi2.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ public class RuleController extends BaseController<Rule, Long> {
 
     @Autowired
     private RuleService ruleService;
+
+    @Autowired
+    SecurityService securityService;
 
     @Override
     protected RuleService getBaseService() {
@@ -62,5 +66,21 @@ public class RuleController extends BaseController<Rule, Long> {
     @ResponseBody
     void delete(@PathVariable(value = "id") Long id) {
         ruleService.delete(id);
+    }
+
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Boolean check(@RequestParam(required = false) String service,
+                  @RequestParam(required = false) String operation,
+                  @RequestParam(required = false) String entity,
+                  @RequestParam(required = false) String format,
+                  @RequestParam(required = false) Integer size) {
+        try {
+            securityService.validate(service, operation, entity, format, size);
+        } catch (SecurityException exception) {
+            return false;
+        }
+        return true;
     }
 }

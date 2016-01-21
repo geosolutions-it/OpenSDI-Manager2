@@ -214,4 +214,12 @@ public abstract class BaseService<T, K extends Serializable> {
             getDao().remove(entity);
         }
     }
+
+    protected void persistDerivated(Serializable primaryKey, Object entity) {
+        if (primaryKey != null && getDao().getEntityManager().find(entity.getClass(), primaryKey) == null) {
+            ClassMetadata classMetadata = getDao().getClassMetadata(entity.getClass());
+            classMetadata.setIdentifier(entity, primaryKey, EntityMode.POJO);
+            getDao().getEntityManager().persist(entity);
+        }
+    }
 }

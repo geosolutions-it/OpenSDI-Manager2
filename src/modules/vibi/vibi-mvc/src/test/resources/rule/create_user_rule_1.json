@@ -1,0 +1,10 @@
+{
+  "id": null,
+  "user": "user",
+  "group": "*",
+  "service": "crud",
+  "operation": "delete",
+  "entity": "*",
+  "format": "*",
+  "size": -1
+}

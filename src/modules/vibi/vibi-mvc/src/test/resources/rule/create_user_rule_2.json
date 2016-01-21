@@ -1,0 +1,10 @@
+{
+  "id": null,
+  "user": "user",
+  "group": "*",
+  "service": "download",
+  "operation": "export",
+  "entity": "*",
+  "format": "csv",
+  "size": 1000
+}

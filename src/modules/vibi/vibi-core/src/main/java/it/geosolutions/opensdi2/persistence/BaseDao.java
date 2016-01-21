@@ -141,6 +141,11 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
     }
 
     @Override
+    public ClassMetadata getClassMetadata(Class entityType) {
+        return sessionFactory.getClassMetadata(entityType);
+    }
+
+    @Override
     public String[] getAllPropertiesNames() {
         ClassMetadata classMetadata = getClassMetadata();
         String[] normalProperties = classMetadata.getPropertyNames();

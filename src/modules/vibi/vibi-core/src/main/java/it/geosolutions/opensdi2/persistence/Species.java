@@ -34,6 +34,9 @@ public class Species {
     private String commonName;
 
     @Column(name = "family")
+    private String family;
+
+    @Column(name = "ind")
     private String ind;
 
     @Column(name = "hydro")
@@ -48,8 +51,11 @@ public class Species {
     @Column(name = "groupp")
     private String groupp;
 
-    @Column(name = "shade")
+    @Column(name = "nativity")
     private String nativity;
+
+    @Column(name = "shade")
+    private String shade;
 
     @Column(name = "code1")
     private String code1;
@@ -114,6 +120,14 @@ public class Species {
         this.commonName = commonName;
     }
 
+    public String getFamily() {
+        return family;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
+    }
+
     public String getInd() {
         return ind;
     }
@@ -160,6 +174,14 @@ public class Species {
 
     public void setNativity(String nativity) {
         this.nativity = nativity;
+    }
+
+    public String getShade() {
+        return shade;
+    }
+
+    public void setShade(String shade) {
+        this.shade = shade;
     }
 
     public String getCode1() {

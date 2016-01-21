@@ -1,8 +1,10 @@
 package it.geosolutions.opensdi2.persistence;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity(name = "rule")
+@XmlRootElement
 public final class Rule {
 
     @Id

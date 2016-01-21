@@ -1,0 +1,10 @@
+{
+  "id": null,
+  "user": "*",
+  "group": "everyone",
+  "service": "crud",
+  "operation": "read",
+  "entity": "*",
+  "format": "*",
+  "size": -1
+}

@@ -45,6 +45,8 @@ public interface GenericVibiDao<T, ID extends Serializable> extends
 
     ClassMetadata getClassMetadata();
 
+    ClassMetadata getClassMetadata(Class entityType);
+
     String[] getAllPropertiesNames();
 
     Filter getKeyWordSearchFilter(String keyword);

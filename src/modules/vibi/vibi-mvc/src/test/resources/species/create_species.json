@@ -1,0 +1,21 @@
+{
+  "scientificName": "Acalypha deamii",
+  "acronym": "ACADEA",
+  "authority": "(Weath.) Ahles.",
+  "cofc": 0,
+  "tolerance": "tolerant",
+  "commonName": "DEAM'S TWO-SEEDED MERCURY",
+  "family": "Euphorbiaceae",
+  "ind": "FAC",
+  "hydro": "FAC",
+  "form": "forb",
+  "habit": "AN",
+  "groupp": "DI",
+  "nativity": "native",
+  "shade": "partial",
+  "code1": "natDI",
+  "code2": "other",
+  "code3": "other",
+  "code4": "other",
+  "code5": "other"
+}

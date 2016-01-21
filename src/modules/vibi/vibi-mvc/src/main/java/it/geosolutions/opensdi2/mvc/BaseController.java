@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public abstract class BaseController<T, K extends Serializable> extends BaseFile
     @ResponseBody
     void update(@PathVariable(value = "id") K id, @RequestBody T entity) {
         securityService.validate("crud", "update", getBaseService().getEntityName(), null, null);
-        getBaseService().merge(id, entity);
+        getBaseService().merge(decode(id), entity);
         getBaseService().refreshCalculations();
     }
 
@@ -63,7 +64,7 @@ public abstract class BaseController<T, K extends Serializable> extends BaseFile
     @ResponseBody
     void delete(@PathVariable(value = "id") K id) {
         securityService.validate("crud", "delete", getBaseService().getEntityName(), null, null);
-        getBaseService().delete(id);
+        getBaseService().delete(decode(id));
         getBaseService().refreshCalculations();
     }
 
@@ -86,6 +87,18 @@ public abstract class BaseController<T, K extends Serializable> extends BaseFile
             super.downloadFile("", folder.getAbsolutePath(), file, response);
         } finally {
             super.deleteFolder("", folder.getAbsolutePath(), "");
+        }
+    }
+
+    private K decode(K value) {
+        if (value instanceof String) {
+            try {
+                return (K) URLDecoder.decode((String) value, "UTF-8");
+            } catch (Exception exception) {
+                throw new RuntimeException(String.format("Error encoding string '%s'.", value), exception);
+            }
+        } else {
+            return value;
         }
     }
 
