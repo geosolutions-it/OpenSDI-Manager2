@@ -19,7 +19,7 @@ public class Metrics {
     private Integer viewId;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "vibi_type")
     private String vibiType;
@@ -116,11 +116,11 @@ public class Metrics {
         this.viewId = viewId;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

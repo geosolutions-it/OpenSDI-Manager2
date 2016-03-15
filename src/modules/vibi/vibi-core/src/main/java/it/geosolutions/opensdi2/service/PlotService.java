@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotService extends BaseService<Plot, Long> {
+public class PlotService extends BaseService<Plot, String> {
 
     @Autowired
     private PlotDao plotDao;
 
     @Override
-    protected GenericVibiDao<Plot, Long> getDao() {
+    protected GenericVibiDao<Plot, String> getDao() {
         return plotDao;
     }
 
@@ -29,7 +29,7 @@ public class PlotService extends BaseService<Plot, Long> {
     }
 
     @Override
-    public void merge(Long id, Plot entity) {
+    public void merge(String id, Plot entity) {
         handleDerivated(entity);
         super.merge(id, entity);
     }

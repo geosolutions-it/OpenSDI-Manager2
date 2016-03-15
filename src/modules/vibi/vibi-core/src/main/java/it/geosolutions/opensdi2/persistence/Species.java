@@ -14,6 +14,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "species")
 public class Species {
 
+    @Column(name = "veg_id")
+    private Integer vegId;
+
     @Id
     @Column(name = "scientific_name")
     private String scientificName;
@@ -27,8 +30,8 @@ public class Species {
     @Column(name = "cofc")
     private Integer cofc;
 
-    @Column(name = "tolerance")
-    private String tolerance;
+    @Column(name = "syn")
+    private String syn;
 
     @Column(name = "common_name")
     private String commonName;
@@ -36,11 +39,11 @@ public class Species {
     @Column(name = "family")
     private String family;
 
-    @Column(name = "ind")
-    private String ind;
+    @Column(name = "fn")
+    private Integer fn;
 
-    @Column(name = "hydro")
-    private String hydro;
+    @Column(name = "wet")
+    private String wet;
 
     @Column(name = "form")
     private String form;
@@ -48,29 +51,40 @@ public class Species {
     @Column(name = "habit")
     private String habit;
 
-    @Column(name = "groupp")
-    private String groupp;
-
-    @Column(name = "nativity")
-    private String nativity;
-
     @Column(name = "shade")
     private String shade;
 
-    @Column(name = "code1")
-    private String code1;
+    @Column(name = "usda_id")
+    private String usdaId;
 
-    @Column(name = "code2")
-    private String code2;
+    @Column(name = "oh_tore")
+    private String ohTore;
 
-    @Column(name = "code3")
-    private String code3;
+    @Column(name = "type")
+    private String type;
 
-    @Column(name = "code4")
-    private String code4;
+    @Column(name = "oh_status")
+    private String ohStatus;
 
-    @Column(name = "code5")
-    private String code5;
+    @Column(name = "emp")
+    private String emp;
+
+    @Column(name = "mw")
+    private String mw;
+
+    @Column(name = "ncne")
+    private String ncne;
+
+    @Column(name = "notes")
+    private String notes;
+
+    public Integer getVegId() {
+        return vegId;
+    }
+
+    public void setVegId(Integer vegId) {
+        this.vegId = vegId;
+    }
 
     public String getScientificName() {
         return scientificName;
@@ -104,12 +118,12 @@ public class Species {
         this.cofc = cofc;
     }
 
-    public String getTolerance() {
-        return tolerance;
+    public String getSyn() {
+        return syn;
     }
 
-    public void setTolerance(String tolerance) {
-        this.tolerance = tolerance;
+    public void setSyn(String syn) {
+        this.syn = syn;
     }
 
     public String getCommonName() {
@@ -128,20 +142,20 @@ public class Species {
         this.family = family;
     }
 
-    public String getInd() {
-        return ind;
+    public Integer getFn() {
+        return fn;
     }
 
-    public void setInd(String ind) {
-        this.ind = ind;
+    public void setFn(Integer fn) {
+        this.fn = fn;
     }
 
-    public String getHydro() {
-        return hydro;
+    public String getWet() {
+        return wet;
     }
 
-    public void setHydro(String hydro) {
-        this.hydro = hydro;
+    public void setWet(String wet) {
+        this.wet = wet;
     }
 
     public String getForm() {
@@ -160,22 +174,6 @@ public class Species {
         this.habit = habit;
     }
 
-    public String getGroupp() {
-        return groupp;
-    }
-
-    public void setGroupp(String groupp) {
-        this.groupp = groupp;
-    }
-
-    public String getNativity() {
-        return nativity;
-    }
-
-    public void setNativity(String nativity) {
-        this.nativity = nativity;
-    }
-
     public String getShade() {
         return shade;
     }
@@ -184,43 +182,67 @@ public class Species {
         this.shade = shade;
     }
 
-    public String getCode1() {
-        return code1;
+    public String getUsdaId() {
+        return usdaId;
     }
 
-    public void setCode1(String code1) {
-        this.code1 = code1;
+    public void setUsdaId(String usdaId) {
+        this.usdaId = usdaId;
     }
 
-    public String getCode2() {
-        return code2;
+    public String getOhTore() {
+        return ohTore;
     }
 
-    public void setCode2(String code2) {
-        this.code2 = code2;
+    public void setOhTore(String ohTore) {
+        this.ohTore = ohTore;
     }
 
-    public String getCode3() {
-        return code3;
+    public String getType() {
+        return type;
     }
 
-    public void setCode3(String code3) {
-        this.code3 = code3;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getCode4() {
-        return code4;
+    public String getOhStatus() {
+        return ohStatus;
     }
 
-    public void setCode4(String code4) {
-        this.code4 = code4;
+    public void setOhStatus(String ohStatus) {
+        this.ohStatus = ohStatus;
     }
 
-    public String getCode5() {
-        return code5;
+    public String getEmp() {
+        return emp;
     }
 
-    public void setCode5(String code5) {
-        this.code5 = code5;
+    public void setEmp(String emp) {
+        this.emp = emp;
+    }
+
+    public String getMw() {
+        return mw;
+    }
+
+    public void setMw(String mw) {
+        this.mw = mw;
+    }
+
+    public String getNcne() {
+        return ncne;
+    }
+
+    public void setNcne(String ncne) {
+        this.ncne = ncne;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

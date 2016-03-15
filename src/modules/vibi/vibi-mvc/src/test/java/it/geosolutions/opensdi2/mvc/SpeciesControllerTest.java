@@ -20,19 +20,20 @@ public final class SpeciesControllerTest extends BaseMvcTests {
     public void testCrudSpecies() {
         MvcTestsUtils.create("species", MvcTestsUtils.readResourceFile("species/create_species.json"));
         List<Species> species = MvcTestsUtils.list(SPECIES_GENERIC_TYPE, "species",
-                null, "scientificName:=:'Acalypha deamii'", null, null, null, null);
+                null, "scientificName:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(species.size(), is(1));
-        assertThat(species.get(0).getScientificName(), is("Acalypha deamii"));
-        assertThat(species.get(0).getAuthority(), is("(Weath.) Ahles."));
-        MvcTestsUtils.update("species", "Acalypha deamii", MvcTestsUtils.readResourceFile("species/update_species.json"));
+        assertThat(species.get(0).getScientificName(), is("Acer pensylvanicum"));
+        assertThat(species.get(0).getAuthority(), is("L."));
+        assertThat(species.get(0).getOhStatus(), is("native"));
+        MvcTestsUtils.update("species", "Acer pensylvanicum", MvcTestsUtils.readResourceFile("species/update_species.json"));
         species = MvcTestsUtils.list(SPECIES_GENERIC_TYPE, "species",
-                null, "scientificName:=:'Acalypha deamii'", null, null, null, null);
+                null, "scientificName:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(species.size(), is(1));
-        assertThat(species.get(0).getScientificName(), is("Acalypha deamii"));
-        assertThat(species.get(0).getAuthority(), is("Some Authority"));
-        MvcTestsUtils.delete("species", "Acalypha deamii");
+        assertThat(species.get(0).getAuthority(), is("L."));
+        assertThat(species.get(0).getOhStatus(), is("non-native"));
+        MvcTestsUtils.delete("species", "Acer pensylvanicum");
         species = MvcTestsUtils.list(SPECIES_GENERIC_TYPE, "species",
-                null, "scientificName:=:'Acalypha deamii'", null, null, null, null);
+                null, "scientificName:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(species.size(), is(0));
     }
 }

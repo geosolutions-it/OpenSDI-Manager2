@@ -1,9 +1,9 @@
 {
   "fid": null,
-  "plotNo": 1101,
+  "plotNo": "1101",
   "moduleId": 1,
   "cornerId": 2,
   "depth": 4,
-  "species": "Acalypha deamii",
+  "species": "Acer pensylvanicum",
   "coverClassCode": 0
 }

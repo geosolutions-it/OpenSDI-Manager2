@@ -19,7 +19,7 @@ public class PlotModuleWoodyRaw {
     private String fid;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "sub")
     private Double sub;
@@ -47,11 +47,11 @@ public class PlotModuleWoodyRaw {
         this.fid = fid;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

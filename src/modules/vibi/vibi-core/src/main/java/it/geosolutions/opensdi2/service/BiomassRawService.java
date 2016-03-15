@@ -24,7 +24,7 @@ public class BiomassRawService extends BaseService<BiomassRaw, String> {
 
     @Override
     public void persist(BiomassRaw entity) {
-        entity.setFid(String.format("%d-%d-%d", entity.getPlotNo(),
+        entity.setFid(String.format("%s-%d-%d", entity.getPlotNo(),
                 entity.getModuleId(), entity.getCorner()));
         handleDerivated(entity);
         super.persist(entity);

@@ -24,7 +24,7 @@ public class PlotModuleHerbaceousInfoService extends BaseService<PlotModuleHerba
 
     @Override
     public void persist(PlotModuleHerbaceousInfo entity) {
-        entity.setFid(String.format("%d-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
+        entity.setFid(String.format("%s-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
                 entity.getCornerId(), entity.getInfo().toLowerCase()));
         handleDerivated(entity);
         super.persist(entity);

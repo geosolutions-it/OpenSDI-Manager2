@@ -17,7 +17,7 @@ public class Biomass {
     private Integer viewId;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "date_time")
     private Date date_time;
@@ -57,11 +57,11 @@ public class Biomass {
         this.viewId = viewId;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

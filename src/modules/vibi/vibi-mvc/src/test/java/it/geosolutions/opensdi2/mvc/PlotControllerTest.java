@@ -21,12 +21,12 @@ public final class PlotControllerTest extends BaseMvcTests {
         MvcTestsUtils.create("plot", MvcTestsUtils.readResourceFile("plot/create_plot.json"));
         List<Plot> plots = MvcTestsUtils.list(PLOT_GENERIC_TYPE, "plot", "morgan", "plotNo:=:'1101'", null, null, null, null);
         assertThat(plots.size(), is(1));
-        assertThat(plots.get(0).getPlotNo(), is(1101L));
+        assertThat(plots.get(0).getPlotNo(), is("1101"));
         assertThat(plots.get(0).getPlotName(), is("The Morgan Factor"));
         MvcTestsUtils.update("plot", "1101", MvcTestsUtils.readResourceFile("plot/update_plot.json"));
         plots = MvcTestsUtils.list(PLOT_GENERIC_TYPE, "plot", "morgan", "plotNo:=:'1101'", null, null, null, null);
         assertThat(plots.size(), is(1));
-        assertThat(plots.get(0).getPlotNo(), is(1101L));
+        assertThat(plots.get(0).getPlotNo(), is("1101"));
         assertThat(plots.get(0).getPlotName(), is("The Morgan Factor Updated"));
         MvcTestsUtils.delete("plot", "1101");
         plots = MvcTestsUtils.list(PLOT_GENERIC_TYPE, "plot", "Morgan Factor", "plotNo:=:'1101'", null, null, null, null);

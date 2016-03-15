@@ -6,12 +6,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@Entity(name = "CODE4")
-@Table(name = "CODE4")
-@XmlRootElement(name = "CODE4")
-public class Code4 {
+@Entity(name = "oh_status")
+@Table(name = "oh_status")
+@XmlRootElement(name = "oh_status")
+public class OhStatus {
 
     @Id
-    @Column(name = "CODE4")
-    private String CODE4;
+    @Column(name = "status")
+    private String status;
 }

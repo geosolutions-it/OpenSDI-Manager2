@@ -19,7 +19,7 @@ public class HerbaceousRelativeCover {
     private Integer viewId;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "species")
     private String species;
@@ -35,11 +35,11 @@ public class HerbaceousRelativeCover {
         this.viewId = viewId;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

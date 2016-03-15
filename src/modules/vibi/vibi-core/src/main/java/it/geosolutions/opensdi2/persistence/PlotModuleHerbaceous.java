@@ -16,7 +16,7 @@ public class PlotModuleHerbaceous {
     private String fid;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "module_id")
     private Integer moduleId;
@@ -41,11 +41,11 @@ public class PlotModuleHerbaceous {
         this.fid = fid;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

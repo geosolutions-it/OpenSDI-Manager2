@@ -20,7 +20,7 @@ public class BiomassRaw {
     private String fid;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "date_time")
     private Date date_time;
@@ -57,11 +57,11 @@ public class BiomassRaw {
         this.fid = fid;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

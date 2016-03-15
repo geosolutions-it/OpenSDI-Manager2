@@ -1,9 +1,9 @@
 {
   "fid": null,
-  "plotNo": 1101,
+  "plotNo": "1101",
   "sub": 0.5,
   "moduleId": 2,
-  "species": "Acalypha deamii",
+  "species": "Acer pensylvanicum",
   "dbhClass": "clump",
   "dbhClassIndex": 0,
   "count": "22.0"

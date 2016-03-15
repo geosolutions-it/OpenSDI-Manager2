@@ -3,7 +3,7 @@ package it.geosolutions.opensdi2.persistence;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "opensdiTransactionManager")
-public class PlotDaoImpl extends BaseDao<Plot, Long> implements PlotDao {
+public class PlotDaoImpl extends BaseDao<Plot, String> implements PlotDao {
 
     @Override
     public void persist(Plot... entities) {
@@ -21,7 +21,7 @@ public class PlotDaoImpl extends BaseDao<Plot, Long> implements PlotDao {
     }
 
     @Override
-    public boolean removeById(Long id) {
+    public boolean removeById(String id) {
         return super.removeById(id);
     }
 

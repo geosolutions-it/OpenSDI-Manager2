@@ -19,7 +19,7 @@ public class PlotModuleWoodyDbh {
     private Integer viewId;
 
     @Column(name = "plot_no")
-    private Integer plotNo;
+    private String plotNo;
 
     @Column(name = "module_id")
     private Integer moduleId;
@@ -44,11 +44,11 @@ public class PlotModuleWoodyDbh {
         this.viewId = viewId;
     }
 
-    public Integer getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Integer plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 

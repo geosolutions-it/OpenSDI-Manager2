@@ -31,18 +31,12 @@ public class SpeciesService extends BaseService<Species, String> {
     }
 
     private void handleDerivated(Species entity) {
-        persistDerivated(entity.getAuthority(), new Authority());
-        persistDerivated(entity.getFamily(), new Family());
-        persistDerivated(entity.getInd(), new Ind());
         persistDerivated(entity.getForm(), new Form());
         persistDerivated(entity.getHabit(), new Habit());
-        persistDerivated(entity.getGroupp(), new Groupp());
         persistDerivated(entity.getShade(), new Shade());
-        persistDerivated(entity.getNativity(), new Nativity());
-        persistDerivated(entity.getCode1(), new Code1());
-        persistDerivated(entity.getCode2(), new Code2());
-        persistDerivated(entity.getCode3(), new Code3());
-        persistDerivated(entity.getCode4(), new Code4());
-        persistDerivated(entity.getCode5(), new Code5());
+        persistDerivated(entity.getOhStatus(), new OhStatus());
+        persistDerivated(entity.getEmp(), new Ind());
+        persistDerivated(entity.getMw(), new Ind());
+        persistDerivated(entity.getNcne(), new Ind());
     }
 }

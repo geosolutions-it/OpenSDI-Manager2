@@ -17,7 +17,7 @@ public final class BiomassRawControllerTest extends BaseMvcTests {
     };
 
     @Test
-    public void testCrudSpecies() {
+    public void testCrudBiomassRaw() {
         MvcTestsUtils.create("classCodeModNatureServe", MvcTestsUtils.readResourceFile("plot/create_classCodeModNatureServe.json"));
         MvcTestsUtils.create("plot", MvcTestsUtils.readResourceFile("plot/create_plot.json"));
         MvcTestsUtils.create("biomassRaw",

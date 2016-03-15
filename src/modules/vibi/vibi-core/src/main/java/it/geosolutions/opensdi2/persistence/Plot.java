@@ -17,7 +17,7 @@ public class Plot {
 
     @Id
     @Column(name = "plot_no")
-    private Long plotNo;
+    private String plotNo;
 
     @Column(name = "project_name")
     private String projectName;
@@ -205,11 +205,11 @@ public class Plot {
     @Column(name = "threeo_disturbance_description")
     private String threeoDisturbanceDescription;
 
-    public Long getPlotNo() {
+    public String getPlotNo() {
         return plotNo;
     }
 
-    public void setPlotNo(Long plotNo) {
+    public void setPlotNo(String plotNo) {
         this.plotNo = plotNo;
     }
 
