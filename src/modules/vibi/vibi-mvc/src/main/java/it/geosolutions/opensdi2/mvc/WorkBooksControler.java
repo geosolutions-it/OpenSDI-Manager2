@@ -26,11 +26,12 @@ public final class WorkBooksControler extends BaseFileManager {
 
     @RequestMapping(value = "download", method = {RequestMethod.POST, RequestMethod.GET})
     public void download(
-            @RequestParam String folder,
+            @RequestParam(required = false) String folder,
             @RequestParam String file,
             HttpServletRequest request, HttpServletResponse response) {
         securityService.validate("download", "workbook", null, null, null);
-        super.downloadFile("", folder, file, response);
+        String finalFolder = folder == null ? VarUtils.GEOBATCH_OUTPUT : folder;
+        super.downloadFile("", finalFolder, file, response);
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -43,10 +44,11 @@ public final class WorkBooksControler extends BaseFileManager {
             HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         securityService.validate("upload", "workbook", null, null, null);
+        String finalFolder = folder == null ? VarUtils.GEOBATCH_INPUT : folder;
         if (!allowedFileExtensions.matcher(name).matches()) {
             throw new RuntimeException("Only Excel files (xls, xlsx) are allowed: '" + name + "'.");
         }
         String uniqueName = UUID.randomUUID().toString() + "_uuid_" + name;
-        super.upload("", file, name, uniqueName, chunks, chunk, folder, request, response);
+        super.upload("", file, name, uniqueName, chunks, chunk, finalFolder, request, response);
     }
 }

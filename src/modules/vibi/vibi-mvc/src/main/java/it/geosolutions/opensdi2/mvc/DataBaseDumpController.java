@@ -41,7 +41,7 @@ public final class DataBaseDumpController extends BaseFileManager {
         String fileName = String.format("%s-vibi.dump", System.currentTimeMillis());
         File file = new File(folder, fileName);
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("dbUrl", DbUtils.URL);
+        map.put("dbUrl", VarUtils.DB_URL);
         map.put("file", file);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
