@@ -21,7 +21,7 @@
     <authentication-manager>
         <authentication-provider ref='geoStoreAuthenticationProvider'/>
     </authentication-manager>
-	 <beans:bean id="geoStoreAuthenticationProvider" class="it.geosolutions.geostore.services.security.GeoStoreAuthenticationProvider">
+	 <beans:bean id="geoStoreAuthenticationProvider" class="it.geosolutions.opensdi2.security.GeoStoreAuthenticationProviderWithUserPrincipal">
 	 <!-- externalize using Property Override Configurer -->
     	<beans:property name="geoStoreRestURL" value="http://localhost/geostore/rest/"></beans:property>
     	<beans:property name="allowedRoles">
