@@ -7,9 +7,7 @@ import com.googlecode.genericdao.search.Sort;
 import com.googlecode.genericdao.search.jpa.JPASearchProcessor;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.StringType;
-import org.hibernate.type.TextType;
-import org.hibernate.type.Type;
+import org.hibernate.type.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +108,7 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
 
     /**
      * Returns the field identified as unique, that represent the composite primary key in the Relational model.
-     * <p/>
+     * <p>
      * This method should replace the hardcoded list in the old DAO objects.
      *
      * @return
@@ -198,7 +196,7 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
         String propertyName = matcher.group(1);
         String operator = matcher.group(2);
         String expression = matcher.group(3);
-        if(isStringType(classMetadata, propertyName)) {
+        if (isStringType(classMetadata, propertyName)) {
             return Filter.custom(String.format("{%s} %s '%s'", propertyName, operator, expression));
         }
         return Filter.custom(String.format("{%s} %s %s", propertyName, operator, expression));
@@ -206,12 +204,13 @@ public abstract class BaseDao<T, ID extends Serializable> extends GenericDAOImpl
 
     private boolean isStringType(ClassMetadata classMetadata, String propertyName) {
         Type type;
-        if(propertyName.equals(classMetadata.getIdentifierPropertyName())) {
+        if (propertyName.equals(classMetadata.getIdentifierPropertyName())) {
             type = classMetadata.getIdentifierType();
         } else {
             type = classMetadata.getPropertyType(propertyName);
         }
-        return type instanceof StringType || type instanceof TextType;
+        return type instanceof StringType || type instanceof TextType
+                || type instanceof DateType || type instanceof TimestampType;
     }
 
     private Sort getSortingForProperty(String propertySort) {

@@ -17,30 +17,22 @@ public final class PlotModuleWoodyRawControllerTest extends BaseMvcTests {
     };
 
     @Test
-    public void testCrudSpecies() {
-        MvcTestsUtils.create("classCodeModNatureServe", MvcTestsUtils.readResourceFile("plot/create_classCodeModNatureServe.json"));
-        MvcTestsUtils.create("plot", MvcTestsUtils.readResourceFile("plot/create_plot.json"));
-        MvcTestsUtils.create("species", MvcTestsUtils.readResourceFile("species/create_species.json"));
+    public void testCrud() {
         MvcTestsUtils.create("plotModuleWoodyRaw",
                 MvcTestsUtils.readResourceFile("plotModuleWoodyRaw/create_plotModuleWoodyRaw.json"));
         List<PlotModuleWoodyRaw> plotModuleWoodyRaw = MvcTestsUtils.list(PLOT_MODULE_WOODY_RAW_GENERIC_TYPE, "plotModuleWoodyRaw",
-                null, "fid:=:'1101-2-Acer pensylvanicum-clump'", null, null, null, null);
+                null, "plotNo:=:'1101';species:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(plotModuleWoodyRaw.size(), is(1));
-        assertThat(plotModuleWoodyRaw.get(0).getFid(), is("1101-2-Acer pensylvanicum-clump"));
         assertThat(plotModuleWoodyRaw.get(0).getCount(), is("22.0"));
-        MvcTestsUtils.update("plotModuleWoodyRaw", "1101-2-Acer pensylvanicum-clump",
+        MvcTestsUtils.update("plotModuleWoodyRaw", plotModuleWoodyRaw.get(0).getFid(),
                 MvcTestsUtils.readResourceFile("plotModuleWoodyRaw/update_plotModuleWoodyRaw.json"));
         plotModuleWoodyRaw = MvcTestsUtils.list(PLOT_MODULE_WOODY_RAW_GENERIC_TYPE, "plotModuleWoodyRaw",
-                null, "fid:=:'1101-2-Acer pensylvanicum-clump'", null, null, null, null);
+                null, "plotNo:=:'1101';species:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(plotModuleWoodyRaw.size(), is(1));
-        assertThat(plotModuleWoodyRaw.get(0).getFid(), is("1101-2-Acer pensylvanicum-clump"));
         assertThat(plotModuleWoodyRaw.get(0).getCount(), is("23.0"));
-        MvcTestsUtils.delete("plotModuleWoodyRaw", "1101-2-Acer pensylvanicum-clump");
+        MvcTestsUtils.delete("plotModuleWoodyRaw", plotModuleWoodyRaw.get(0).getFid());
         plotModuleWoodyRaw = MvcTestsUtils.list(PLOT_MODULE_WOODY_RAW_GENERIC_TYPE, "plotModuleWoodyRaw",
-                null, "fid:=:'1101-2-Acer pensylvanicum-clump'", null, null, null, null);
+                null, "plotNo:=:'1101';species:=:'Acer pensylvanicum'", null, null, null, null);
         assertThat(plotModuleWoodyRaw.size(), is(0));
-        MvcTestsUtils.delete("plot", "1101");
-        MvcTestsUtils.delete("species", "Acer pensylvanicum");
-        MvcTestsUtils.delete("classCodeModNatureServe", "W02c");
     }
 }

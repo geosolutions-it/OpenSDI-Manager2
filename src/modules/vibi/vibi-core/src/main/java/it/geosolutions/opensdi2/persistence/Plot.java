@@ -25,9 +25,6 @@ public class Plot {
     @Column(name = "plot_name")
     private String plotName;
 
-    @Column(name = "plot_label")
-    private String plotLabel;
-
     @Column(name = "monitoring_event")
     private String monitoringEvent;
 
@@ -45,18 +42,6 @@ public class Plot {
 
     @Column(name = "sampling_quality")
     private String samplingQuality;
-
-    @Column(name = "tax_accuracy_vascular")
-    private String taxAccuracyVascular;
-
-    @Column(name = "tax_accuracy_bryophytes")
-    private String taxAccuracyBryophytes;
-
-    @Column(name = "tax_accuracy_lichens")
-    private String taxAccuracyLichens;
-
-    @Column(name = "authority")
-    private String authority;
 
     @Column(name = "state")
     private String state;
@@ -100,29 +85,17 @@ public class Plot {
     @Column(name = "estimate_of_per_open_water_entire_site")
     private Double estimateOfPerOpenWaterEntireSite;
 
-    @Column(name = "estimate_of_perunvegetated_ow_entire_site")
-    private Double estimateOfPerunvegetatedOwEntireSite;
-
     @Column(name = "Estimate_per_invasives_entire_site")
     private Double estimatePerInvasivesEntireSite;
 
     @Column(name = "centerline")
     private Double centerline;
 
-    @Column(name = "oneo_plant")
-    private String oneoPlant;
-
-    @Column(name = "oneo_text")
-    private String oneoText;
-
     @Column(name = "vegclass")
     private String vegclass;
 
     @Column(name = "vegsubclass")
     private String vegsubclass;
-
-    @Column(name = "twoo_plant")
-    private String twooPlant;
 
     @Column(name = "hgmclass")
     private String hgmclass;
@@ -138,9 +111,6 @@ public class Plot {
 
     @Column(name = "oneo_class_code_mod_natureServe")
     private String oneoClassCodeModNatureServe;
-
-    @Column(name = "veg_class_wetlands_only")
-    private String vegClassWetlandsOnly;
 
     @Column(name = "landform_type")
     private String landformType;
@@ -202,8 +172,50 @@ public class Plot {
     @Column(name = "threeo_distubance_per_of_plot")
     private Integer threeoDistubancePerOfPlot;
 
-    @Column(name = "threeo_disturbance_description")
-    private String threeoDisturbanceDescription;
+    @Column(name = "Project_Label")
+    private String projectLabel;
+
+    @Column(name = "plot_placement")
+    private String plotPlacement;
+
+    @Column(name = "plot_configuration_other")
+    private String plotConfigurationOther;
+
+    @Column(name = "Estimate_of_per_unvegetated_ow_entire_site")
+    private Double EstimateOfPerUnvegetatedOwEntireSite;
+
+    @Column(name = "leap_landcover_classification")
+    private String leapLandcoverClassification;
+
+    @Column(name = "cowardin_classification")
+    private String cowardinClassification;
+
+    @Column(name = "cowardin_water_regime")
+    private String cowardinWaterRegime;
+
+    @Column(name = "cowardin_special_modifier")
+    private String cowardinSpecialModifier;
+
+    @Column(name = "cowardin_special_modifier_other")
+    private String cowardinSpecialModifierOther;
+
+    @Column(name = "landscape_position")
+    private String landscapePosition;
+
+    @Column(name = "inland_landform")
+    private String inlandLandform;
+
+    @Column(name = "water_flow_path")
+    private String waterFlowPath;
+
+    @Column(name = "llww_modifiers")
+    private String llwwModifiers;
+
+    @Column(name = "llww_modifiers_other")
+    private String llwwModifiersOther;
+
+    @Column(name = "landform_type_other")
+    private String landformTypeOther;
 
     public String getPlotNo() {
         return plotNo;
@@ -227,14 +239,6 @@ public class Plot {
 
     public void setPlotName(String plotName) {
         this.plotName = plotName;
-    }
-
-    public String getPlotLabel() {
-        return plotLabel;
-    }
-
-    public void setPlotLabel(String plotLabel) {
-        this.plotLabel = plotLabel;
     }
 
     public String getMonitoringEvent() {
@@ -283,38 +287,6 @@ public class Plot {
 
     public void setSamplingQuality(String samplingQuality) {
         this.samplingQuality = samplingQuality;
-    }
-
-    public String getTaxAccuracyVascular() {
-        return taxAccuracyVascular;
-    }
-
-    public void setTaxAccuracyVascular(String taxAccuracyVascular) {
-        this.taxAccuracyVascular = taxAccuracyVascular;
-    }
-
-    public String getTaxAccuracyBryophytes() {
-        return taxAccuracyBryophytes;
-    }
-
-    public void setTaxAccuracyBryophytes(String taxAccuracyBryophytes) {
-        this.taxAccuracyBryophytes = taxAccuracyBryophytes;
-    }
-
-    public String getTaxAccuracyLichens() {
-        return taxAccuracyLichens;
-    }
-
-    public void setTaxAccuracyLichens(String taxAccuracyLichens) {
-        this.taxAccuracyLichens = taxAccuracyLichens;
-    }
-
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
     }
 
     public String getState() {
@@ -429,14 +401,6 @@ public class Plot {
         this.estimateOfPerOpenWaterEntireSite = estimateOfPerOpenWaterEntireSite;
     }
 
-    public Double getEstimateOfPerunvegetatedOwEntireSite() {
-        return estimateOfPerunvegetatedOwEntireSite;
-    }
-
-    public void setEstimateOfPerunvegetatedOwEntireSite(Double estimateOfPerunvegetatedOwEntireSite) {
-        this.estimateOfPerunvegetatedOwEntireSite = estimateOfPerunvegetatedOwEntireSite;
-    }
-
     public Double getEstimatePerInvasivesEntireSite() {
         return estimatePerInvasivesEntireSite;
     }
@@ -453,22 +417,6 @@ public class Plot {
         this.centerline = centerline;
     }
 
-    public String getOneoPlant() {
-        return oneoPlant;
-    }
-
-    public void setOneoPlant(String oneoPlant) {
-        this.oneoPlant = oneoPlant;
-    }
-
-    public String getOneoText() {
-        return oneoText;
-    }
-
-    public void setOneoText(String oneoText) {
-        this.oneoText = oneoText;
-    }
-
     public String getVegclass() {
         return vegclass;
     }
@@ -483,14 +431,6 @@ public class Plot {
 
     public void setVegsubclass(String vegsubclass) {
         this.vegsubclass = vegsubclass;
-    }
-
-    public String getTwooPlant() {
-        return twooPlant;
-    }
-
-    public void setTwooPlant(String twooPlant) {
-        this.twooPlant = twooPlant;
     }
 
     public String getHgmclass() {
@@ -531,14 +471,6 @@ public class Plot {
 
     public void setOneoClassCodeModNatureServe(String oneoClassCodeModNatureServe) {
         this.oneoClassCodeModNatureServe = oneoClassCodeModNatureServe;
-    }
-
-    public String getVegClassWetlandsOnly() {
-        return vegClassWetlandsOnly;
-    }
-
-    public void setVegClassWetlandsOnly(String vegClassWetlandsOnly) {
-        this.vegClassWetlandsOnly = vegClassWetlandsOnly;
     }
 
     public String getLandformType() {
@@ -701,11 +633,123 @@ public class Plot {
         this.threeoDistubancePerOfPlot = threeoDistubancePerOfPlot;
     }
 
-    public String getThreeoDisturbanceDescription() {
-        return threeoDisturbanceDescription;
+    public String getProjectLabel() {
+        return projectLabel;
     }
 
-    public void setThreeoDisturbanceDescription(String threeoDisturbanceDescription) {
-        this.threeoDisturbanceDescription = threeoDisturbanceDescription;
+    public void setProjectLabel(String projectLabel) {
+        this.projectLabel = projectLabel;
+    }
+
+    public String getPlotPlacement() {
+        return plotPlacement;
+    }
+
+    public void setPlotPlacement(String plotPlacement) {
+        this.plotPlacement = plotPlacement;
+    }
+
+    public String getPlotConfigurationOther() {
+        return plotConfigurationOther;
+    }
+
+    public void setPlotConfigurationOther(String plotConfigurationOther) {
+        this.plotConfigurationOther = plotConfigurationOther;
+    }
+
+    public Double getEstimateOfPerUnvegetatedOwEntireSite() {
+        return EstimateOfPerUnvegetatedOwEntireSite;
+    }
+
+    public void setEstimateOfPerUnvegetatedOwEntireSite(Double estimateOfPerUnvegetatedOwEntireSite) {
+        EstimateOfPerUnvegetatedOwEntireSite = estimateOfPerUnvegetatedOwEntireSite;
+    }
+
+    public String getLeapLandcoverClassification() {
+        return leapLandcoverClassification;
+    }
+
+    public void setLeapLandcoverClassification(String leapLandcoverClassification) {
+        this.leapLandcoverClassification = leapLandcoverClassification;
+    }
+
+    public String getCowardinClassification() {
+        return cowardinClassification;
+    }
+
+    public void setCowardinClassification(String cowardinClassification) {
+        this.cowardinClassification = cowardinClassification;
+    }
+
+    public String getCowardinWaterRegime() {
+        return cowardinWaterRegime;
+    }
+
+    public void setCowardinWaterRegime(String cowardinWaterRegime) {
+        this.cowardinWaterRegime = cowardinWaterRegime;
+    }
+
+    public String getCowardinSpecialModifier() {
+        return cowardinSpecialModifier;
+    }
+
+    public void setCowardinSpecialModifier(String cowardinSpecialModifier) {
+        this.cowardinSpecialModifier = cowardinSpecialModifier;
+    }
+
+    public String getCowardinSpecialModifierOther() {
+        return cowardinSpecialModifierOther;
+    }
+
+    public void setCowardinSpecialModifierOther(String cowardinSpecialModifierOther) {
+        this.cowardinSpecialModifierOther = cowardinSpecialModifierOther;
+    }
+
+    public String getLandscapePosition() {
+        return landscapePosition;
+    }
+
+    public void setLandscapePosition(String landscapePosition) {
+        this.landscapePosition = landscapePosition;
+    }
+
+    public String getInlandLandform() {
+        return inlandLandform;
+    }
+
+    public void setInlandLandform(String inlandLandform) {
+        this.inlandLandform = inlandLandform;
+    }
+
+    public String getWaterFlowPath() {
+        return waterFlowPath;
+    }
+
+    public void setWaterFlowPath(String waterFlowPath) {
+        this.waterFlowPath = waterFlowPath;
+    }
+
+    public String getLlwwModifiers() {
+        return llwwModifiers;
+    }
+
+    public void setLlwwModifiers(String llwwModifiers) {
+        this.llwwModifiers = llwwModifiers;
+    }
+
+    public String getLlwwModifiersOther() {
+        return llwwModifiersOther;
+    }
+
+    public void setLlwwModifiersOther(String llwwModifiersOther) {
+        this.llwwModifiersOther = llwwModifiersOther;
+    }
+
+    public String getLandformTypeOther() {
+        return landformTypeOther;
+    }
+
+    public void setLandformTypeOther(String landformTypeOther) {
+        this.landformTypeOther = landformTypeOther;
     }
 }

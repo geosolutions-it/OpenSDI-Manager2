@@ -11,6 +11,12 @@ public final class Rule {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
+    @Column(name = "priority")
+    private Integer priority;
+
+    @Column(name = "allow")
+    private Boolean allow;
+
     @Column(name = "_user")
     private String user;
 
@@ -38,6 +44,22 @@ public final class Rule {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public Boolean getAllow() {
+        return allow;
+    }
+
+    public void setAllow(Boolean allow) {
+        this.allow = allow;
     }
 
     public String getUser() {

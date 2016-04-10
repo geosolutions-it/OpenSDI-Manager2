@@ -10,6 +10,8 @@ import it.geosolutions.opensdi2.persistence.derivated.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Transactional(value = "opensdiTransactionManager")
 public class PlotModuleHerbaceousInfoService extends BaseService<PlotModuleHerbaceousInfo, String> {
 
@@ -24,8 +26,7 @@ public class PlotModuleHerbaceousInfoService extends BaseService<PlotModuleHerba
 
     @Override
     public void persist(PlotModuleHerbaceousInfo entity) {
-        entity.setFid(String.format("%s-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
-                entity.getCornerId(), entity.getInfo().toLowerCase()));
+        entity.setFid(UUID.randomUUID().toString());
         handleDerivated(entity);
         super.persist(entity);
     }

@@ -5,7 +5,6 @@ import com.googlecode.genericdao.search.Search;
 import it.geosolutions.opensdi2.persistence.GenericVibiDao;
 import it.geosolutions.opensdi2.persistence.Rule;
 import it.geosolutions.opensdi2.persistence.RuleDao;
-import it.geosolutions.opensdi2.persistence.RuleDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,8 @@ public class RuleService extends BaseService<Rule, Long> {
         return ruleDao;
     }
 
-    public List<Rule> findRules(String service, String operation, String entity, String format, String user, List<String> groups) {
+    public List<Rule> findRules(String service, String operation, String entity,
+                                String format, String user, List<String> groups) {
         Search search = new Search(Rule.class);
         search.addFilterAnd(
                 Filter.or(Filter.equal("service", service), Filter.equal("service", "*")),

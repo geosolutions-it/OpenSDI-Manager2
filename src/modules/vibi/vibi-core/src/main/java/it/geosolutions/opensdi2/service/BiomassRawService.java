@@ -11,6 +11,8 @@ import it.geosolutions.opensdi2.persistence.derivated.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Transactional(value = "opensdiTransactionManager")
 public class BiomassRawService extends BaseService<BiomassRaw, String> {
 
@@ -24,8 +26,7 @@ public class BiomassRawService extends BaseService<BiomassRaw, String> {
 
     @Override
     public void persist(BiomassRaw entity) {
-        entity.setFid(String.format("%s-%d-%d", entity.getPlotNo(),
-                entity.getModuleId(), entity.getCorner()));
+        entity.setFid(UUID.randomUUID().toString());
         handleDerivated(entity);
         super.persist(entity);
     }

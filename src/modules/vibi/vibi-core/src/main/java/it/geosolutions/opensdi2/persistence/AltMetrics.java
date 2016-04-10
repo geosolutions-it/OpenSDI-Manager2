@@ -1,18 +1,15 @@
 package it.geosolutions.opensdi2.persistence;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@Entity(name = "metric_calculations")
-@Table(name = "metric_calculations")
-@XmlRootElement(name = "metric_calculations")
-public class Metrics {
+@Entity(name = "alt_metric_calculations")
+@Table(name = "alt_metric_calculations")
+@XmlRootElement(name = "alt_metric_calculations")
+public class AltMetrics {
 
     @Id
     @Column(name = "view_id")

@@ -17,28 +17,22 @@ public final class BiomassRawControllerTest extends BaseMvcTests {
     };
 
     @Test
-    public void testCrudBiomassRaw() {
-        MvcTestsUtils.create("classCodeModNatureServe", MvcTestsUtils.readResourceFile("plot/create_classCodeModNatureServe.json"));
-        MvcTestsUtils.create("plot", MvcTestsUtils.readResourceFile("plot/create_plot.json"));
+    public void testCrud() {
         MvcTestsUtils.create("biomassRaw",
                 MvcTestsUtils.readResourceFile("biomassRaw/create_biomassRaw.json"));
         List<BiomassRaw> biomassRaw = MvcTestsUtils.list(BIOMASS_RAW_GENERIC_TYPE, "biomassRaw",
-                null, "fid:=:'1101-1-3'", null, null, null, null);
+                null, "date_time:>:'2016-04-11 15:00:00+00';date_time:<:'2016-04-11 16:00:00+00'", null, null, null, null);
         assertThat(biomassRaw.size(), is(1));
-        assertThat(biomassRaw.get(0).getFid(), is("1101-1-3"));
         assertThat(biomassRaw.get(0).getAreaSampled(), is(0.1));
-        MvcTestsUtils.update("biomassRaw", "1101-1-3",
+        MvcTestsUtils.update("biomassRaw", biomassRaw.get(0).getFid(),
                 MvcTestsUtils.readResourceFile("biomassRaw/update_biomassRaw.json"));
         biomassRaw = MvcTestsUtils.list(BIOMASS_RAW_GENERIC_TYPE, "biomassRaw",
-                null, "fid:=:'1101-1-3'", null, null, null, null);
+                null, "date_time:>:'2016-04-11 15:00:00+00';date_time:<:'2016-04-11 16:00:00+00'", null, null, null, null);
         assertThat(biomassRaw.size(), is(1));
-        assertThat(biomassRaw.get(0).getFid(), is("1101-1-3"));
         assertThat(biomassRaw.get(0).getAreaSampled(), is(0.2));
-        MvcTestsUtils.delete("biomassRaw", "1101-1-3");
+        MvcTestsUtils.delete("biomassRaw", biomassRaw.get(0).getFid());
         biomassRaw = MvcTestsUtils.list(BIOMASS_RAW_GENERIC_TYPE, "biomassRaw",
-                null, "fid:=:'1101-1-3'", null, null, null, null);
+                null, "date_time:>:'2016-04-11 15:00:00+00';date_time:<:'2016-04-11 16:00:00+00'", null, null, null, null);
         assertThat(biomassRaw.size(), is(0));
-        MvcTestsUtils.delete("plot", "1101");
-        MvcTestsUtils.delete("classCodeModNatureServe", "W02c");
     }
 }

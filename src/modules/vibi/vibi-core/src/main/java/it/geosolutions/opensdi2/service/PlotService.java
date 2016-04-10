@@ -35,13 +35,10 @@ public class PlotService extends BaseService<Plot, String> {
     }
 
     private void handleDerivated(Plot entity) {
-        persistDerivated(entity.getOneoPlant(), new PlantCommCode());
         persistDerivated(entity.getVegclass(), new VegClass());
-        persistDerivated(entity.getTwooPlant(), new PlantCommCode());
         persistDerivated(entity.getHgmclass(), new HgmClass());
         persistDerivated(entity.getHgmsubclass(), new HgmSubClass());
         persistDerivated(entity.getHgmgroup(), new HgmGroup());
-        persistDerivated(entity.getVegClassWetlandsOnly(), new VegClass());
         persistDerivated(entity.getLandformType(), new LandFormType());
         persistDerivated(entity.getHomogeneity(), new Homogeneity());
         persistDerivated(entity.getStandSize(), new StandSize());

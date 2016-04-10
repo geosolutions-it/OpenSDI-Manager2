@@ -27,36 +27,18 @@ public final class RuleControllerTest extends BaseMvcTests {
 
     @Test
     public void testCrudRule() {
-        MvcTestsUtils.create("rule", MvcTestsUtils.readResourceFile("rule/create_group_everyone.json"));
-        MvcTestsUtils.create("rule", MvcTestsUtils.readResourceFile("rule/create_user_rule_1.json"));
-        MvcTestsUtils.create("rule", MvcTestsUtils.readResourceFile("rule/create_user_rule_2.json"));
-        List<Rule> rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, null, null, null, null, null);
-        assertThat(rules.size(), is(4));
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'admin'", null, null, null, null);
+        MvcTestsUtils.create("rule", MvcTestsUtils.readResourceFile("rule/create_user_rule.json"));
+        List<Rule> rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'test_user'", null, null, null, null);
         assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), MvcTestsUtils.ADMIN_USER, "*", "*", "*", "*", "*", -1L);
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'user';service:=:'crud'", null, null, null, null);
+        Long idRule = rules.get(0).getId();
+        validateRule(rules.get(0), "test_user", "*", "crud", "delete", "*", "*", -1L);
+        MvcTestsUtils.update("rule", idRule.toString(), MvcTestsUtils.readResourceFile("rule/update_user_rule.json"));
+        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'test_user'", null, null, null, null);
         assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), "user", "*", "crud", "delete", "*", "*", -1L);
-        Long idRule1 = rules.get(0).getId();
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'user';service:=:'download'", null, null, null, null);
-        assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), "user", "*", "download", "export", "*", "csv", 1000L);
-        Long idRule2 = rules.get(0).getId();
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "group:=:'everyone'", null, null, null, null);
-        assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), "*", "everyone", "crud", "read", "*", "*", -1L);
-        Long idRule3 = rules.get(0).getId();
-        MvcTestsUtils.update("rule", idRule3.toString(), MvcTestsUtils.readResourceFile("rule/update_group_everyone.json"));
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "group:=:'everyone'", null, null, null, null);
-        assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), "*", "everyone", "crud", "read", "*", "*", 100L);
-        MvcTestsUtils.delete("rule", idRule1.toString());
-        MvcTestsUtils.delete("rule", idRule2.toString());
-        MvcTestsUtils.delete("rule", idRule3.toString());
-        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, null, null, null, null, null);
-        assertThat(rules.size(), is(1));
-        validateRule(rules.get(0), MvcTestsUtils.ADMIN_USER, "*", "*", "*", "*", "*", -1L);
+        validateRule(rules.get(0), "test_user", "*", "crud", "delete", "species", "*", -1L);
+        MvcTestsUtils.delete("rule", idRule.toString());
+        rules = MvcTestsUtils.list(RULE_GENERIC_TYPE, "rule", null, "user:=:'test_user'", null, null, null, null);
+        assertThat(rules.size(), is(0));
     }
 
     private void validateRule(Rule rule, String user, String group, String service,

@@ -75,4 +75,28 @@
     </bean>
     <bean id="ruleService" class="it.geosolutions.opensdi2.service.RuleService"/>
     <bean id="securityService" class="it.geosolutions.opensdi2.service.SecurityService"/>
+    <bean id="leapLandcoverClassificationDao" class="it.geosolutions.opensdi2.persistence.LeapLandcoverClassificationDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="leapLandcoverClassificationService" class="it.geosolutions.opensdi2.service.LeapLandcoverClassificationService"/>
+    <bean id="fds1SpeciesMiscInfoDao" class="it.geosolutions.opensdi2.persistence.Fds1SpeciesMiscInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="fds1SpeciesMiscInfoService" class="it.geosolutions.opensdi2.service.Fds1SpeciesMiscInfoService"/>
+    <bean id="fds2SpeciesMiscInfoDao" class="it.geosolutions.opensdi2.persistence.Fds2SpeciesMiscInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="fds2SpeciesMiscInfoService" class="it.geosolutions.opensdi2.service.Fds2SpeciesMiscInfoService"/>
+    <bean id="AltHerbaceousRelativeCoverDao" class="it.geosolutions.opensdi2.persistence.AltHerbaceousRelativeCoverDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="AltHerbaceousRelativeCoverService" class="it.geosolutions.opensdi2.service.AltHerbaceousRelativeCoverService"/>
+    <bean id="altWoodyImportanceValueDao" class="it.geosolutions.opensdi2.persistence.AltWoodyImportanceValueDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="altWoodyImportanceValueService" class="it.geosolutions.opensdi2.service.AltWoodyImportanceValueService"/>
+    <bean id="altMetricsDao" class="it.geosolutions.opensdi2.persistence.AltMetricsDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="altMetricsService" class="it.geosolutions.opensdi2.service.AltMetricsService"/>
 </beans>

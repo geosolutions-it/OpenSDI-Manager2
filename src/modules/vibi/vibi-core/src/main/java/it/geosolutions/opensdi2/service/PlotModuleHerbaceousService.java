@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Transactional(value = "opensdiTransactionManager")
 public class PlotModuleHerbaceousService extends BaseService<PlotModuleHerbaceous, String>{
@@ -21,8 +22,7 @@ public class PlotModuleHerbaceousService extends BaseService<PlotModuleHerbaceou
 
     @Override
     public void persist(PlotModuleHerbaceous entity) {
-        entity.setFid(String.format("%s-%d-%d-%s", entity.getPlotNo(), entity.getModuleId(),
-                entity.getCornerId(), entity.getSpecies().toLowerCase()));
+        entity.setFid(UUID.randomUUID().toString());
         handleDerivated(entity);
         super.persist(entity);
     }

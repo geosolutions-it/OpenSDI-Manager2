@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class SecurityService {
@@ -23,9 +25,24 @@ public class SecurityService {
         if (rules.isEmpty()) {
             throw new SecurityException();
         }
+        Collections.sort(rules, new Comparator<Rule>() {
+            @Override
+            public int compare(Rule rule1, Rule rule2) {
+                if (rule1.getPriority().equals(rule2.getPriority())) {
+                    return 0;
+                }
+                if (rule1.getPriority() < rule2.getPriority()) {
+                    return -1;
+                }
+                return 1;
+            }
+        });
         if (size != null) {
             for (Rule rule : rules) {
-                if (rule.getSize() == null || rule.getSize() < 0 || size <= rule.getSize()) {
+                if (!rule.getAllow() && (rule.getSize() == null || rule.getSize() < 0 || size > rule.getSize())) {
+                    throw new SecurityException();
+                }
+                if (rule.getAllow() || rule.getSize() == null || rule.getSize() < 0 || size <= rule.getSize()) {
                     return;
                 }
             }
