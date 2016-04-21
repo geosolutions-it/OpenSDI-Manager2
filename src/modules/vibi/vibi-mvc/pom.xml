@@ -22,6 +22,11 @@
                 <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>it.geosolutions.opensdi2</groupId>
+            <artifactId>opensdi2-filemanager</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-crud-rest-api</artifactId>
         </dependency>
@@ -51,7 +56,18 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <scope>test</scope>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.19</version>
+        </dependency>
+    </dependencies>
 
 </project>
 

@@ -1,0 +1,12 @@
+{
+  "id": null,
+  "allow": true,
+  "priority": 1,
+  "user": "test_user",
+  "group": "*",
+  "service": "crud",
+  "operation": "delete",
+  "entity": "*",
+  "format": "*",
+  "size": -1
+}

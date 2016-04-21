@@ -1,68 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="
-	    	http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-			http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd
-			http://www.springframework.org/schema/aop       http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd"
        default-autowire="byName">
-    <context:annotation-config />
-
-    <import resource="applicationContext-datasource.xml"/>
-
-    <!--**** Hibernate Generic DAO Setup ****-->
-    <!--
-            Need one search processor and one metadata util per persistence unit
-            (i.e. EntityManagerFactory). We're wiring these to the Generic DAOs
-            using an autowire annotation in BaseDAO.
-    -->
+    <context:annotation-config/>
+    <import resource="datasource.xml"/>
     <bean id="searchProcessor" class="com.googlecode.genericdao.search.jpa.JPASearchProcessor">
-        <constructor-arg ref="metadataUtil" />
+        <constructor-arg ref="metadataUtil"/>
     </bean>
-
     <bean id="metadataUtil" class="com.googlecode.genericdao.search.jpa.hibernate.HibernateMetadataUtil"
-           factory-method="getInstanceForEntityManagerFactory">
-        <constructor-arg ref="opensdiEntityManagerFactory" />
+          factory-method="getInstanceForEntityManagerFactory">
+        <constructor-arg ref="opensdiEntityManagerFactory"/>
     </bean>
-
-    <!--  DAO  -->
-    <bean id="cropDescriptorDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropDescriptorDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotDao" class="it.geosolutions.opensdi2.persistence.PlotDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="cropDataDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropDataDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotService" class="it.geosolutions.opensdi2.service.PlotService"/>
+    <bean id="plotModuleHerbaceousDao" class="it.geosolutions.opensdi2.persistence.PlotModuleHerbaceousDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="agrometDescriptorDao" class="it.geosolutions.opensdi.persistence.dao.impl.AgrometDescriptorDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotModuleHerbaceousService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousService"/>
+    <bean id="herbaceousRelativeCoverDao" class="it.geosolutions.opensdi2.persistence.HerbaceousRelativeCoverDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="agrometDao" class="it.geosolutions.opensdi.persistence.dao.impl.AgrometDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="herbaceousRelativeCoverService" class="it.geosolutions.opensdi2.service.HerbaceousRelativeCoverService"/>
+    <bean id="woodyImportanceValueDao" class="it.geosolutions.opensdi2.persistence.WoodyImportanceValueDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="cropStatusDao" class="it.geosolutions.opensdi.persistence.dao.impl.CropStatusDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="woodyImportanceValueService" class="it.geosolutions.opensdi2.service.WoodyImportanceValueService"/>
+    <bean id="speciesDao" class="it.geosolutions.opensdi2.persistence.SpeciesDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="fertilizerDao" class="it.geosolutions.opensdi.persistence.dao.impl.FertilizerDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="speciesService" class="it.geosolutions.opensdi2.service.SpeciesService"/>
+    <bean id="metricsDao" class="it.geosolutions.opensdi2.persistence.MetricsDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="unitOfMeasureDao" class="it.geosolutions.opensdi.persistence.dao.impl.UnitOfMeasureDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="metricsService" class="it.geosolutions.opensdi2.service.MetricsService"/>
+    <bean id="plotModuleWoodyRawDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyRawDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="marketPriceDao" class="it.geosolutions.opensdi.persistence.dao.impl.MarketPriceDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotModuleWoodyRawService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyRawService"/>
+    <bean id="plotModuleWoodyDbhDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyDbhDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-    <bean id="waterflowDao" class="it.geosolutions.opensdi.persistence.dao.impl.WaterflowDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotModuleWoodyDbhService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyDbhService"/>
+    <bean id="plotModuleWoodyDbhCmDao" class="it.geosolutions.opensdi2.persistence.PlotModuleWoodyDbhCmDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-	<bean id="withdrawalDao" class="it.geosolutions.opensdi.persistence.dao.impl.WithdrawalDAOImpl" >
-        <property name="searchProcessor" ref="searchProcessor" />
+    <bean id="plotModuleWoodyDbhCmService" class="it.geosolutions.opensdi2.service.PlotModuleWoodyDbhCmService"/>
+    <bean id="plotModuleHerbaceousInfoDao" class="it.geosolutions.opensdi2.persistence.PlotModuleHerbaceousInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
     </bean>
-	
-	
-      <!--  SERVICES  -->
-      <bean id="cropDescriptorService" class="it.geosolutions.opensdi.service.CropDescriptorService"></bean>
-	  <bean id="agrometDescriptorService" class="it.geosolutions.opensdi.service.AgrometDescriptorService"></bean>
-	  <bean id="unitOfMeasureService" class="it.geosolutions.opensdi.service.UnitOfMeasureService"></bean>
-    
+    <bean id="plotModuleHerbaceousInfoService" class="it.geosolutions.opensdi2.service.PlotModuleHerbaceousInfoService"/>
+    <bean id="classCodeModNatureServeDao" class="it.geosolutions.opensdi2.persistence.ClassCodeModNatureServeDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="classCodeModNatureServeService" class="it.geosolutions.opensdi2.service.ClassCodeModNatureServeService"/>
+    <bean id="coverMidpointLookupDao" class="it.geosolutions.opensdi2.persistence.CoverMidpointLookupDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="coverMidpointLookupService" class="it.geosolutions.opensdi2.service.CoverMidpointLookupService"/>
+    <bean id="biomassRawDao" class="it.geosolutions.opensdi2.persistence.BiomassRawDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="biomassRawService" class="it.geosolutions.opensdi2.service.BiomassRawService"/>
+    <bean id="biomassDao" class="it.geosolutions.opensdi2.persistence.BiomassDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="biomassService" class="it.geosolutions.opensdi2.service.BiomassService"/>
+    <bean id="ruleDao" class="it.geosolutions.opensdi2.persistence.RuleDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="ruleService" class="it.geosolutions.opensdi2.service.RuleService"/>
+    <bean id="securityService" class="it.geosolutions.opensdi2.service.SecurityService"/>
+    <bean id="leapLandcoverClassificationDao" class="it.geosolutions.opensdi2.persistence.LeapLandcoverClassificationDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="leapLandcoverClassificationService" class="it.geosolutions.opensdi2.service.LeapLandcoverClassificationService"/>
+    <bean id="fds1SpeciesMiscInfoDao" class="it.geosolutions.opensdi2.persistence.Fds1SpeciesMiscInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="fds1SpeciesMiscInfoService" class="it.geosolutions.opensdi2.service.Fds1SpeciesMiscInfoService"/>
+    <bean id="fds2SpeciesMiscInfoDao" class="it.geosolutions.opensdi2.persistence.Fds2SpeciesMiscInfoDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="fds2SpeciesMiscInfoService" class="it.geosolutions.opensdi2.service.Fds2SpeciesMiscInfoService"/>
+    <bean id="AltHerbaceousRelativeCoverDao" class="it.geosolutions.opensdi2.persistence.AltHerbaceousRelativeCoverDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="AltHerbaceousRelativeCoverService" class="it.geosolutions.opensdi2.service.AltHerbaceousRelativeCoverService"/>
+    <bean id="altWoodyImportanceValueDao" class="it.geosolutions.opensdi2.persistence.AltWoodyImportanceValueDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="altWoodyImportanceValueService" class="it.geosolutions.opensdi2.service.AltWoodyImportanceValueService"/>
+    <bean id="altMetricsDao" class="it.geosolutions.opensdi2.persistence.AltMetricsDaoImpl">
+        <property name="searchProcessor" ref="searchProcessor"/>
+    </bean>
+    <bean id="altMetricsService" class="it.geosolutions.opensdi2.service.AltMetricsService"/>
 </beans>

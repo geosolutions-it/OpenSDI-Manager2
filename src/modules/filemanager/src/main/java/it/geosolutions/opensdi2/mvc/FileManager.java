@@ -1,6 +1,6 @@
 /*
  *  OpenSDI Manager 2
- *  Copyright (C) 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2014 - 2016 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -108,6 +108,7 @@ public class FileManager extends BaseFileManager {
 			HttpServletRequest request, HttpServletResponse servletResponse)
 			throws IOException {
 	        String rootDir = configureModule(request);
+		System.out.println("UPLOADING FILE !!!");
 		super.upload(rootDir, file, name, chunks, chunk, folder, request, servletResponse);
 	}
 
