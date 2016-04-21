@@ -1,7 +1,7 @@
 /*
  *  VIBI
  *  https://github.com/geosolutions-it/vibi
- *  Copyright (C) 2015 GeoSolutions S.A.S.
+ *  Copyright (C) 2016 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception

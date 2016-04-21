@@ -1,6 +1,6 @@
 /*
  *  OpenSDI Manager 2
- *  Copyright (C) 2014 GeoSolutions S.A.S.
+ *  Copyright (C) 2014 - 2016 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
