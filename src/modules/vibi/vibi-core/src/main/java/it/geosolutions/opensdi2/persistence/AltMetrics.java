@@ -97,11 +97,11 @@ public class AltMetrics {
     @Column(name = "biomass_metric_value")
     private Double biomassMetricValue;
 
-    @Column(name = "steams_ha_wetland_trees")
-    private Double steamsHaWetlandTrees;
+    @Column(name = "stems_ha_wetland_trees")
+    private Double stemsHaWetlandTrees;
 
-    @Column(name = "steams_ha_wetland_shrubs")
-    private Double steamsHaWetlandShrubs;
+    @Column(name = "stems_ha_wetland_shrubs")
+    private Double stemsHaWetlandShrubs;
 
     @Column(name = "per_unvegetated")
     private Double perUnvegetated;
@@ -300,20 +300,20 @@ public class AltMetrics {
         this.biomassMetricValue = biomassMetricValue;
     }
 
-    public Double getSteamsHaWetlandTrees() {
-        return steamsHaWetlandTrees;
+    public Double getStemsHaWetlandTrees() {
+        return stemsHaWetlandTrees;
     }
 
-    public void setSteamsHaWetlandTrees(Double steamsHaWetlandTrees) {
-        this.steamsHaWetlandTrees = steamsHaWetlandTrees;
+    public void setStemsHaWetlandTrees(Double stemsHaWetlandTrees) {
+        this.stemsHaWetlandTrees = stemsHaWetlandTrees;
     }
 
-    public Double getSteamsHaWetlandShrubs() {
-        return steamsHaWetlandShrubs;
+    public Double getStemsHaWetlandShrubs() {
+        return stemsHaWetlandShrubs;
     }
 
-    public void setSteamsHaWetlandShrubs(Double steamsHaWetlandShrubs) {
-        this.steamsHaWetlandShrubs = steamsHaWetlandShrubs;
+    public void setStemsHaWetlandShrubs(Double stemsHaWetlandShrubs) {
+        this.stemsHaWetlandShrubs = stemsHaWetlandShrubs;
     }
 
     public Double getPerUnvegetated() {
