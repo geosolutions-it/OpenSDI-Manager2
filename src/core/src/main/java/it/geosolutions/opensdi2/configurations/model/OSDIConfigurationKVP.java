@@ -22,12 +22,15 @@ package it.geosolutions.opensdi2.configurations.model;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
+
+
 
 /**
  * This class represents the configuration of an OpenSDI module that the configuration depot must handle.
@@ -109,13 +112,22 @@ public class OSDIConfigurationKVP implements OSDIConfiguration{
     
     @Override
     public boolean validateIDs() {
-        if(StringUtils.isEmpty(scopeID) || StringUtils.containsWhitespace(scopeID) || !org.apache.commons.lang.StringUtils.isAlphanumeric(scopeID)){
+    	 
+        if(StringUtils.isEmpty(scopeID) ||hasWhiteSpaces(scopeID) || StringUtils.isBlank(scopeID)|| !org.apache.commons.lang.StringUtils.isAlphanumeric(scopeID)){
             return false;
         }
-        if(StringUtils.isEmpty(instanceID) || StringUtils.containsWhitespace(instanceID) || !org.apache.commons.lang.StringUtils.isAlphanumeric(instanceID)){
+        
+        if(StringUtils.isEmpty(instanceID) || hasWhiteSpaces(scopeID) || StringUtils.isBlank(instanceID)|| !org.apache.commons.lang.StringUtils.isAlphanumeric(instanceID)){
             return false;
         }
         return true;
     }
+
+	private boolean hasWhiteSpaces(String s) {
+		Pattern pattern = Pattern.compile("\\s+");
+    	Matcher matcher = pattern.matcher(s);
+    	boolean found = matcher.find();
+		return found;
+	}
     
 }
