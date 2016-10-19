@@ -45,7 +45,7 @@ public class SpeciesDaoImpl extends BaseDao<Species, String> implements SpeciesD
     }
 
     private static String[] PKNames = {
-            "plot_no"
+            "plot_id"
     };
 
     public String[] getPKNames() {

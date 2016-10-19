@@ -35,6 +35,9 @@ import java.util.Date;
 public class Plot {
 
     @Id
+    @Column(name = "plot_id")
+    private String plotId;
+
     @Column(name = "plot_no")
     private String plotNo;
 
@@ -235,6 +238,14 @@ public class Plot {
 
     @Column(name = "landform_type_other")
     private String landformTypeOther;
+
+    public String getPlotId() {
+        return plotId;
+    }
+
+    public void setPlotId(String plotId) {
+        this.plotId = plotId;
+    }
 
     public String getPlotNo() {
         return plotNo;

@@ -21,9 +21,13 @@ package it.geosolutions.opensdi2.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @Entity(name = "alt_woody_importance_value")
 @Table(name = "alt_woody_importance_value")
@@ -34,8 +38,21 @@ public class AltWoodyImportanceValue {
     @Column(name = "view_id")
     private Integer viewId;
 
-    @Column(name = "plot_no")
-    private Integer plotNo;
+    @ManyToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = "plot_id")
+    Plot plot;
+
+    public String getPlotNo() {
+        return plot.getPlotNo();
+    }
+
+    public String getMonitoringEvent() {
+        return plot.getMonitoringEvent();
+    }
+
+    public Date getDateTimer() {
+        return plot.getDateTimer();
+    }
 
     @Column(name = "species")
     private String species;
@@ -55,14 +72,6 @@ public class AltWoodyImportanceValue {
 
     public void setViewId(Integer viewId) {
         this.viewId = viewId;
-    }
-
-    public Integer getPlotNo() {
-        return plotNo;
-    }
-
-    public void setPlotNo(Integer plotNo) {
-        this.plotNo = plotNo;
     }
 
     public String getSpecies() {

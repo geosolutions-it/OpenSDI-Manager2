@@ -21,9 +21,13 @@ package it.geosolutions.opensdi2.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @Entity(name = "fds2_species_misc_info")
 @Table(name = "fds2_species_misc_info")
@@ -37,11 +41,24 @@ public class Fds2SpeciesMiscInfo {
     @Column(name = "species")
     private String species;
 
-    @Column(name = "plot_no")
-    private String plotNo;
+    @ManyToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = "plot_id")
+    Plot plot;
+
+    public String getPlotNo() {
+        return plot.getPlotNo();
+    }
+
+    public String getMonitoringEvent() {
+        return plot.getMonitoringEvent();
+    }
+
+    public Date getDateTimer() {
+        return plot.getDateTimer();
+    }
 
     @Column(name = "module_id")
-    private Integer moduleId;
+    private String moduleId;
 
     @Column(name = "voucher_no")
     private String voucherNo;
@@ -74,19 +91,11 @@ public class Fds2SpeciesMiscInfo {
         this.species = species;
     }
 
-    public String getPlotNo() {
-        return plotNo;
-    }
-
-    public void setPlotNo(String plotNo) {
-        this.plotNo = plotNo;
-    }
-
-    public Integer getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(Integer moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 

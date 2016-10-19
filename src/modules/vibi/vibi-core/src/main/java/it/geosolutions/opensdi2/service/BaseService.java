@@ -23,6 +23,7 @@ import com.googlecode.genericdao.search.Search;
 import com.googlecode.genericdao.search.SearchResult;
 import com.googlecode.genericdao.search.Sort;
 import it.geosolutions.opensdi2.persistence.GenericVibiDao;
+import it.geosolutions.opensdi2.persistence.Plot;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -103,19 +104,27 @@ public abstract class BaseService<T, K extends Serializable> {
     private void writeEntityToExcel(Row row, Object entity,
                                     ClassMetadata classMetadata, List<PropertyMapping> propertiesMappings) {
         String idProperty = classMetadata.getIdentifierPropertyName();
+        int columnIndex = 0;
         for (int i = 0; i < propertiesMappings.size(); i++) {
             PropertyMapping mapping = propertiesMappings.get(i);
             if (!mapping.name.equalsIgnoreCase(idProperty)) {
-                setRowValue(row, classMetadata.getPropertyValue(entity, mapping.name, EntityMode.POJO), i);
+                columnIndex = setRowValue(row, classMetadata.getPropertyValue(entity, mapping.name, EntityMode.POJO), columnIndex);
             } else {
-                setRowValue(row, classMetadata.getIdentifier(entity, EntityMode.POJO), i);
+                columnIndex = setRowValue(row, classMetadata.getIdentifier(entity, EntityMode.POJO), columnIndex);
             }
         }
     }
 
-    private void setRowValue(Row row, Object value, int columnIndex) {
+    private int setRowValue(Row row, Object value, int columnIndex) {
         if (value == null) {
-            return;
+            return columnIndex + 1;
+        }
+        if (value instanceof Plot) {
+            Plot plot = (Plot) value;
+            row.createCell(columnIndex).setCellValue(plot.getPlotNo());
+            row.createCell(columnIndex).setCellValue(plot.getMonitoringEvent());
+            row.createCell(columnIndex).setCellValue(plot.getDateTimer());
+            return columnIndex + 3;
         }
         if (value instanceof Double) {
             row.createCell(columnIndex).setCellValue((Double) value);
@@ -128,6 +137,7 @@ public abstract class BaseService<T, K extends Serializable> {
         } else {
             row.createCell(columnIndex).setCellValue(value.toString());
         }
+        return columnIndex + 1;
     }
 
     public void writeEntitiesToCsv(File file, List<Object> entities, String propertiesMappingString) {

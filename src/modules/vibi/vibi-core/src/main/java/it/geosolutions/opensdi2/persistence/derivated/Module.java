@@ -32,5 +32,5 @@ public class Module {
 
     @Id
     @Column(name = "module_id")
-    private Integer module_id;
+    private String moduleId;
 }

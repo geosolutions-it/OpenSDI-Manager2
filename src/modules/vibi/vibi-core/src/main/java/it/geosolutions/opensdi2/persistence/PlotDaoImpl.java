@@ -45,7 +45,7 @@ public class PlotDaoImpl extends BaseDao<Plot, String> implements PlotDao {
     }
 
     private static String[] PKNames = {
-            "plot_no"
+            "plot_id"
     };
 
     public String[] getPKNames() {
