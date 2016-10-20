@@ -32,5 +32,5 @@ public class Corner {
 
     @Id
     @Column(name = "corner")
-    private Integer corner;
+    private String corner;
 }

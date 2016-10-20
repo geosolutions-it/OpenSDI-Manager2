@@ -21,7 +21,10 @@ package it.geosolutions.opensdi2.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
@@ -35,17 +38,30 @@ public class BiomassRaw {
     @Column(name = "fid")
     private String fid;
 
-    @Column(name = "plot_no")
-    private String plotNo;
+    @ManyToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = "plot_id")
+    Plot plot;
+
+    public String getPlotNo() {
+        return plot.getPlotNo();
+    }
+
+    public String getMonitoringEvent() {
+        return plot.getMonitoringEvent();
+    }
+
+    public Date getDateTimer() {
+        return plot.getDateTimer();
+    }
 
     @Column(name = "date_time")
     private Date date_time;
 
     @Column(name = "module_id")
-    private Integer moduleId;
+    private String moduleId;
 
     @Column(name = "corner")
-    private Integer corner;
+    private String corner;
 
     @Column(name = "sample_id")
     private Integer sampleId;
@@ -73,14 +89,6 @@ public class BiomassRaw {
         this.fid = fid;
     }
 
-    public String getPlotNo() {
-        return plotNo;
-    }
-
-    public void setPlotNo(String plotNo) {
-        this.plotNo = plotNo;
-    }
-
     public Date getDate_time() {
         return date_time;
     }
@@ -89,19 +97,19 @@ public class BiomassRaw {
         this.date_time = date_time;
     }
 
-    public Integer getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(Integer moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public Integer getCorner() {
+    public String getCorner() {
         return corner;
     }
 
-    public void setCorner(Integer corner) {
+    public void setCorner(String corner) {
         this.corner = corner;
     }
 

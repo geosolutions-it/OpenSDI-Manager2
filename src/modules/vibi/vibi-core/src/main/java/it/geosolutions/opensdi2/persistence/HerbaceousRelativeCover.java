@@ -24,9 +24,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @Entity(name = "herbaceous_relative_cover")
 @Table(name = "herbaceous_relative_cover")
@@ -37,8 +41,21 @@ public class HerbaceousRelativeCover {
     @Column(name = "view_id")
     private Integer viewId;
 
-    @Column(name = "plot_no")
-    private String plotNo;
+    @ManyToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = "plot_id")
+    Plot plot;
+
+    public String getPlotNo() {
+        return plot.getPlotNo();
+    }
+
+    public String getMonitoringEvent() {
+        return plot.getMonitoringEvent();
+    }
+
+    public Date getDateTimer() {
+        return plot.getDateTimer();
+    }
 
     @Column(name = "species")
     private String species;
@@ -52,14 +69,6 @@ public class HerbaceousRelativeCover {
 
     public void setViewId(Integer viewId) {
         this.viewId = viewId;
-    }
-
-    public String getPlotNo() {
-        return plotNo;
-    }
-
-    public void setPlotNo(String plotNo) {
-        this.plotNo = plotNo;
     }
 
     public String getSpecies() {
