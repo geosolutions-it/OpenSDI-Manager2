@@ -34,7 +34,11 @@ import org.hibernate.EntityMode;
 import org.hibernate.metadata.ClassMetadata;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -75,8 +79,18 @@ public abstract class BaseService<T, K extends Serializable> {
         Workbook workBook = new HSSFWorkbook();
         Sheet sheet = workBook.createSheet(getEntityName());
         Row row = sheet.createRow(0);
+        int headerIndex = 0;
         for (int i = 0; i < propertiesMappings.size(); i++) {
-            row.createCell(i).setCellValue(propertiesMappings.get(i).header);
+            PropertyMapping mapping = propertiesMappings.get(i);
+            if (mapping.header.equalsIgnoreCase("plot")) {
+                row.createCell(headerIndex).setCellValue("plotNo");
+                row.createCell(headerIndex + 1).setCellValue("monitoringEvent");
+                row.createCell(headerIndex + 2).setCellValue("dateTimer");
+                headerIndex += 3;
+                continue;
+            }
+            row.createCell(headerIndex).setCellValue(mapping.header);
+            headerIndex++;
         }
         ClassMetadata classMetadata = getDao().getClassMetadata();
         for (int i = 0; i < entities.size(); i++) {
@@ -122,8 +136,8 @@ public abstract class BaseService<T, K extends Serializable> {
         if (value instanceof Plot) {
             Plot plot = (Plot) value;
             row.createCell(columnIndex).setCellValue(plot.getPlotNo());
-            row.createCell(columnIndex).setCellValue(plot.getMonitoringEvent());
-            row.createCell(columnIndex).setCellValue(plot.getDateTimer());
+            row.createCell(columnIndex + 1).setCellValue(plot.getMonitoringEvent());
+            row.createCell(columnIndex + 2).setCellValue(plot.getDateTimer());
             return columnIndex + 3;
         }
         if (value instanceof Double) {
@@ -142,11 +156,18 @@ public abstract class BaseService<T, K extends Serializable> {
 
     public void writeEntitiesToCsv(File file, List<Object> entities, String propertiesMappingString) {
         List<PropertyMapping> propertiesMappings = getAllPropertiesMappings(propertiesMappingString);
-        String[] header = new String[propertiesMappings.size()];
+        List<String> header = new ArrayList<String>();
         for (int i = 0; i < propertiesMappings.size(); i++) {
-            header[i] = propertiesMappings.get(i).header;
+            PropertyMapping mapping = propertiesMappings.get(i);
+            if (mapping.header.equalsIgnoreCase("plot")) {
+                header.add("plotNo");
+                header.add("monitoringEvent");
+                header.add("dateTimer");
+            } else {
+                header.add(mapping.header);
+            }
         }
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(header);
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(header.toArray(new String[header.size()]));
         FileWriter fileWriter = null;
         CSVPrinter csvPrinter = null;
         try {
@@ -180,12 +201,23 @@ public abstract class BaseService<T, K extends Serializable> {
         String idProperty = classMetadata.getIdentifierPropertyName();
         for (PropertyMapping propertyMapping : propertiesMappings) {
             if (!propertyMapping.name.equalsIgnoreCase(idProperty)) {
-                record.add(classMetadata.getPropertyValue(entity, propertyMapping.name, EntityMode.POJO));
+                addValueToRecord(record, classMetadata.getPropertyValue(entity, propertyMapping.name, EntityMode.POJO));
             } else {
-                record.add(classMetadata.getIdentifier(entity, EntityMode.POJO));
+                addValueToRecord(record, classMetadata.getIdentifier(entity, EntityMode.POJO));
             }
         }
         csvPrinter.printRecord(record);
+    }
+
+    private void addValueToRecord(List<Object> record, Object value) {
+        if (value instanceof Plot) {
+            Plot plot = (Plot) value;
+            record.add(plot.getPlotNo());
+            record.add(plot.getMonitoringEvent());
+            record.add(plot.getDateTimer());
+        } else {
+            record.add(value);
+        }
     }
 
     private List<PropertyMapping> getAllPropertiesMappings(String propertiesMappingString) {
