@@ -19,9 +19,6 @@
  */
 package it.geosolutions.opensdi2.persistence;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -238,6 +235,9 @@ public class Plot {
 
     @Column(name = "landform_type_other")
     private String landformTypeOther;
+    
+    @Column(name= "location")
+    private String location;
 
     public String getPlotId() {
         return plotId;
@@ -781,5 +781,13 @@ public class Plot {
 
     public void setLandformTypeOther(String landformTypeOther) {
         this.landformTypeOther = landformTypeOther;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
+    
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

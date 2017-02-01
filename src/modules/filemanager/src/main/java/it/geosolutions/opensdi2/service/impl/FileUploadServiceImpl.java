@@ -231,7 +231,7 @@ public int size() {
  */
 public void remove(String key) {
     if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Removing uploading file "+ key);
+        LOGGER.debug("Removing file "+ key);
     }
     // remove temporal content
     for (String filePath : uploadedChunksByFile.get(key)) {
@@ -241,8 +241,9 @@ public void remove(String key) {
     uploadedChunksByFile.remove(key);
 
     // remove it from pending chunks
-    if (pendingChunksByFile.containsKey(key))
+    if (pendingChunksByFile.containsKey(key)) {
         pendingChunksByFile.remove(key);
+    }
 }
 
 /**

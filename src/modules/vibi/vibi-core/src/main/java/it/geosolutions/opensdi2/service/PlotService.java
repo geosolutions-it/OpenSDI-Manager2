@@ -23,12 +23,8 @@ import it.geosolutions.opensdi2.persistence.GenericVibiDao;
 import it.geosolutions.opensdi2.persistence.Plot;
 import it.geosolutions.opensdi2.persistence.PlotDao;
 import it.geosolutions.opensdi2.persistence.derivated.*;
-import org.hibernate.EntityMode;
-import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.Serializable;
 
 @Transactional(value = "opensdiTransactionManager")
 public class PlotService extends BaseService<Plot, String> {

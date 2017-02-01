@@ -30,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -40,6 +42,16 @@ public final class WorkBooksControler extends BaseFileManager {
 
     @Autowired
     SecurityService securityService;
+    
+    /**
+     * a list of available locations
+     */
+    List<String> locationsList = new ArrayList<String>();
+    {
+        locationsList.add("EMP");
+        locationsList.add("MW");
+        locationsList.add("NCNE");
+    }
 
     private final static Pattern allowedFileExtensions = Pattern.compile(".+?\\.(?:(?:xls$)|(?:xlsx$))");
 
@@ -60,6 +72,7 @@ public final class WorkBooksControler extends BaseFileManager {
             @RequestParam(required = false, defaultValue = "-1") int chunks,
             @RequestParam(required = false, defaultValue = "-1") int chunk,
             @RequestParam(required = false) String folder,
+            @RequestParam(required = false) String location,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         securityService.validate("upload", "workbook", null, null, null);
@@ -67,7 +80,17 @@ public final class WorkBooksControler extends BaseFileManager {
         if (!allowedFileExtensions.matcher(name).matches()) {
             throw new RuntimeException("Only Excel files (xls, xlsx) are allowed: '" + name + "'.");
         }
-        String uniqueName = UUID.randomUUID().toString() + "_uuid_" + name;
+        
+        String locationTag = "_uuid_";
+        if(
+                location != null
+                && locationsList != null
+                && locationsList.size() > 0
+                && locationsList.contains(location.toUpperCase())){
+            locationTag = "_"+location+"_";
+        }
+        
+        String uniqueName = UUID.randomUUID().toString() + locationTag + name;
         super.upload("", file, name, uniqueName, chunks, chunk, finalFolder, request, response);
     }
 }

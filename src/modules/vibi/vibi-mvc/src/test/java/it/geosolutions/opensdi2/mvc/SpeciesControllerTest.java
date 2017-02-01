@@ -21,7 +21,6 @@ package it.geosolutions.opensdi2.mvc;
 
 import com.sun.jersey.api.client.GenericType;
 import it.geosolutions.opensdi2.old.dto.CRUDResponseWrapper;
-import it.geosolutions.opensdi2.persistence.Plot;
 import it.geosolutions.opensdi2.persistence.Species;
 import org.junit.Test;
 
