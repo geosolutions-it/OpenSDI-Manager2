@@ -13,11 +13,11 @@
 
     <name>OpenSDI Manager 2 - Modules - Rest facade</name>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-http_proxy-core</artifactId>
         </dependency>
-	</dependencies>
+    </dependencies>
 
 </project>

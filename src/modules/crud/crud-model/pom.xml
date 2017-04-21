@@ -15,7 +15,7 @@
   
     <dependencies>
         <!-- Core  -->
-	    <dependency>
+        <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-core</artifactId>
                 <version>1.2-SNAPSHOT</version>

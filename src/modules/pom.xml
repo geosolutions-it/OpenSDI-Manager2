@@ -20,13 +20,13 @@
         <module>http-proxy-mvc</module>
         <module>rest-facade</module>
         <module>web-security</module>
-		<module>workflow</module>
-		<module>crud</module>
-		<module>admin</module>
+        <module>workflow</module>
+        <module>crud</module>
+        <module>admin</module>
     </modules>
     <!-- profile geocollect -->
     <profiles>
-		<profile>
+        <profile>
              <id>geocollect</id>
             <modules>
                 <module>geocollect</module>
@@ -40,6 +40,6 @@
         </profile>
   </profiles>
 
-		
+        
     
 </project>

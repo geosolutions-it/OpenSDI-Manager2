@@ -20,7 +20,7 @@
             <name>Alejandro Diaz</name>
             <id>alediator</id>
             <organization>GeoSolutions</organization>
-        </developer>			
+        </developer>            
     </developers>
     
     <!-- properties -->
@@ -83,7 +83,7 @@
             <url>http://maven.geo-solutions.it</url>
           <snapshots>
             <enabled>true</enabled>
-          </snapshots>			
+          </snapshots>            
         </repository>
 
         <!-- Other repositories -->
@@ -93,7 +93,7 @@
           <url>http://download.osgeo.org/webdav/geotools/</url>
           <snapshots>
             <enabled>true</enabled>
-          </snapshots>		  
+          </snapshots>          
         </repository>
         <repository>
           <id>boundless</id>
@@ -103,14 +103,6 @@
             <enabled>true</enabled>
           </snapshots>
         </repository>
-		<!--repository>
-          <id>maven_central</id>
-          <name>maven_central Maven Repository</name>
-          <url>http://central.maven.org/maven2/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository-->	
         
     </repositories>
     
@@ -153,7 +145,7 @@
                 <artifactId>opensdi2-web-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-workflow</artifactId>
                 <version>${project.version}</version>
@@ -165,15 +157,15 @@
                 <type>war</type>
             </dependency>
             <dependency>
-			    <groupId>it.geosolutions.opensdi2</groupId>
-			    <artifactId>opensdi2-crud-rest-api</artifactId>
-			    <version>${project.version}</version>
-		    </dependency>
-		    <dependency>
-			    <groupId>it.geosolutions.opensdi2</groupId>
-			    <artifactId>opensdi2-crud-model</artifactId>
-			    <version>${project.version}</version>
-		    </dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-rest-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.opensdi2</groupId>
+                <artifactId>opensdi2-crud-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-admin</artifactId>
@@ -414,13 +406,13 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-			<!-- Mockito -->
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mockito.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <!-- Mockito -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
      </dependencyManagement>
     <!-- Profiled dependencies --> 

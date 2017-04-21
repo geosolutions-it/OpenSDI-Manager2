@@ -12,10 +12,10 @@
     <packaging>jar</packaging>
 
     <name>OpenSDI Manager 2 - Modules - CRUD REST API</name>
-	
-	<dependencies>
-	    <!-- Core  -->
-	    <dependency>
+    
+    <dependencies>
+        <!-- Core  -->
+        <dependency>
                 <groupId>it.geosolutions.opensdi2</groupId>
                 <artifactId>opensdi2-core</artifactId>
                 <version>1.2-SNAPSHOT</version>
@@ -32,7 +32,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-	</dependencies>
+    </dependencies>
 
 </project>
 

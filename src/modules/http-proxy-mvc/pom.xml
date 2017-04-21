@@ -16,11 +16,11 @@
     <properties>
     </properties>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>it.geosolutions.opensdi2</groupId>
             <artifactId>opensdi2-http_proxy-core</artifactId>
         </dependency>
-	</dependencies>
+    </dependencies>
 
 </project>
