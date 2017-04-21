@@ -5,7 +5,7 @@
     <!-- Main Project -->
     <groupId>it.geosolutions.opensdi2</groupId>
     <artifactId>opensdi-manager2</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>pom</packaging>
     
     <name>OpenSDI-Manager 2 - Parent</name>
@@ -50,7 +50,8 @@
     <scm>
         <url>https://github.com/geosolutions-it/OpenSDI-Manager2</url>
         <connection>scm:git:git@github.com:geosolutions-it/OpenSDI-Manager2.git</connection>
-    </scm>
+      <tag>v1.1</tag>
+  </scm>
 
     <ciManagement>
         <system>jenkins</system>    
@@ -321,7 +322,7 @@
             <dependency>
                 <groupId>it.geosolutions.geostore</groupId>
                  <artifactId>geostore-rest-client</artifactId>
-                 <version>${geostore.version}</version>
+                 <version>1.4.1</version>
              </dependency>
             <!-- =========================================================== -->
             <!--     TEST                                                    -->
